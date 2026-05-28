@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leyes y Gacetas - CLEBNE</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="franja-patria">
+        <div class="amarillo"></div><div class="azul"></div><div class="rojo"></div>
+    </div>
+    
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                <div class="logo-text">
+                    <span class="title">CLEBNE</span>
+                    <span class="subtitle">Consejo Legislativo Bolivariano</span>
+                </div>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="directorio.html">Directorio</a></li>
+                    <li><a href="gacetas.html" class="active">Leyes y Gacetas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Repositorio Legal</h1>
+                <p>Consulta, visualiza y descarga leyes y gacetas oficiales en PDF.</p>
+            </div>
+        </section>
+
+        <section class="gacetas-section">
+            <div class="container">
+                <div class="gacetas-layout">
+                    <div class="gacetas-sidebar">
+                        <div class="sidebar-box">
+                            <h3>Buscar Documento</h3>
+                            <div class="search-box-small">
+                                <input type="text" id="gacetaSearch" placeholder="Ej. Gaceta 5001..." onkeyup="filterDocs()">
+                                <button class="btn btn-primary w-100 mt-2" onclick="filterDocs()">Filtrar Lista</button>
+                            </div>
+                        </div>
+                        
+                        <div class="sidebar-box mt-4">
+                            <h3>Documentos de Prueba</h3>
+                            <ul class="doc-list">
+                                <!-- Enlaces al PDF que hemos descargado, abren en el iframe -->
+                                <li>
+                                    <a href="Gaceta_Oficial_Prueba.pdf" target="pdf-viewer" class="active-doc">
+                                        <i class="fas fa-file-pdf"></i> Gaceta Oficial N° 5001
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Gaceta_Oficial_Prueba.pdf" target="pdf-viewer">
+                                        <i class="fas fa-file-pdf"></i> Ley de Presupuesto 2026
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="Gaceta_Oficial_Prueba.pdf" target="pdf-viewer">
+                                        <i class="fas fa-file-pdf"></i> Ley de Turismo Sustentable
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="gacetas-viewer">
+                        <!-- Visor de PDF integrado -->
+                        <iframe name="pdf-viewer" src="Gaceta_Oficial_Prueba.pdf" class="pdf-iframe" title="Visor de PDF"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados. | <a href="login.html" style="color: #64748b; font-weight: 600; margin-left: 10px; transition: 0.3s;"><i class="fas fa-lock"></i> Acceso Intranet</a></p>
+        </div>
+    </footer>
+
+    <!-- Botón Flotante de Atención al Ciudadano -->
+    <a href="#" class="floating-btn" title="Atención al Ciudadano (WhatsApp)">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Lógica del buscador funcional -->
+    <script>
+        function filterDocs() {
+            let input = document.getElementById('gacetaSearch').value.toLowerCase();
+            let items = document.querySelectorAll('.doc-list li');
+            items.forEach(item => {
+                let text = item.textContent.toLowerCase();
+                if(text.includes(input)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Al cargar la página, revisar si viene una búsqueda desde el Inicio
+        window.onload = function() {
+            let params = new URLSearchParams(window.location.search);
+            let q = params.get('q');
+            if(q) {
+                document.getElementById('gacetaSearch').value = q;
+                filterDocs(); // Ejecutar el filtro automáticamente
+            }
+        };
+    </script>
+</body>
+</html>

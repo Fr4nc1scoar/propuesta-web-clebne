@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEBNE - Inicio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Franja Tricolor (Estilo Estatal) -->
+    <div class="franja-patria">
+        <div class="amarillo"></div>
+        <div class="azul"></div>
+        <div class="rojo"></div>
+    </div>
+    
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-content">
+            <div class="contact-info">
+                <span><i class="fas fa-landmark"></i> Palacio Legislativo: La Asunción, Nueva Esparta</span>
+                <span><i class="fas fa-phone"></i> 0295-1234567</span>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <!-- Se asume que guardaste el logo como logo.png en esta carpeta -->
+                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                <div class="logo-text">
+                    <span class="title">CLEBNE</span>
+                    <span class="subtitle">Consejo Legislativo Bolivariano</span>
+                </div>
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Inicio</a></li>
+                    <li><a href="directorio.html">Directorio</a></li>
+                    <li><a href="gacetas.html">Leyes y Gacetas</a></li>
+                </ul>
+            </nav>
+            <a href="gacetas.html" class="btn btn-primary"><i class="fas fa-search"></i> Buscar Gaceta</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section con la imagen de fondo -->
+        <section class="hero" style="background-image: url('Clebne_2024.jpeg');">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <span class="badge">Gestión Legislativa 2026</span>
+                <h1>Transparencia y Leyes al alcance del Pueblo Neoespartano</h1>
+                <p>Trabajamos por el desarrollo integral, la justicia y el bienestar de nuestras islas: Margarita, Coche y Cubagua.</p>
+                <div class="search-box">
+                    <input type="text" id="heroSearch" placeholder="Buscar Gaceta o Ley (ej. Turismo)..." onkeypress="if(event.key === 'Enter') document.getElementById('btnSearch').click();">
+                    <button id="btnSearch" class="btn btn-search" onclick="window.location.href='gacetas.html?q=' + encodeURIComponent(document.getElementById('heroSearch').value);"><i class="fas fa-file-pdf"></i> Consultar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Participación (Reemplazo de estadísticas) -->
+        <section class="participacion-section">
+            <div class="container participacion-grid">
+                <a href="#" class="part-card">
+                    <div class="part-icon"><i class="fas fa-bullhorn"></i></div>
+                    <div class="part-info">
+                        <h3>Atención al Ciudadano</h3>
+                        <p>Plantea tus inquietudes, sugerencias o denuncias a la OAC.</p>
+                    </div>
+                </a>
+                <a href="#" class="part-card">
+                    <div class="part-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="part-info">
+                        <h3>Agenda Legislativa</h3>
+                        <p>Conoce las próximas sesiones y debates programados.</p>
+                    </div>
+                </a>
+                <a href="#" class="part-card">
+                    <div class="part-icon"><i class="fas fa-search-dollar"></i></div>
+                    <div class="part-info">
+                        <h3>Contraloría Social</h3>
+                        <p>Acceso a balances de gestión y ejecución presupuestaria.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Comisiones Permanentes -->
+        <section class="comisiones-section">
+            <div class="container">
+                <div class="section-header center">
+                    <h2 class="section-title">Comisiones Permanentes de Trabajo</h2>
+                    <p class="section-subtitle">Conoce los equipos encargados del trabajo legislativo y desarrollo del Estado Bolivariano de Nueva Esparta.</p>
+                </div>
+                <div class="comisiones-image-container">
+                    <img src="comisiones.jpg" alt="Comisiones Permanentes de Trabajo" class="comisiones-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 80px 20px; color: #64748b; font-weight: 600; font-size: 18px;\'><i class=\'fas fa-image fa-3x\' style=\'margin-bottom: 15px; color: #cbd5e1;\'></i><br>Por favor, guarda la imagen de las comisiones como \'comisiones.jpg\' en esta carpeta para que aparezca aquí.</div>';">
+                </div>
+            </div>
+        </section>
+
+        <!-- Últimas Noticias Section -->
+        <section class="noticias-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Actualidad Legislativa</h2>
+                </div>
+                <div class="news-grid">
+                    <article class="news-card">
+                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80');">
+                            <span class="news-category">Legislación</span>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span><i class="far fa-calendar-alt"></i> 28 de mayo de 2026</span>
+                            </div>
+                            <h3>Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable</h3>
+                            <p>El Consejo Legislativo dio el primer paso para impulsar el desarrollo económico y turístico de nuestras islas protegiendo el ecosistema.</p>
+                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                    <article class="news-card">
+                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80');">
+                            <span class="news-category" style="background-color: var(--accent-green);">Acuerdos</span>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span><i class="far fa-calendar-alt"></i> 26 de mayo de 2026</span>
+                            </div>
+                            <h3>CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta</h3>
+                            <p>En sesión especial, se reconoció la trayectoria de importantes figuras de la música tradicional neoespartana y su aporte a la identidad.</p>
+                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                    <article class="news-card">
+                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80');">
+                            <span class="news-category" style="background-color: var(--accent-yellow); color: #000;">Institucional</span>
+                        </div>
+                        <div class="news-content">
+                            <div class="news-meta">
+                                <span><i class="far fa-calendar-alt"></i> 24 de mayo de 2026</span>
+                            </div>
+                            <h3>Comisión de Finanzas evalúa ejecución presupuestaria</h3>
+                            <p>Garantizando la transparencia, los legisladores revisaron junto a las autoridades del ejecutivo regional los balances de gestión.</p>
+                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Plataformas y Enlaces -->
+        <section class="enlaces-section">
+            <div class="container">
+                <div class="section-header center">
+                    <h2 class="section-title">Plataformas y Enlaces de Interés</h2>
+                </div>
+                <div class="enlaces-grid">
+                    <a href="https://www.patria.org.ve/" target="_blank" class="enlace-card">
+                        <i class="fas fa-star"></i>
+                        <span>Sistema Patria</span>
+                    </a>
+                    <a href="https://venapp.com/" target="_blank" class="enlace-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>App VenApp</span>
+                    </a>
+                    <a href="https://www.gebne.org.ve/" target="_blank" class="enlace-card">
+                        <i class="fas fa-landmark"></i>
+                        <span>Gobernación GBNE</span>
+                    </a>
+                    <a href="#" class="enlace-card">
+                        <i class="fas fa-balance-scale"></i>
+                        <span>Contraloría del Estado</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-info">
+                <div class="logo footer-logo">
+                    <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/60x60?text=Logo';">
+                    <span class="logo-text" style="color: white; font-weight: bold; font-size: 24px; margin-left: 10px;">CLEBNE</span>
+                </div>
+                <div class="contact-details">
+                    <p><i class="fas fa-map-marker-alt"></i> Palacio Legislativo, La Asunción, Municipio Arismendi.</p>
+                    <p><i class="fas fa-phone"></i> 0295 - 123.45.67</p>
+                    <p><i class="fas fa-envelope"></i> info@clebne.gob.ve</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Marco Legal</h4>
+                <ul>
+                    <li><a href="#">Constitución del Estado</a></li>
+                    <li><a href="gacetas.html">Gacetas Oficiales</a></li>
+                    <li><a href="#">Reglamento Interior y de Debates</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Transparencia</h4>
+                <ul>
+                    <li><a href="#">Presupuesto Público</a></li>
+                    <li><a href="#">Informes de Gestión</a></li>
+                    <li><a href="#">Atención Ciudadana (OAC)</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados. | <a href="login.html" style="color: #64748b; font-weight: 600; margin-left: 10px; transition: 0.3s;"><i class="fas fa-lock"></i> Acceso Intranet</a></p>
+        </div>
+    </footer>
+
+    <!-- Botón Flotante de Atención al Ciudadano -->
+    <a href="#contacto" class="floating-btn" title="Atención al Ciudadano (WhatsApp)">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - CLEBNE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-primary: #093c71;
+            --admin-secondary: #f4f7f6;
+            --admin-text: #1e293b;
+            --admin-muted: #64748b;
+            --admin-border: #e2e8f0;
+            --admin-accent: #d52b2b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { display: flex; min-height: 100vh; background-color: var(--admin-secondary); color: var(--admin-text); }
+        
+        /* Sidebar */
+        .sidebar { width: 280px; background-color: var(--admin-primary); color: white; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 25px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-header img { width: 45px; height: 45px; }
+        .sidebar-header h2 { font-size: 18px; font-weight: 800; line-height: 1.2; }
+        .sidebar-header span { font-size: 12px; color: #a0aec0; font-weight: normal; display: block; }
+        
+        .nav-menu { padding: 20px 0; flex: 1; }
+        .nav-item { display: block; padding: 15px 25px; color: #cbd5e1; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s; border-left: 4px solid transparent; }
+        .nav-item i { width: 25px; font-size: 18px; }
+        .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.05); color: white; border-left-color: var(--admin-accent); }
+        
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-btn { display: flex; align-items: center; gap: 10px; color: #f87171; text-decoration: none; font-weight: 600; padding: 10px; border-radius: 8px; transition: 0.3s; }
+        .logout-btn:hover { background-color: rgba(248, 113, 113, 0.1); }
+
+        /* Main Content */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+        .topbar { background: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .user-profile { display: flex; align-items: center; gap: 15px; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; }
+        
+        .content-area { padding: 40px; }
+        .page-title { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .page-title h1 { font-size: 28px; font-weight: 800; color: var(--admin-primary); }
+        .btn-action { background-color: var(--admin-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-action:hover { background-color: #052243; }
+
+        /* Cards and Forms */
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 30px; margin-bottom: 30px; }
+        .card-header { border-bottom: 1px solid var(--admin-border); padding-bottom: 15px; margin-bottom: 25px; }
+        .card-header h3 { font-size: 18px; font-weight: 700; color: var(--admin-text); }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--admin-text); }
+        .form-control { width: 100%; padding: 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        .form-control:focus { border-color: var(--admin-primary); }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+        
+        .file-drop-area { border: 2px dashed var(--admin-border); border-radius: 8px; padding: 40px 20px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s; }
+        .file-drop-area:hover { border-color: var(--admin-primary); background: #f1f5f9; }
+        .file-drop-area i { font-size: 40px; color: var(--admin-muted); margin-bottom: 15px; }
+        .file-drop-area p { color: var(--admin-muted); font-weight: 500; font-size: 14px; }
+        
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 14px; }
+        .data-table th { font-weight: 600; color: var(--admin-muted); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+        .action-icons i { color: var(--admin-muted); cursor: pointer; margin-right: 10px; transition: 0.3s; }
+        .action-icons i:hover { color: var(--admin-primary); }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="Logo.png" alt="CLEBNE" onerror="this.src='https://via.placeholder.com/45';">
+            <div>
+                <h2>CLEBNE</h2>
+                <span>Panel de Administración</span>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="#" class="nav-item" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i> Resumen</a>
+            <a href="#" class="nav-item active" onclick="switchTab('noticias', this)"><i class="fas fa-newspaper"></i> Noticias</a>
+            <a href="#" class="nav-item" onclick="switchTab('gacetas', this)"><i class="fas fa-file-pdf"></i> Gacetas Oficiales</a>
+            <a href="#" class="nav-item" onclick="switchTab('directorio', this)"><i class="fas fa-users"></i> Directorio</a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="topbar">
+            <div class="search">
+                <span style="color: var(--admin-muted); font-weight: 500;">Sistema Integrado de Gestión Legislativa</span>
+            </div>
+            <div class="user-profile">
+                <div style="text-align: right;">
+                    <span style="display: block; font-weight: 600; font-size: 14px;">Administrador</span>
+                    <span style="font-size: 12px; color: var(--admin-muted);">Prensa y Relaciones Públicas</span>
+                </div>
+                <img src="https://via.placeholder.com/40" alt="Avatar">
+            </div>
+        </header>
+
+        <div class="content-area">
+            
+            <!-- Tab: Noticias -->
+            <div id="tab-noticias">
+                <div class="page-title">
+                    <h1>Gestión de Noticias</h1>
+                    <button class="btn-action" onclick="alert('Funcionalidad de guardado simulada.')"><i class="fas fa-save"></i> Publicar Noticia</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Redactar Nueva Entrada</h3>
+                    </div>
+                    <form onsubmit="event.preventDefault(); alert('Noticia publicada con éxito en el portal.');">
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <label class="form-label">Título de la Noticia</label>
+                                <input type="text" class="form-control" placeholder="Ej. Aprobada nueva ley de turismo...">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Categoría</label>
+                                <select class="form-control">
+                                    <option>Legislación</option>
+                                    <option>Acuerdos</option>
+                                    <option>Institucional</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Publicación</label>
+                                <input type="date" class="form-control" value="2026-05-28">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Imagen de Portada</label>
+                            <div class="file-drop-area" onclick="document.getElementById('file-img').click()">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Haz clic para subir una imagen o arrástrala aquí</p>
+                                <input type="file" id="file-img" style="display: none;" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Contenido de la Noticia</label>
+                            <textarea class="form-control" placeholder="Escribe el cuerpo de la noticia aquí..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-action">Guardar Borrador</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Últimas Noticias Publicadas</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Categoría</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aprobada en Primera Discusión Ley para el Fomento...</td>
+                                <td>Legislación</td>
+                                <td>28 May 2026</td>
+                                <td><span class="badge badge-success">Publicado</span></td>
+                                <td class="action-icons">
+                                    <i class="fas fa-edit" title="Editar"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f87171;" title="Eliminar"></i>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>CLEBNE rinde honores a cultores y patrimonio...</td>
+                                <td>Acuerdos</td>
+                                <td>26 May 2026</td>
+                                <td><span class="badge badge-success">Publicado</span></td>
+                                <td class="action-icons">
+                                    <i class="fas fa-edit"></i>
+                                    <i class="fas fa-trash-alt" style="color: #f87171;"></i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Otros Tabs Ocultos (Simulados) -->
+            <div id="tab-gacetas" style="display: none;">
+                <div class="page-title">
+                    <h1>Gestión de Gacetas y Leyes</h1>
+                    <button class="btn-action"><i class="fas fa-upload"></i> Subir Gaceta</button>
+                </div>
+                <div class="card">
+                    <div class="file-drop-area">
+                        <i class="fas fa-file-pdf"></i>
+                        <p>Arrastra el archivo PDF de la Gaceta Oficial aquí</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-directorio" style="display: none;">
+                <div class="page-title">
+                    <h1>Directorio de Legisladores</h1>
+                </div>
+                <div class="card">
+                    <p>Módulo para actualizar fotos, nombres y comisiones de los legisladores activos.</p>
+                </div>
+            </div>
+            
+            <div id="tab-dashboard" style="display: none;">
+                <div class="page-title">
+                    <h1>Resumen del Sistema</h1>
+                </div>
+                <div class="card">
+                    <p>Bienvenido al sistema. Utiliza el menú lateral para gestionar el contenido del portal público.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tabId, element) {
+            // Ocultar todos los tabs
+            document.getElementById('tab-noticias').style.display = 'none';
+            document.getElementById('tab-gacetas').style.display = 'none';
+            document.getElementById('tab-directorio').style.display = 'none';
+            document.getElementById('tab-dashboard').style.display = 'none';
+            
+            // Mostrar el seleccionado
+            document.getElementById('tab-' + tabId).style.display = 'block';
+            
+            // Actualizar estilo del menú
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>
