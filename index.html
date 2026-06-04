@@ -51,7 +51,7 @@
                 <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
                 <div class="logo-text">
                     <span class="title">CLEBNE</span>
-                    <span class="subtitle">Consejo Legislativo Bolivariano</span>
+                    <span class="subtitle">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
                 </div>
             </a>
             <div class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">
@@ -60,6 +60,7 @@
             <nav>
                 <ul class="nav-links">
                     <li><a href="index.html" class="active">Inicio</a></li>
+                    <li><a href="noticias.html">Noticias</a></li>
                     <li><a href="directorio.html">Directorio</a></li>
                     <li><a href="gacetas.html">Leyes y Gacetas</a></li>
                 </ul>
@@ -130,46 +131,94 @@
                     <h2 class="section-title">Actualidad Legislativa</h2>
                 </div>
                 <div class="news-grid">
-                    <article class="news-card">
-                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80');">
-                            <span class="news-category">Legislación</span>
-                        </div>
-                        <div class="news-content">
-                            <div class="news-meta">
-                                <span><i class="far fa-calendar-alt"></i> 28 de mayo de 2026</span>
-                            </div>
-                            <h3>Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable</h3>
-                            <p>El Consejo Legislativo dio el primer paso para impulsar el desarrollo económico y turístico de nuestras islas protegiendo el ecosistema.</p>
-                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
-                        </div>
-                    </article>
-                    <article class="news-card">
-                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80');">
-                            <span class="news-category" style="background-color: var(--accent-green);">Acuerdos</span>
-                        </div>
-                        <div class="news-content">
-                            <div class="news-meta">
-                                <span><i class="far fa-calendar-alt"></i> 26 de mayo de 2026</span>
-                            </div>
-                            <h3>CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta</h3>
-                            <p>En sesión especial, se reconoció la trayectoria de importantes figuras de la música tradicional neoespartana y su aporte a la identidad.</p>
-                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
-                        </div>
-                    </article>
-                    <article class="news-card">
-                        <div class="news-img" style="background-image: url('https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80');">
-                            <span class="news-category" style="background-color: var(--accent-yellow); color: #000;">Institucional</span>
-                        </div>
-                        <div class="news-content">
-                            <div class="news-meta">
-                                <span><i class="far fa-calendar-alt"></i> 24 de mayo de 2026</span>
-                            </div>
-                            <h3>Comisión de Finanzas evalúa ejecución presupuestaria</h3>
-                            <p>Garantizando la transparencia, los legisladores revisaron junto a las autoridades del ejecutivo regional los balances de gestión.</p>
-                            <a href="#" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
-                        </div>
-                    </article>
+                    <!-- Las noticias se cargan dinámicamente con JavaScript -->
                 </div>
+                <div class="center-btn" style="text-align: center; margin-top: 40px;">
+                    <a href="noticias.html" class="btn btn-primary"><i class="fas fa-newspaper"></i> Ver Todas las Noticias</a>
+                </div>
+
+    <script>
+        // Noticias por defecto si no hay nada en localStorage
+        const defaultNews = [
+            {
+                id: "def-1",
+                title: "Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable",
+                category: "Legislación",
+                date: "2026-05-28",
+                image: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
+                content: "El Consejo Legislativo dio el primer paso para impulsar el desarrollo económico y turístico de nuestras islas protegiendo el ecosistema."
+            },
+            {
+                id: "def-2",
+                title: "CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta",
+                category: "Acuerdos",
+                date: "2026-05-26",
+                image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80",
+                content: "En sesión especial, se reconoció la trayectoria de importantes figuras de la música tradicional neoespartana y su aporte a la identidad."
+            },
+            {
+                id: "def-3",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                category: "Institucional",
+                date: "2026-05-24",
+                image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
+                content: "Garantizando la transparencia, los legisladores revisaron junto a las autoridades del ejecutivo regional los balances de gestión."
+            }
+        ];
+
+        // Inicializar localStorage si no existe
+        if (!localStorage.getItem('clebne_news')) {
+            localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
+        }
+
+        // Renderizar las noticias
+        function renderNews() {
+            const newsGrid = document.querySelector('.news-grid');
+            if (!newsGrid) return;
+            
+            const newsList = JSON.parse(localStorage.getItem('clebne_news')) || defaultNews;
+            newsGrid.innerHTML = '';
+            
+            // Mostrar las últimas 3 noticias
+            const latestNews = newsList.slice(0, 3);
+            
+            latestNews.forEach(item => {
+                const article = document.createElement('article');
+                article.className = 'news-card';
+                
+                // Formatear fecha
+                const fechaParts = item.date.split('-');
+                let fechaFormateada = item.date;
+                if (fechaParts.length === 3) {
+                    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                    fechaFormateada = `${fechaParts[2]} de ${meses[parseInt(fechaParts[1]) - 1]} de ${fechaParts[0]}`;
+                }
+                
+                let categoryColor = 'var(--primary-blue)';
+                if (item.category === 'Acuerdos') categoryColor = 'var(--accent-green)';
+                if (item.category === 'Institucional') categoryColor = 'var(--accent-yellow)';
+                const categoryTextColor = item.category === 'Institucional' ? '#000' : '#fff';
+                
+                article.innerHTML = `
+                    <div class="news-img" style="background-image: url('${item.image}');">
+                        <span class="news-category" style="background-color: ${categoryColor}; color: ${categoryTextColor};">${item.category}</span>
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span><i class="far fa-calendar-alt"></i> ${fechaFormateada}</span>
+                        </div>
+                        <h3>${item.title}</h3>
+                        <p>${item.content}</p>
+                        <a href="noticia.html?id=${item.id}" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                `;
+                newsGrid.appendChild(article);
+            });
+        }
+
+        // Ejecutar al cargar la página
+        window.addEventListener('DOMContentLoaded', renderNews);
+    </script>
             </div>
         </section>
 

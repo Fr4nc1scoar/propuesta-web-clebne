@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEBNE - Noticias</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .btn-filter {
+            padding: 10px 22px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--dark-text);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-filter:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            transform: translateY(-1px);
+        }
+        .btn-filter.active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+    </style>
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+    <div class="franja-patria">
+        <div class="amarillo"></div><div class="azul"></div><div class="rojo"></div>
+    </div>
+    
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                <div class="logo-text">
+                    <span class="title">CLEBNE</span>
+                    <span class="subtitle">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
+                </div>
+            </a>
+            <div class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <i class="fas fa-bars"></i>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="noticias.html" class="active">Noticias</a></li>
+                    <li><a href="directorio.html">Directorio</a></li>
+                    <li><a href="gacetas.html">Leyes y Gacetas</a></li>
+                </ul>
+            </nav>
+            <a href="gacetas.html" class="btn btn-primary btn-nav"><i class="fas fa-search"></i> Buscar Gaceta</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Noticias y Actualidad</h1>
+                <p>Noticias, acuerdos, sesiones especiales y leyes aprobadas por el parlamento regional.</p>
+            </div>
+        </section>
+
+        <section class="filters-section" style="padding: 40px 0 10px; background: var(--white); border-bottom: 1px solid var(--border-color);">
+            <div class="container" style="display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; align-items: center;">
+                <div class="search-box-small" style="max-width: 400px; flex: 1; position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--muted-text);"></i>
+                    <input type="text" id="news-search" placeholder="Buscar noticias..." oninput="filterNews()" style="width: 100%; padding: 14px 20px 14px 45px; border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: 15px; outline: none; transition: border-color 0.3s;">
+                </div>
+                <div class="category-filters" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-filter active" onclick="filterCategory('Todos', this)">Todos</button>
+                    <button class="btn-filter" onclick="filterCategory('Legislación', this)">Legislación</button>
+                    <button class="btn-filter" onclick="filterCategory('Acuerdos', this)">Acuerdos</button>
+                    <button class="btn-filter" onclick="filterCategory('Institucional', this)">Institucional</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="noticias-section">
+            <div class="container">
+                <div class="news-grid" id="news-grid-all">
+                    <!-- Las noticias se cargan dinámicamente con JavaScript -->
+                </div>
+                <div id="no-news-message" style="display: none; text-align: center; padding: 80px 20px; color: var(--muted-text);">
+                    <i class="fas fa-newspaper fa-4x" style="margin-bottom: 20px; color: #cbd5e1;"></i>
+                    <p style="font-size: 20px; font-weight: 700; color: var(--dark-text);">No se encontraron noticias</p>
+                    <p style="margin-top: 10px; font-size: 15px;">Intenta cambiar los filtros de búsqueda o la categoría seleccionada.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div>
+                <div class="logo footer-logo">
+                    <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                    <div class="logo-text">
+                        <span class="title" style="color: white;">CLEBNE</span>
+                        <span class="subtitle" style="color: #a0aec0;">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
+                    </div>
+                </div>
+                <div class="contact-details">
+                    <p><i class="fas fa-map-marker-alt"></i> Palacio Legislativo, Calle Girardot, La Asunción, Nueva Esparta.</p>
+                    <p><i class="fas fa-envelope"></i> clebne.oficial@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Enlaces Útiles</h4>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="noticias.html">Noticias</a></li>
+                    <li><a href="directorio.html">Directorio de Legisladores</a></li>
+                    <li><a href="gacetas.html">Leyes y Gacetas Oficiales</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Intranet</h4>
+                <ul>
+                    <li><a href="login.html"><i class="fas fa-lock"></i> Acceso Intranet</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const defaultNews = [
+            {
+                id: "def-1",
+                title: "Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable",
+                category: "Legislación",
+                date: "2026-05-28",
+                image: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
+                content: "El Consejo Legislativo del Estado Bolivariano de Nueva Esparta dio el primer paso legislativo para impulsar el desarrollo económico y turístico de nuestras islas, protegiendo el ecosistema local y promoviendo la participación de las comunidades en la actividad turística sustentable.\n\nEste instrumento legal busca normar e incentivar la inversión en ecoturismo, respetando las bellezas naturales de Margarita, Coche y Cubagua. La Presidenta del Consejo legislativo enfatizó que esta ley marcará un hito para el futuro ecológico y financiero de la entidad regional."
+            },
+            {
+                id: "def-2",
+                title: "CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta",
+                category: "Acuerdos",
+                date: "2026-05-26",
+                image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80",
+                content: "En una emotiva Sesión Especial celebrada en el Palacio Legislativo de La Asunción, se reconoció la destacada trayectoria de importantes figuras de la música tradicional neoespartana, declarándolos patrimonio cultural viviente de nuestro estado.\n\nEl presídium del legislativo regional destacó la labor de preservación de nuestras raíces, galerones y cantos tradicionales, elementos vitales que definen la identidad del pueblo de Margarita, Coche y Cubagua. Se hizo entrega de condecoraciones y pergaminos de reconocimiento oficial."
+            },
+            {
+                id: "def-3",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                category: "Institucional",
+                date: "2026-05-24",
+                image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
+                content: "Garantizando la transparencia y la contraloría social, los legisladores de la Comisión Permanente de Finanzas se reunieron con las autoridades del ejecutivo regional para revisar detenidamente los balances de gestión del último trimestre.\n\nEsta mesa técnica de trabajo evaluó detalladamente el avance de las obras presupuestadas, la distribución del situado constitucional y el cumplimiento de las metas sociales planteadas para este periodo. El informe final será presentado en la próxima sesión ordinaria."
+            }
+        ];
+
+        let selectedCategory = 'Todos';
+        let searchQuery = '';
+
+        function renderAllNews() {
+            const newsGrid = document.getElementById('news-grid-all');
+            const noNewsMessage = document.getElementById('no-news-message');
+            if (!newsGrid) return;
+
+            const newsList = JSON.parse(localStorage.getItem('clebne_news')) || defaultNews;
+            newsGrid.innerHTML = '';
+
+            // Filtrar
+            const filteredNews = newsList.filter(item => {
+                const matchesCategory = selectedCategory === 'Todos' || item.category === selectedCategory;
+                const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      item.content.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (filteredNews.length === 0) {
+                newsGrid.style.display = 'none';
+                noNewsMessage.style.display = 'block';
+                return;
+            }
+
+            newsGrid.style.display = 'grid';
+            noNewsMessage.style.display = 'none';
+
+            filteredNews.forEach(item => {
+                const article = document.createElement('article');
+                article.className = 'news-card';
+
+                // Formatear fecha
+                const fechaParts = item.date.split('-');
+                let fechaFormateada = item.date;
+                if (fechaParts.length === 3) {
+                    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+                    fechaFormateada = `${fechaParts[2]} de ${meses[parseInt(fechaParts[1]) - 1]} de ${fechaParts[0]}`;
+                }
+
+                let categoryColor = 'var(--primary-blue)';
+                if (item.category === 'Acuerdos') categoryColor = 'var(--accent-green)';
+                if (item.category === 'Institucional') categoryColor = 'var(--accent-yellow)';
+                const categoryTextColor = item.category === 'Institucional' ? '#000' : '#fff';
+
+                article.innerHTML = `
+                    <div class="news-img" style="background-image: url('${item.image}');">
+                        <span class="news-category" style="background-color: ${categoryColor}; color: ${categoryTextColor};">${item.category}</span>
+                    </div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span><i class="far fa-calendar-alt"></i> ${fechaFormateada}</span>
+                        </div>
+                        <h3>${item.title}</h3>
+                        <p>${item.content}</p>
+                        <a href="noticia.html?id=${item.id}" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
+                    </div>
+                `;
+                newsGrid.appendChild(article);
+            });
+        }
+
+        function filterCategory(category, buttonElement) {
+            selectedCategory = category;
+            
+            // Actualizar botones
+            document.querySelectorAll('.btn-filter').forEach(el => el.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            renderAllNews();
+        }
+
+        function filterNews() {
+            searchQuery = document.getElementById('news-search').value.trim();
+            renderAllNews();
+        }
+
+        // Inicializar al cargar la página
+        window.addEventListener('DOMContentLoaded', () => {
+            if (!localStorage.getItem('clebne_news')) {
+                localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
+            }
+            renderAllNews();
+        });
+    </script>
+</body>
+</html>

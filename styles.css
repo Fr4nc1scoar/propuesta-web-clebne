@@ -44,7 +44,7 @@ a { text-decoration: none; color: inherit; }
 .logo-img { height: 65px; width: auto; object-fit: contain; }
 .logo-text { display: flex; flex-direction: column; justify-content: center; }
 .logo-text .title { font-size: 26px; font-weight: 800; color: var(--primary-blue); letter-spacing: -0.5px; line-height: 1.1; }
-.logo-text .subtitle { font-size: 12px; color: var(--muted-text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.logo-text .subtitle { font-size: 10px; color: var(--muted-text); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3; }
 
 .nav-links { display: flex; list-style: none; gap: 32px; }
 .nav-links a { font-weight: 600; color: var(--dark-text); font-size: 15px; transition: all 0.3s; position: relative; }
@@ -116,6 +116,8 @@ a { text-decoration: none; color: inherit; }
 .legislador-card { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); text-align: center; transition: 0.3s; border: 1px solid var(--border-color); border-top: 5px solid var(--primary-blue); }
 .legislador-card:hover { transform: translateY(-5px); border-top-color: var(--accent-red); box-shadow: var(--shadow-lg); }
 .avatar-placeholder { height: 180px; background-color: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 80px; color: #94a3b8; }
+.avatar-container { height: 180px; background-color: #e2e8f0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.director-img { width: 100%; height: 100%; object-fit: cover; }
 .legislador-info { padding: 25px 20px; }
 .legislador-info h3 { font-size: 18px; color: var(--primary-blue); margin-bottom: 8px; font-weight: 800; line-height: 1.3; min-height: 46px; }
 .legislador-info .role { font-weight: 700; color: var(--accent-red); font-size: 14px; margin-bottom: 10px; text-transform: uppercase; }

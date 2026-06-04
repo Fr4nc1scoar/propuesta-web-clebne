@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLEBNE - Detalle de Noticia</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .article-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        .article-img {
+            width: 100%;
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .article-content {
+            padding: 40px;
+        }
+        .article-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: var(--muted-text);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+        .article-meta i {
+            color: var(--accent-red);
+            margin-right: 5px;
+        }
+        .article-body {
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--dark-text);
+            white-space: pre-wrap;
+        }
+        .btn-back {
+            margin-top: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-blue);
+            font-weight: 700;
+            transition: 0.3s;
+        }
+        .btn-back:hover {
+            color: var(--accent-red);
+            transform: translateX(-5px);
+        }
+    </style>
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+    <div class="franja-patria">
+        <div class="amarillo"></div><div class="azul"></div><div class="rojo"></div>
+    </div>
+    
+    <header class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                <div class="logo-text">
+                    <span class="title">CLEBNE</span>
+                    <span class="subtitle">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
+                </div>
+            </a>
+            <div class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">
+                <i class="fas fa-bars"></i>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="noticias.html">Noticias</a></li>
+                    <li><a href="directorio.html">Directorio</a></li>
+                    <li><a href="gacetas.html">Leyes y Gacetas</a></li>
+                </ul>
+            </nav>
+            <a href="gacetas.html" class="btn btn-primary btn-nav"><i class="fas fa-search"></i> Buscar Gaceta</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="article-container">
+            <div id="artImage" class="article-img"></div>
+            <div class="article-content">
+                <div class="article-meta">
+                    <span id="artCategory"><i class="fas fa-tag"></i> Categoría</span>
+                    <span id="artDate"><i class="far fa-calendar-alt"></i> Fecha</span>
+                </div>
+                <h1 id="artTitle" class="article-title">Título de la Noticia</h1>
+                <div id="artBody" class="article-body">
+                    Cargando contenido de la noticia...
+                </div>
+                <a href="index.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver a Noticias</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-bottom">
+            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Noticias por defecto
+        const defaultNews = [
+            {
+                id: "def-1",
+                title: "Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable",
+                category: "Legislación",
+                date: "2026-05-28",
+                image: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
+                content: "El Consejo Legislativo del Estado Bolivariano de Nueva Esparta dio el primer paso legislativo para impulsar el desarrollo económico y turístico de nuestras islas, protegiendo el ecosistema local y promoviendo la participación de las comunidades en la actividad turística sustentable.\n\nEste instrumento legal busca normar e incentivar la inversión en ecoturismo, respetando las bellezas naturales de Margarita, Coche y Cubagua. La Presidenta del Consejo legislativo enfatizó que esta ley marcará un hito para el futuro ecológico y financiero de la entidad regional."
+            },
+            {
+                id: "def-2",
+                title: "CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta",
+                category: "Acuerdos",
+                date: "2026-05-26",
+                image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80",
+                content: "En una emotiva Sesión Especial celebrada en el Palacio Legislativo de La Asunción, se reconoció la destacada trayectoria de importantes figuras de la música tradicional neoespartana, declarándolos patrimonio cultural viviente de nuestro estado.\n\nEl presídium del legislativo regional destacó la labor de preservación de nuestras raíces, galerones y cantos tradicionales, elementos vitales que definen la identidad del pueblo de Margarita, Coche y Cubagua. Se hizo entrega de condecoraciones y pergaminos de reconocimiento oficial."
+            },
+            {
+                id: "def-3",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                category: "Institucional",
+                date: "2026-05-24",
+                image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
+                content: "Garantizando la transparencia y la contraloría social, los legisladores de la Comisión Permanente de Finanzas se reunieron con las autoridades del ejecutivo regional para revisar detenidamente los balances de gestión del último trimestre.\n\nEsta mesa técnica de trabajo evaluó detalladamente el avance de las obras presupuestadas, la distribución del situado constitucional y el cumplimiento de las metas sociales planteadas para este periodo. El informe final será presentado en la próxima sesión ordinaria."
+            }
+        ];
+
+        window.onload = function() {
+            // Obtener el ID de la URL
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            // Buscar la noticia en localStorage o en defaults
+            let newsList = JSON.parse(localStorage.getItem('clebne_news')) || defaultNews;
+            let article = newsList.find(item => item.id == id);
+            
+            // Si no la encuentra directamente, buscar en los defaults por si acaso
+            if (!article) {
+                article = defaultNews.find(item => item.id == id);
+            }
+
+            if (article) {
+                document.title = article.title + " - CLEBNE";
+                document.getElementById('artTitle').textContent = article.title;
+                document.getElementById('artCategory').innerHTML = `<i class="fas fa-tag"></i> ${article.category}`;
+                
+                // Formatear fecha
+                const fechaParts = article.date.split('-');
+                let fechaFormateada = article.date;
+                if (fechaParts.length === 3) {
+                    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                    fechaFormateada = `${fechaParts[2]} de ${meses[parseInt(fechaParts[1]) - 1]} de ${fechaParts[0]}`;
+                }
+                document.getElementById('artDate').innerHTML = `<i class="far fa-calendar-alt"></i> ${fechaFormateada}`;
+                
+                document.getElementById('artImage').style.backgroundImage = `url('${article.image}')`;
+                document.getElementById('artBody').textContent = article.content;
+            } else {
+                document.getElementById('artTitle').textContent = "Noticia no encontrada";
+                document.getElementById('artBody').innerHTML = "<p>Lo sentimos, el artículo solicitado no se encuentra registrado en el sistema.</p>";
+            }
+        };
+    </script>
+</body>
+</html>

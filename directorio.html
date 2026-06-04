@@ -25,7 +25,7 @@
                 <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
                 <div class="logo-text">
                     <span class="title">CLEBNE</span>
-                    <span class="subtitle">Consejo Legislativo Bolivariano</span>
+                    <span class="subtitle">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
                 </div>
             </a>
             <div class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')">
@@ -34,6 +34,7 @@
             <nav>
                 <ul class="nav-links">
                     <li><a href="index.html">Inicio</a></li>
+                    <li><a href="noticias.html">Noticias</a></li>
                     <li><a href="directorio.html" class="active">Directorio</a></li>
                     <li><a href="gacetas.html">Leyes y Gacetas</a></li>
                 </ul>
@@ -52,71 +53,98 @@
         <section class="directorio-section">
             <div class="container">
                 <div class="directorio-grid">
-                    
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user-tie"></i></div>
-                        <div class="legislador-info">
-                            <h3>Jennyffer Mercedes Gil Martínez</h3>
-                            <p class="role">Presidente</p>
-                            <p class="comision">Presidencia</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user-tie"></i></div>
-                        <div class="legislador-info">
-                            <h3>Tirso Ezequiel Solano Cornivell</h3>
-                            <p class="role">Vicepresidente</p>
-                            <p class="comision">Vicepresidencia</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
-                        <div class="legislador-info">
-                            <h3>Osvelida del Valle Gil Velásquez</h3>
-                            <p class="role">Legisladora</p>
-                            <p class="comision">Oficina Legislativa</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user"></i></div>
-                        <div class="legislador-info">
-                            <h3>Mayra Johana Lairet Viloria</h3>
-                            <p class="role">Legisladora</p>
-                            <p class="comision">Oficina Legislativa</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user-tie"></i></div>
-                        <div class="legislador-info">
-                            <h3>Osmícar José Cabeza Rondón</h3>
-                            <p class="role">Legislador</p>
-                            <p class="comision">Oficina Legislativa</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user-tie"></i></div>
-                        <div class="legislador-info">
-                            <h3>Johan Francisco Yánez Arias</h3>
-                            <p class="role">Legislador</p>
-                            <p class="comision">Oficina Legislativa</p>
-                        </div>
-                    </div>
-
-                    <div class="legislador-card">
-                        <div class="avatar-placeholder"><i class="fas fa-user-tie"></i></div>
-                        <div class="legislador-info">
-                            <h3>Luis Manuel Rosas Caraballo</h3>
-                            <p class="role">Legislador</p>
-                            <p class="comision">Oficina Legislativa</p>
-                        </div>
-                    </div>
-
+                    <!-- Los legisladores se cargan dinámicamente con JavaScript -->
                 </div>
+
+    <script>
+        const defaultLegisladores = [
+            {
+                id: "leg-1",
+                name: "Jennyffer Mercedes Gil Martínez",
+                role: "Presidente",
+                commission: "Presidencia",
+                gender: "female"
+            },
+            {
+                id: "leg-2",
+                name: "Tirso Ezequiel Solano Cornivell",
+                role: "Vicepresidente",
+                commission: "Vicepresidencia",
+                gender: "male"
+            },
+            {
+                id: "leg-3",
+                name: "Osvelida del Valle Gil Velásquez",
+                role: "Legisladora",
+                commission: "Oficina Legislativa",
+                gender: "female"
+            },
+            {
+                id: "leg-4",
+                name: "Mayra Johana Lairet Viloria",
+                role: "Legisladora",
+                commission: "Oficina Legislativa",
+                gender: "female"
+            },
+            {
+                id: "leg-5",
+                name: "Osmícar José Cabeza Rondón",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            },
+            {
+                id: "leg-6",
+                name: "Johan Francisco Yánez Arias",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            },
+            {
+                id: "leg-7",
+                name: "Luis Manuel Rosas Caraballo",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            }
+        ];
+
+        // Inicializar localStorage si no existe
+        if (!localStorage.getItem('clebne_legisladores')) {
+            localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
+        }
+
+        // Renderizar directorio
+        function renderDirectorio() {
+            const grid = document.querySelector('.directorio-grid');
+            if (!grid) return;
+            
+            const list = JSON.parse(localStorage.getItem('clebne_legisladores')) || defaultLegisladores;
+            grid.innerHTML = '';
+            
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'legislador-card';
+                
+                const avatarIcon = item.gender === 'female' ? 'fa-user' : 'fa-user-tie';
+                const avatarHTML = item.image
+                    ? `<div class="avatar-container"><img src="${item.image}" alt="${item.name}" class="director-img"></div>`
+                    : `<div class="avatar-placeholder"><i class="fas ${avatarIcon}"></i></div>`;
+                
+                card.innerHTML = `
+                    ${avatarHTML}
+                    <div class="legislador-info">
+                        <h3>${item.name}</h3>
+                        <p class="role">${item.role}</p>
+                        <p class="comision">${item.commission}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', renderDirectorio);
+    </script>
             </div>
         </section>
     </main>

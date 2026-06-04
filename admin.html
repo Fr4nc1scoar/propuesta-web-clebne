@@ -71,8 +71,13 @@
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .badge-success { background: #dcfce7; color: #166534; }
         .badge-warning { background: #fef9c3; color: #854d0e; }
-        .action-icons i { color: var(--admin-muted); cursor: pointer; margin-right: 10px; transition: 0.3s; }
-        .action-icons i:hover { color: var(--admin-primary); }
+        .btn-action-table { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; margin-right: 5px; }
+        .btn-edit { background-color: #eff6ff; color: #1d4ed8; }
+        .btn-edit:hover { background-color: #dbeafe; }
+        .btn-delete { background-color: #fef2f2; color: #b91c1c; }
+        .btn-delete:hover { background-color: #fee2e2; }
+        .table-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #e2e8f0; display: inline-block; vertical-align: middle; margin-right: 8px; }
+        .table-avatar-placeholder { width: 35px; height: 35px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #e2e8f0; color: #64748b; font-size: 14px; margin-right: 8px; vertical-align: middle; }
     </style>
     
     <!-- Vercel Web Analytics -->
@@ -96,7 +101,7 @@
             <a href="#" class="nav-item" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i> Resumen</a>
             <a href="#" class="nav-item active" onclick="switchTab('noticias', this)"><i class="fas fa-newspaper"></i> Noticias</a>
             <a href="#" class="nav-item" onclick="switchTab('gacetas', this)"><i class="fas fa-file-pdf"></i> Gacetas Oficiales</a>
-            <a href="#" class="nav-item" onclick="switchTab('directorio', this)"><i class="fas fa-users"></i> Directorio</a>
+            <a href="#" class="nav-item" onclick="switchTab('directorio', this)"><i class="fas fa-users"></i> Directores Activos</a>
         </nav>
         <div class="sidebar-footer">
             <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
@@ -114,32 +119,67 @@
                     <span style="display: block; font-weight: 600; font-size: 14px;">Administrador</span>
                     <span style="font-size: 12px; color: var(--admin-muted);">Prensa y Relaciones Públicas</span>
                 </div>
-                <img src="https://via.placeholder.com/40" alt="Avatar">
+                <div class="user-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); border: 2px solid white; flex-shrink: 0;">PR</div>
             </div>
         </header>
 
         <div class="content-area">
             
+            <!-- Tab: Dashboard -->
+            <div id="tab-dashboard" style="display: none;">
+                <div class="page-title">
+                    <h1>Resumen del Sistema</h1>
+                </div>
+                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid var(--admin-primary);">
+                        <i class="fas fa-newspaper fa-2x" style="color: var(--admin-primary); margin-bottom: 10px;"></i>
+                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Noticias Publicadas</h3>
+                        <p id="stat-news-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid var(--admin-accent);">
+                        <i class="fas fa-file-pdf fa-2x" style="color: var(--admin-accent); margin-bottom: 10px;"></i>
+                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Gacetas y Leyes</h3>
+                        <p id="stat-gacetas-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid #009b3a;">
+                        <i class="fas fa-users fa-2x" style="color: #009b3a; margin-bottom: 10px;"></i>
+                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Directores y Legisladores</h3>
+                        <p id="stat-legisladores-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Acciones Rápidas</h3>
+                    </div>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn-action" onclick="switchTab('noticias', document.querySelector('[onclick*=\'noticias\']'))"><i class="fas fa-plus"></i> Redactar Noticia</button>
+                        <button class="btn-action" style="background-color: var(--admin-accent);" onclick="switchTab('gacetas', document.querySelector('[onclick*=\'gacetas\']'))"><i class="fas fa-upload"></i> Subir Gaceta</button>
+                        <button class="btn-action" style="background-color: #009b3a;" onclick="switchTab('directorio', document.querySelector('[onclick*=\'directorio\']'))"><i class="fas fa-user-plus"></i> Agregar Miembro</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Tab: Noticias -->
             <div id="tab-noticias">
                 <div class="page-title">
-                    <h1>Gestión de Noticias</h1>
-                    <button class="btn-action" onclick="alert('Funcionalidad de guardado simulada.')"><i class="fas fa-save"></i> Publicar Noticia</button>
+                    <h1 id="news-page-title">Gestión de Noticias</h1>
+                    <button class="btn-action" id="btn-submit-news" onclick="submitNewsForm()"><i class="fas fa-save"></i> Publicar Noticia</button>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <h3>Redactar Nueva Entrada</h3>
+                        <h3 id="news-form-title">Redactar Nueva Entrada</h3>
                     </div>
-                    <form onsubmit="event.preventDefault(); alert('Noticia publicada con éxito en el portal.');">
+                    <form id="newsForm" onsubmit="event.preventDefault();">
+                        <input type="hidden" id="news-edit-id">
                         <div class="form-grid">
                             <div class="form-group full">
                                 <label class="form-label">Título de la Noticia</label>
-                                <input type="text" class="form-control" placeholder="Ej. Aprobada nueva ley de turismo...">
+                                <input type="text" id="news-title" class="form-control" placeholder="Ej. Aprobada nueva ley de turismo..." required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Categoría</label>
-                                <select class="form-control">
+                                <select id="news-category" class="form-control">
                                     <option>Legislación</option>
                                     <option>Acuerdos</option>
                                     <option>Institucional</option>
@@ -147,7 +187,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Fecha de Publicación</label>
-                                <input type="date" class="form-control" value="2026-05-28">
+                                <input type="date" id="news-date" class="form-control" required>
                             </div>
                         </div>
                         
@@ -155,16 +195,20 @@
                             <label class="form-label">Imagen de Portada</label>
                             <div class="file-drop-area" onclick="document.getElementById('file-img').click()">
                                 <i class="fas fa-cloud-upload-alt"></i>
-                                <p>Haz clic para subir una imagen o arrástrala aquí</p>
-                                <input type="file" id="file-img" style="display: none;" accept="image/*">
+                                <p id="img-upload-status">Haz clic para subir una imagen o arrástrala aquí (opcional)</p>
+                                <input type="file" id="file-img" style="display: none;" accept="image/*" onchange="handleImageUpload(this)">
                             </div>
+                            <input type="hidden" id="news-image-base64">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Contenido de la Noticia</label>
-                            <textarea class="form-control" placeholder="Escribe el cuerpo de la noticia aquí..."></textarea>
+                            <textarea id="news-content" class="form-control" placeholder="Escribe el cuerpo de la noticia aquí..." required></textarea>
                         </div>
-                        <button type="submit" class="btn-action">Guardar Borrador</button>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" onclick="submitNewsForm()" class="btn-action" id="btn-save-news">Publicar</button>
+                            <button type="button" onclick="resetNewsForm()" class="btn-action" style="background-color: var(--admin-muted); display: none;" id="btn-cancel-news">Cancelar Edición</button>
+                        </div>
                     </form>
                 </div>
 
@@ -178,65 +222,153 @@
                                 <th>Título</th>
                                 <th>Categoría</th>
                                 <th>Fecha</th>
-                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Aprobada en Primera Discusión Ley para el Fomento...</td>
-                                <td>Legislación</td>
-                                <td>28 May 2026</td>
-                                <td><span class="badge badge-success">Publicado</span></td>
-                                <td class="action-icons">
-                                    <i class="fas fa-edit" title="Editar"></i>
-                                    <i class="fas fa-trash-alt" style="color: #f87171;" title="Eliminar"></i>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>CLEBNE rinde honores a cultores y patrimonio...</td>
-                                <td>Acuerdos</td>
-                                <td>26 May 2026</td>
-                                <td><span class="badge badge-success">Publicado</span></td>
-                                <td class="action-icons">
-                                    <i class="fas fa-edit"></i>
-                                    <i class="fas fa-trash-alt" style="color: #f87171;"></i>
-                                </td>
-                            </tr>
+                        <tbody id="news-table-body">
+                            <!-- Filas dinámicas -->
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Otros Tabs Ocultos (Simulados) -->
+            <!-- Tab: Gacetas -->
             <div id="tab-gacetas" style="display: none;">
                 <div class="page-title">
                     <h1>Gestión de Gacetas y Leyes</h1>
-                    <button class="btn-action"><i class="fas fa-upload"></i> Subir Gaceta</button>
                 </div>
                 <div class="card">
-                    <div class="file-drop-area">
-                        <i class="fas fa-file-pdf"></i>
-                        <p>Arrastra el archivo PDF de la Gaceta Oficial aquí</p>
+                    <div class="card-header">
+                        <h3>Subir Nuevo Documento Oficial</h3>
                     </div>
+                    <form id="gacetaForm" onsubmit="event.preventDefault(); submitGacetaForm();">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Título / Número de Gaceta o Ley</label>
+                                <input type="text" id="gaceta-title" class="form-control" placeholder="Ej. Gaceta Oficial N° 5002" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Categoría</label>
+                                <select id="gaceta-category" class="form-control">
+                                    <option>Gaceta</option>
+                                    <option>Ley</option>
+                                    <option>Reglamento</option>
+                                    <option>Otro</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Fecha de Publicación</label>
+                                <input type="date" id="gaceta-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Archivo PDF</label>
+                                <div class="file-drop-area" style="padding: 18px 10px;" onclick="document.getElementById('file-pdf').click()">
+                                    <i class="fas fa-file-pdf" style="font-size: 24px; margin-bottom: 5px;"></i>
+                                    <p id="pdf-upload-status" style="font-size: 13px;">Haz clic para seleccionar el PDF oficial</p>
+                                    <input type="file" id="file-pdf" style="display: none;" accept="application/pdf" onchange="handlePdfUpload(this)">
+                                </div>
+                                <input type="hidden" id="gaceta-pdf-base64">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-action"><i class="fas fa-upload"></i> Cargar Gaceta Oficial</button>
+                    </form>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Repositorio de Documentos</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Categoría</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="gaceta-table-body">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
+            <!-- Tab: Directorio -->
             <div id="tab-directorio" style="display: none;">
                 <div class="page-title">
-                    <h1>Directorio de Legisladores</h1>
+                    <h1 id="directorio-page-title">Directores Activos y Legisladores</h1>
                 </div>
                 <div class="card">
-                    <p>Módulo para actualizar fotos, nombres y comisiones de los legisladores activos.</p>
+                    <div class="card-header">
+                        <h3 id="leg-form-title">Agregar Miembro (Director / Legislador)</h3>
+                    </div>
+                    <form id="legForm" onsubmit="event.preventDefault(); submitLegForm();">
+                        <input type="hidden" id="leg-edit-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nombre Completo</label>
+                                <input type="text" id="leg-name" class="form-control" placeholder="Ej. Jennyffer Gil" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cargo / Rol</label>
+                                <select id="leg-role" class="form-control">
+                                    <option>Presidente</option>
+                                    <option>Vicepresidente</option>
+                                    <option>Legislador</option>
+                                    <option>Legisladora</option>
+                                    <option>Secretario</option>
+                                    <option>Director</option>
+                                    <option>Directora</option>
+                                    <option>Coordinador</option>
+                                    <option>Coordinadora</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Comisión Permanente / Oficina</label>
+                                <input type="text" id="leg-commission" class="form-control" placeholder="Ej. Dirección de Prensa" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Género (Para Avatar alternativo)</label>
+                                <select id="leg-gender" class="form-control">
+                                    <option value="male">Masculino (Avatar con corbata)</option>
+                                    <option value="female">Femenino (Avatar estándar)</option>
+                                </select>
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label">Foto del Director/Legislador (Opcional)</label>
+                                <div class="file-drop-area" style="padding: 20px 10px;" onclick="document.getElementById('file-leg-photo').click()">
+                                    <i class="fas fa-camera" style="font-size: 28px; margin-bottom: 8px;"></i>
+                                    <p id="leg-photo-status" style="font-size: 14px;">Haz clic para seleccionar una fotografía</p>
+                                    <input type="file" id="file-leg-photo" style="display: none;" accept="image/*" onchange="handleLegPhotoUpload(this)">
+                                </div>
+                                <input type="hidden" id="leg-image-base64">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn-action" id="btn-save-leg">Guardar Registro</button>
+                            <button type="button" onclick="resetLegForm()" class="btn-action" style="background-color: var(--admin-muted); display: none;" id="btn-cancel-leg">Cancelar Edición</button>
+                        </div>
+                    </form>
                 </div>
-            </div>
-            
-            <div id="tab-dashboard" style="display: none;">
-                <div class="page-title">
-                    <h1>Resumen del Sistema</h1>
-                </div>
+
                 <div class="card">
-                    <p>Bienvenido al sistema. Utiliza el menú lateral para gestionar el contenido del portal público.</p>
+                    <div class="card-header">
+                        <h3>Miembros Registrados (Legisladores y Directores)</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Miembro</th>
+                                <th>Cargo</th>
+                                <th>Comisión / Oficina</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leg-table-body">
+                            <!-- Filas dinámicas -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -244,20 +376,519 @@
     </main>
 
     <script>
+        // Data por defecto
+        const defaultNews = [
+            {
+                id: "def-1",
+                title: "Aprobada en Primera Discusión Ley para el Fomento del Turismo Sustentable",
+                category: "Legislación",
+                date: "2026-05-28",
+                image: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
+                content: "El Consejo Legislativo del Estado Bolivariano de Nueva Esparta dio el primer paso legislativo para impulsar el desarrollo económico y turístico de nuestras islas, protegiendo el ecosistema local y promoviendo la participación de las comunidades en la actividad turística sustentable.\n\nEste instrumento legal busca normar e incentivar la inversión en ecoturismo, respetando las bellezas naturales de Margarita, Coche y Cubagua. La Presidenta del Consejo legislativo enfatizó que esta ley marcará un hito para el futuro ecológico y financiero de la entidad regional."
+            },
+            {
+                id: "def-2",
+                title: "CLEBNE rinde honores a cultores y patrimonio del Estado Nueva Esparta",
+                category: "Acuerdos",
+                date: "2026-05-26",
+                image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80",
+                content: "En una emotiva Sesión Especial celebrada en el Palacio Legislativo de La Asunción, se reconoció la destacada trayectoria de importantes figuras de la música tradicional neoespartana, declarándolos patrimonio cultural viviente de nuestro estado.\n\nEl presídium del legislativo regional destacó la labor de preservación de nuestras raíces, galerones y cantos tradicionales, elementos vitales que definen la identidad del pueblo de Margarita, Coche y Cubagua. Se hizo entrega de condecoraciones y pergaminos de reconocimiento oficial."
+            },
+            {
+                id: "def-3",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                category: "Institucional",
+                date: "2026-05-24",
+                image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
+                content: "Garantizando la transparencia y la contraloría social, los legisladores de la Comisión Permanente de Finanzas se reunieron con las autoridades del ejecutivo regional para revisar detenidamente los balances de gestión del último trimestre.\n\nEsta mesa técnica de trabajo evaluó detalladamente el avance de las obras presupuestadas, la distribución del situado constitucional y el cumplimiento de las metas sociales planteadas para este periodo. El informe final será presentado en la próxima sesión ordinaria."
+            }
+        ];
+
+        const defaultGacetas = [
+            {
+                id: "gac-1",
+                title: "Gaceta Oficial N° 5001",
+                category: "Gaceta",
+                date: "2026-05-28",
+                pdfData: "Gaceta_Oficial_Prueba.pdf"
+            },
+            {
+                id: "gac-2",
+                title: "Ley de Presupuesto 2026",
+                category: "Ley",
+                date: "2026-05-26",
+                pdfData: "Gaceta_Oficial_Prueba.pdf"
+            },
+            {
+                id: "gac-3",
+                title: "Ley de Turismo Sustentable",
+                category: "Ley",
+                date: "2026-05-24",
+                pdfData: "Gaceta_Oficial_Prueba.pdf"
+            }
+        ];
+
+        const defaultLegisladores = [
+            {
+                id: "leg-1",
+                name: "Jennyffer Mercedes Gil Martínez",
+                role: "Presidente",
+                commission: "Presidencia",
+                gender: "female"
+            },
+            {
+                id: "leg-2",
+                name: "Tirso Ezequiel Solano Cornivell",
+                role: "Vicepresidente",
+                commission: "Vicepresidencia",
+                gender: "male"
+            },
+            {
+                id: "leg-3",
+                name: "Osvelida del Valle Gil Velásquez",
+                role: "Legisladora",
+                commission: "Oficina Legislativa",
+                gender: "female"
+            },
+            {
+                id: "leg-4",
+                name: "Mayra Johana Lairet Viloria",
+                role: "Legisladora",
+                commission: "Oficina Legislativa",
+                gender: "female"
+            },
+            {
+                id: "leg-5",
+                name: "Osmícar José Cabeza Rondón",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            },
+            {
+                id: "leg-6",
+                name: "Johan Francisco Yánez Arias",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            },
+            {
+                id: "leg-7",
+                name: "Luis Manuel Rosas Caraballo",
+                role: "Legislador",
+                commission: "Oficina Legislativa",
+                gender: "male"
+            }
+        ];
+
+        // Inicialización general en localStorage
+        if (!localStorage.getItem('clebne_news')) localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
+        if (!localStorage.getItem('clebne_gacetas')) localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
+        if (!localStorage.getItem('clebne_legisladores')) localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
+
+        // Cambiar entre pestañas
         function switchTab(tabId, element) {
-            // Ocultar todos los tabs
             document.getElementById('tab-noticias').style.display = 'none';
             document.getElementById('tab-gacetas').style.display = 'none';
             document.getElementById('tab-directorio').style.display = 'none';
             document.getElementById('tab-dashboard').style.display = 'none';
             
-            // Mostrar el seleccionado
             document.getElementById('tab-' + tabId).style.display = 'block';
             
-            // Actualizar estilo del menú
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                // Buscar el elemento en el menú para activarlo
+                const menuItems = document.querySelectorAll('.nav-item');
+                menuItems.forEach(item => {
+                    if (item.getAttribute('onclick').includes(tabId)) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+            
+            // Recargar datos y estadísticas
+            updateDashboardStats();
+            if (tabId === 'noticias') renderNewsTable();
+            if (tabId === 'gacetas') renderGacetasTable();
+            if (tabId === 'directorio') renderLegisladoresTable();
         }
+
+        // --- DASHBOARD FUNCTIONS ---
+        function updateDashboardStats() {
+            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            
+            document.getElementById('stat-news-count').textContent = news.length;
+            document.getElementById('stat-gacetas-count').textContent = gacetas.length;
+            document.getElementById('stat-legisladores-count').textContent = legs.length;
+        }
+
+        // --- NOTICIAS FUNCTIONS ---
+        function renderNewsTable() {
+            const tbody = document.getElementById('news-table-body');
+            if (!tbody) return;
+            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            tbody.innerHTML = '';
+            
+            news.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</td>
+                    <td>${item.category}</td>
+                    <td>${item.date}</td>
+                    <td>
+                        <button class="btn-action-table btn-edit" onclick="editNews('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn-action-table btn-delete" onclick="deleteNews('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            const status = document.getElementById('img-upload-status');
+            if (!file) return;
+            
+            status.textContent = "Procesando imagen...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('news-image-base64').value = e.target.result;
+                status.textContent = `Imagen cargada: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitNewsForm() {
+            const title = document.getElementById('news-title').value.trim();
+            const category = document.getElementById('news-category').value;
+            const date = document.getElementById('news-date').value;
+            const content = document.getElementById('news-content').value.trim();
+            const editId = document.getElementById('news-edit-id').value;
+            
+            if (!title || !date || !content) {
+                alert("Por favor completa los campos obligatorios (Título, Fecha y Contenido).");
+                return;
+            }
+
+            let image = document.getElementById('news-image-base64').value;
+            if (!image) {
+                // Imagen por defecto según categoría
+                image = "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80";
+            }
+
+            let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+
+            if (editId) {
+                // Editar noticia existente
+                news = news.map(item => {
+                    if (item.id === editId) {
+                        return { ...item, title, category, date, content, image };
+                    }
+                    return item;
+                });
+                alert("Noticia editada con éxito.");
+            } else {
+                // Agregar nueva noticia
+                const newEntry = {
+                    id: "custom-" + Date.now(),
+                    title,
+                    category,
+                    date,
+                    content,
+                    image
+                };
+                news.unshift(newEntry); // Agregar al inicio
+                alert("Noticia publicada con éxito.");
+            }
+
+            localStorage.setItem('clebne_news', JSON.stringify(news));
+            resetNewsForm();
+            renderNewsTable();
+            updateDashboardStats();
+        }
+
+        function editNews(id) {
+            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const item = news.find(n => n.id === id);
+            if (!item) return;
+
+            document.getElementById('news-edit-id').value = item.id;
+            document.getElementById('news-title').value = item.title;
+            document.getElementById('news-category').value = item.category;
+            document.getElementById('news-date').value = item.date;
+            document.getElementById('news-content').value = item.content;
+            document.getElementById('news-image-base64').value = item.image;
+            
+            document.getElementById('img-upload-status').textContent = "Imagen cargada en el registro";
+            
+            document.getElementById('news-form-title').textContent = "Editar Noticia Seleccionada";
+            document.getElementById('btn-save-news').textContent = "Guardar Cambios";
+            document.getElementById('btn-cancel-news').style.display = 'inline-block';
+            
+            // Scroll a la sección del formulario
+            document.getElementById('newsForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteNews(id) {
+            if (!confirm("¿Está seguro de que desea eliminar esta noticia?")) return;
+            let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            news = news.filter(item => item.id !== id);
+            localStorage.setItem('clebne_news', JSON.stringify(news));
+            renderNewsTable();
+            updateDashboardStats();
+            alert("Noticia eliminada.");
+        }
+
+        function resetNewsForm() {
+            document.getElementById('news-edit-id').value = '';
+            document.getElementById('newsForm').reset();
+            document.getElementById('news-image-base64').value = '';
+            document.getElementById('img-upload-status').textContent = "Haz clic para subir una imagen o arrástrala aquí (opcional)";
+            
+            document.getElementById('news-form-title').textContent = "Redactar Nueva Entrada";
+            document.getElementById('btn-save-news').textContent = "Publicar";
+            document.getElementById('btn-cancel-news').style.display = 'none';
+            
+            // Reestablecer fecha de hoy
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('news-date').value = today;
+        }
+
+
+        // --- GACETAS FUNCTIONS ---
+        function renderGacetasTable() {
+            const tbody = document.getElementById('gaceta-table-body');
+            if (!tbody) return;
+            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            tbody.innerHTML = '';
+            
+            gacetas.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${item.title}</td>
+                    <td>${item.category}</td>
+                    <td>${item.date}</td>
+                    <td>
+                        <button class="btn-action-table btn-delete" onclick="deleteGaceta('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function handlePdfUpload(input) {
+            const file = input.files[0];
+            const status = document.getElementById('pdf-upload-status');
+            if (!file) return;
+            
+            if (file.size > 1.5 * 1024 * 1024) { // Limitar a 1.5MB para localStorage
+                alert("El archivo PDF es demasiado grande para almacenamiento local en el navegador (Máximo 1.5MB). Para archivos grandes, el sistema en producción guardará la ruta física en base de datos. Se usará el PDF de prueba del sistema para esta demostración.");
+                document.getElementById('gaceta-pdf-base64').value = "Gaceta_Oficial_Prueba.pdf";
+                status.textContent = `Usando PDF de Prueba (Archivo original: ${file.name})`;
+                return;
+            }
+
+            status.textContent = "Procesando PDF...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('gaceta-pdf-base64').value = e.target.result;
+                status.textContent = `PDF cargado: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function submitGacetaForm() {
+            const title = document.getElementById('gaceta-title').value.trim();
+            const category = document.getElementById('gaceta-category').value;
+            const date = document.getElementById('gaceta-date').value;
+            let pdfData = document.getElementById('gaceta-pdf-base64').value;
+            
+            if (!title || !date) {
+                alert("Por favor completa todos los campos del formulario.");
+                return;
+            }
+
+            if (!pdfData) {
+                pdfData = "Gaceta_Oficial_Prueba.pdf"; // Fallback por defecto
+            }
+
+            let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const newEntry = {
+                id: "gac-" + Date.now(),
+                title,
+                category,
+                date,
+                pdfData
+            };
+            
+            gacetas.unshift(newEntry);
+            localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
+            
+            alert("Documento / Gaceta cargado con éxito en el repositorio.");
+            document.getElementById('gacetaForm').reset();
+            document.getElementById('gaceta-pdf-base64').value = '';
+            document.getElementById('pdf-upload-status').textContent = "Haz clic para seleccionar el PDF oficial";
+            
+            // Reestablecer fecha de hoy
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('gaceta-date').value = today;
+            
+            renderGacetasTable();
+            updateDashboardStats();
+        }
+
+        function deleteGaceta(id) {
+            if (!confirm("¿Está seguro de que desea eliminar este documento?")) return;
+            let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            gacetas = gacetas.filter(item => item.id !== id);
+            localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
+            renderGacetasTable();
+            updateDashboardStats();
+            alert("Documento eliminado.");
+        }
+
+
+        // --- LEGISLADORES FUNCTIONS ---
+        function handleLegPhotoUpload(input) {
+            const file = input.files[0];
+            const status = document.getElementById('leg-photo-status');
+            if (!file) return;
+            
+            status.textContent = "Procesando foto...";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('leg-image-base64').value = e.target.result;
+                status.textContent = `Foto cargada: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderLegisladoresTable() {
+            const tbody = document.getElementById('leg-table-body');
+            if (!tbody) return;
+            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            tbody.innerHTML = '';
+            
+            legs.forEach(item => {
+                const tr = document.createElement('tr');
+                const avatarHTML = item.image
+                    ? `<img src="${item.image}" class="table-thumb">`
+                    : `<div class="table-avatar-placeholder"><i class="fas ${item.gender === 'female' ? 'fa-user' : 'fa-user-tie'}"></i></div>`;
+                
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${avatarHTML}${item.name}</td>
+                    <td>${item.role}</td>
+                    <td>${item.commission}</td>
+                    <td>
+                        <button class="btn-action-table btn-edit" onclick="editLeg('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn-action-table btn-delete" onclick="deleteLeg('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function submitLegForm() {
+            const name = document.getElementById('leg-name').value.trim();
+            const role = document.getElementById('leg-role').value;
+            const commission = document.getElementById('leg-commission').value.trim();
+            const gender = document.getElementById('leg-gender').value;
+            const image = document.getElementById('leg-image-base64').value;
+            const editId = document.getElementById('leg-edit-id').value;
+            
+            if (!name || !commission) {
+                alert("Por favor completa los campos requeridos (Nombre y Comisión).");
+                return;
+            }
+
+            let legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+
+            if (editId) {
+                legs = legs.map(item => {
+                    if (item.id === editId) {
+                        return { ...item, name, role, commission, gender, image };
+                    }
+                    return item;
+                });
+                alert("Datos del miembro actualizados.");
+            } else {
+                const newLeg = {
+                    id: "leg-" + Date.now(),
+                    name,
+                    role,
+                    commission,
+                    gender,
+                    image
+                };
+                legs.push(newLeg); // Agregar al final del listado
+                alert("Miembro registrado con éxito.");
+            }
+
+            localStorage.setItem('clebne_legisladores', JSON.stringify(legs));
+            resetLegForm();
+            renderLegisladoresTable();
+            updateDashboardStats();
+        }
+
+        function editLeg(id) {
+            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const item = legs.find(l => l.id === id);
+            if (!item) return;
+
+            document.getElementById('leg-edit-id').value = item.id;
+            document.getElementById('leg-name').value = item.name;
+            document.getElementById('leg-role').value = item.role;
+            document.getElementById('leg-commission').value = item.commission;
+            document.getElementById('leg-gender').value = item.gender;
+            document.getElementById('leg-image-base64').value = item.image || '';
+            
+            if (item.image) {
+                document.getElementById('leg-photo-status').textContent = "Foto cargada en el registro";
+            } else {
+                document.getElementById('leg-photo-status').textContent = "Haz clic para seleccionar una fotografía";
+            }
+            
+            document.getElementById('leg-form-title').textContent = "Editar Datos del Miembro";
+            document.getElementById('btn-save-leg').textContent = "Guardar Cambios";
+            document.getElementById('btn-cancel-leg').style.display = 'inline-block';
+            
+            document.getElementById('legForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function deleteLeg(id) {
+            if (!confirm("¿Está seguro de que desea eliminar este miembro del directorio?")) return;
+            let legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            legs = legs.filter(item => item.id !== id);
+            localStorage.setItem('clebne_legisladores', JSON.stringify(legs));
+            renderLegisladoresTable();
+            updateDashboardStats();
+            alert("Miembro removido.");
+        }
+
+        function resetLegForm() {
+            document.getElementById('leg-edit-id').value = '';
+            document.getElementById('legForm').reset();
+            document.getElementById('leg-image-base64').value = '';
+            document.getElementById('leg-photo-status').textContent = "Haz clic para seleccionar una fotografía";
+            document.getElementById('leg-form-title').textContent = "Agregar Miembro (Director / Legislador)";
+            document.getElementById('btn-save-leg').textContent = "Guardar Registro";
+            document.getElementById('btn-cancel-leg').style.display = 'none';
+        }
+
+
+        // Inicializar al cargar la página
+        window.onload = function() {
+            // Establecer fechas de hoy por defecto
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('news-date').value = today;
+            document.getElementById('gaceta-date').value = today;
+            
+            // Abrir el dashboard por defecto
+            switchTab('dashboard', null);
+        };
     </script>
 </body>
 </html>
