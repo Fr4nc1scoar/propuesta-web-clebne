@@ -1406,6 +1406,8 @@
             renderAdminDirectorio();
         }
 
+        let tempDirectorPhoto = "";
+
         function editDirector(id) {
             const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
             const leg = legisladores.find(l => l.id === id);
@@ -1417,7 +1419,7 @@
             document.getElementById('directorCommission').value = leg.commission;
             document.getElementById('directorGender').value = leg.gender || 'M';
 
-            if (leg.image) {
+            if (leg.image && leg.image.trim() !== "") {
                 tempDirectorPhoto = leg.image;
                 document.getElementById('photoPreviewImg').src = leg.image;
                 document.getElementById('photoPreviewContainer').style.display = 'flex';
@@ -1452,7 +1454,7 @@
             tempDirectorPhoto = "REMOVE";
             document.getElementById('photoPreviewContainer').style.display = 'none';
             document.getElementById('directorPhotoInput').value = '';
-            showToast('Foto removida. Se usará el avatar por defecto.');
+            showToast('Foto removida. Guarde la ficha para usar el avatar por defecto.');
         }
 
         function handleDirectorPhotoUpload(e) {

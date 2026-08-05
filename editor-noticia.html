@@ -199,7 +199,7 @@
             border-radius: 12px;
             padding: 10px 14px;
             display: flex;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
             z-index: 1000;
             margin-bottom: 25px;
@@ -209,8 +209,8 @@
         .tool-group {
             display: flex;
             align-items: center;
-            gap: 4px;
-            padding-right: 8px;
+            gap: 6px;
+            padding-right: 10px;
             border-right: 1px solid #e2e8f0;
         }
         .tool-group:last-child {
@@ -263,14 +263,14 @@
             background: #fde68a;
         }
 
-        /* Body Editable Area */
+        /* Body Editable Area & Element Styling */
         .body-editable {
             min-height: 350px;
             outline: none;
             font-size: 17px;
             line-height: 1.8;
             color: #334155;
-            padding: 10px;
+            padding: 12px;
             border-radius: 8px;
             transition: background 0.2s;
         }
@@ -282,10 +282,57 @@
             color: #94a3b8;
         }
 
-        .body-editable h1 { font-size: 28px; font-weight: 800; color: #0f172a; margin: 20px 0 10px 0; }
-        .body-editable h2 { font-size: 24px; font-weight: 800; color: #0369a1; margin: 20px 0 10px 0; }
-        .body-editable h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin: 18px 0 8px 0; }
+        .body-editable h1 { font-size: 30px; font-weight: 800; color: #0f172a; margin: 24px 0 12px 0; line-height: 1.3; }
+        .body-editable h2 { font-size: 24px; font-weight: 800; color: #0369a1; margin: 20px 0 10px 0; line-height: 1.35; }
+        .body-editable h3 { font-size: 20px; font-weight: 700; color: #0f172a; margin: 18px 0 8px 0; line-height: 1.4; }
         .body-editable p { margin-bottom: 16px; }
+        
+        .body-editable ul {
+            list-style-type: disc !important;
+            padding-left: 30px !important;
+            margin: 15px 0 !important;
+        }
+        .body-editable ol {
+            list-style-type: decimal !important;
+            padding-left: 30px !important;
+            margin: 15px 0 !important;
+        }
+        .body-editable li {
+            margin-bottom: 8px !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Color Picker Popover Dropdown */
+        .color-popover {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 6px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 10px;
+            padding: 12px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1500;
+            width: 220px;
+        }
+        .color-popover.show { display: flex; }
+        
+        .color-presets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .color-btn-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
 
         /* Toast notification */
         .toast-notification {
@@ -378,20 +425,20 @@
                 <!-- Group 1: Format & Heading -->
                 <div class="tool-group">
                     <select class="tool-select" onchange="applyBlockFormat(this.value); this.value='';">
-                        <option value="">Tipo de Texto...</option>
-                        <option value="p">Texto Normal (Párrafo)</option>
+                        <option value="">Formato Encabezado...</option>
+                        <option value="p">Párrafo Normal</option>
                         <option value="h1">Título Grande (H1)</option>
                         <option value="h2">Título Mediano (H2)</option>
                         <option value="h3">Subtítulo (H3)</option>
                     </select>
                     
                     <select class="tool-select" onchange="applyFontSize(this.value); this.value='';">
-                        <option value="">Tamaño Letra...</option>
+                        <option value="">Tamaño de Letra...</option>
                         <option value="14px">14px - Pequeña</option>
                         <option value="16px">16px - Normal</option>
                         <option value="18px">18px - Mediana</option>
                         <option value="22px">22px - Grande</option>
-                        <option value="28px">28px - Enorme</option>
+                        <option value="28px">28px - Titular</option>
                     </select>
                 </div>
 
@@ -411,12 +458,30 @@
                     <button type="button" class="btn-tool" onclick="execCmd('justifyFull')" title="Justificar Texto"><i class="fas fa-align-justify"></i></button>
                 </div>
 
-                <!-- Group 4: Color & Lists -->
-                <div class="tool-group">
-                    <label title="Color de Texto" style="display:inline-flex; align-items:center; gap:4px; cursor:pointer; background:#f1f5f9; padding:4px 8px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; font-weight:700;">
-                        <i class="fas fa-palette" style="color:#ca8a04;"></i> Color
-                        <input type="color" onchange="execCmd('foreColor', this.value)" style="width:20px; height:20px; border:none; background:none; cursor:pointer; padding:0;">
-                    </label>
+                <!-- Group 4: Color Picker Popover with explicit "Aplicar" Button -->
+                <div class="tool-group" style="position:relative;">
+                    <button type="button" class="btn-tool" onclick="toggleColorPopover()" title="Color de Texto" style="gap:6px; padding:0 12px;">
+                        <i class="fas fa-palette" style="color:#ca8a04;"></i> Color <i class="fas fa-caret-down" style="font-size:10px;"></i>
+                    </button>
+                    
+                    <div id="colorPopover" class="color-popover">
+                        <div style="font-size:12px; font-weight:700; color:#0f172a;">Elegir Color de Texto:</div>
+                        <div class="color-presets">
+                            <button type="button" class="color-btn-dot" style="background:#0f172a;" onclick="selectPresetColor('#0f172a')"></button>
+                            <button type="button" class="color-btn-dot" style="background:#ca8a04;" onclick="selectPresetColor('#ca8a04')"></button>
+                            <button type="button" class="color-btn-dot" style="background:#dc2626;" onclick="selectPresetColor('#dc2626')"></button>
+                            <button type="button" class="color-btn-dot" style="background:#0284c7;" onclick="selectPresetColor('#0284c7')"></button>
+                            <button type="button" class="color-btn-dot" style="background:#16a34a;" onclick="selectPresetColor('#16a34a')"></button>
+                            <button type="button" class="color-btn-dot" style="background:#475569;" onclick="selectPresetColor('#475569')"></button>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="color" id="textColorPicker" value="#0f172a" style="width:36px; height:32px; border:none; border-radius:6px; cursor:pointer;">
+                            <button type="button" class="btn-topbar btn-topbar-publish" style="padding:6px 12px; font-size:12px;" onclick="applySelectedColor()">
+                                <i class="fas fa-check"></i> Aplicar Color
+                            </button>
+                        </div>
+                    </div>
+
                     <button type="button" class="btn-tool" onclick="execCmd('insertUnorderedList')" title="Lista con Viñetas"><i class="fas fa-list-ul"></i></button>
                     <button type="button" class="btn-tool" onclick="execCmd('insertOrderedList')" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
                 </div>
@@ -507,27 +572,50 @@
 
         function execCmd(cmd, val = null) {
             document.execCommand(cmd, false, val);
+            document.getElementById('articleBody').focus();
         }
 
         function applyBlockFormat(tag) {
             if (!tag) return;
             document.execCommand('formatBlock', false, '<' + tag + '>');
+            document.getElementById('articleBody').focus();
         }
 
         function applyFontSize(px) {
             if (!px) return;
-            const selection = window.getSelection();
-            if (!selection.rangeCount || selection.isCollapsed) return;
+            const sizeMap = { '14px': '2', '16px': '3', '18px': '4', '22px': '5', '28px': '6' };
+            const sizeVal = sizeMap[px] || '3';
 
-            const range = selection.getRangeAt(0);
-            const span = document.createElement('span');
-            span.style.fontSize = px;
+            document.execCommand('fontSize', false, sizeVal);
             
-            try {
-                range.surroundContents(span);
-            } catch(e) {
-                document.execCommand('fontSize', false, '4');
-            }
+            // Reemplazar los tags de fuente generados por CSS inline font-size limpio
+            const fontElements = document.querySelectorAll('#articleBody font[size]');
+            fontElements.forEach(el => {
+                const span = document.createElement('span');
+                span.style.fontSize = px;
+                span.style.lineHeight = '1.6';
+                span.innerHTML = el.innerHTML;
+                el.parentNode.replaceChild(span, el);
+            });
+
+            document.getElementById('articleBody').focus();
+            showToast('Tamaño de letra ' + px + ' aplicado.');
+        }
+
+        function toggleColorPopover() {
+            const popover = document.getElementById('colorPopover');
+            popover.classList.toggle('show');
+        }
+
+        function selectPresetColor(hex) {
+            document.getElementById('textColorPicker').value = hex;
+        }
+
+        function applySelectedColor() {
+            const color = document.getElementById('textColorPicker').value;
+            execCmd('foreColor', color);
+            document.getElementById('colorPopover').classList.remove('show');
+            showToast('Color de texto aplicado.');
         }
 
         function insertInlineImage(e) {
