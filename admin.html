@@ -3,81 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - CLEBNE</title>
+    <title>Intranet & Panel de Administración - CLEBNE</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AUTHENTICATION GUARD: Bloqueo inmediato si no está autenticado -->
+    <script>
+        (function verifyAdminAuth() {
+            const sessionStr = sessionStorage.getItem('clebne_auth_session') || localStorage.getItem('clebne_auth_session');
+            if (!sessionStr) {
+                window.location.href = 'login.html?unauthorized=true';
+                return;
+            }
+            try {
+                const session = JSON.parse(sessionStr);
+                if (!session || !session.authenticated) {
+                    window.location.href = 'login.html?unauthorized=true';
+                }
+            } catch(e) {
+                window.location.href = 'login.html?unauthorized=true';
+            }
+        })();
+    </script>
+
     <style>
         :root {
-            --admin-primary: #093c71;
-            --admin-secondary: #f4f7f6;
-            --admin-text: #1e293b;
+            --admin-primary: #0b2545;
+            --admin-navy-dark: #071931;
+            --admin-gold: #c59b27;
+            --admin-gold-light: #e5c158;
+            --admin-gold-gradient: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+            --admin-secondary: #f8fafc;
+            --admin-text: #0f172a;
             --admin-muted: #64748b;
             --admin-border: #e2e8f0;
-            --admin-accent: #d52b2b;
+            --admin-accent: #cf142b;
+            --admin-card-shadow: 0 4px 12px rgba(11, 37, 69, 0.05);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
         body { display: flex; min-height: 100vh; background-color: var(--admin-secondary); color: var(--admin-text); }
         
+        /* Mobile Overlay */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(7, 25, 49, 0.6);
+            z-index: 1040;
+            display: none;
+            backdrop-filter: blur(3px);
+        }
+        .sidebar-overlay.active { display: block; }
+
         /* Sidebar */
-        .sidebar { width: 280px; background-color: var(--admin-primary); color: white; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 25px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-header img { width: 45px; height: 45px; }
-        .sidebar-header h2 { font-size: 18px; font-weight: 800; line-height: 1.2; }
-        .sidebar-header span { font-size: 12px; color: #a0aec0; font-weight: normal; display: block; }
+        .sidebar { 
+            width: 280px; 
+            background-color: var(--admin-navy-dark); 
+            color: white; 
+            display: flex; 
+            flex-direction: column;
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 1050;
+            transition: transform 0.3s ease;
+            border-right: 2px solid rgba(197, 155, 39, 0.25);
+        }
+        .sidebar-header { 
+            padding: 25px 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            border-bottom: 1px solid rgba(255,255,255,0.08); 
+            background: rgba(0,0,0,0.15);
+        }
+        .sidebar-header img { width: 48px; height: auto; max-height: 48px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        .sidebar-header h2 { font-size: 19px; font-weight: 800; line-height: 1.1; color: white; font-family: 'Times New Roman', Georgia, serif; letter-spacing: 0.5px; }
+        .sidebar-header span { font-size: 11px; color: var(--admin-gold-light); font-weight: 600; display: block; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
         
-        .nav-menu { padding: 20px 0; flex: 1; }
-        .nav-item { display: block; padding: 15px 25px; color: #cbd5e1; text-decoration: none; font-size: 15px; font-weight: 500; transition: all 0.3s; border-left: 4px solid transparent; }
-        .nav-item i { width: 25px; font-size: 18px; }
-        .nav-item:hover, .nav-item.active { background-color: rgba(255,255,255,0.05); color: white; border-left-color: var(--admin-accent); }
+        .nav-menu { padding: 20px 0; flex: 1; overflow-y: auto; }
+        .nav-section-title { padding: 10px 25px 5px; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            padding: 13px 25px; 
+            color: #cbd5e1; 
+            text-decoration: none; 
+            font-size: 14.5px; 
+            font-weight: 600; 
+            transition: all 0.25s; 
+            border-left: 4px solid transparent; 
+        }
+        .nav-item i { width: 22px; font-size: 17px; text-align: center; color: #94a3b8; transition: color 0.25s; }
+        .nav-item:hover, .nav-item.active { 
+            background: linear-gradient(90deg, rgba(197, 155, 39, 0.15) 0%, transparent 100%); 
+            color: white; 
+            border-left-color: var(--admin-gold); 
+        }
+        .nav-item:hover i, .nav-item.active i { color: var(--admin-gold-light); }
+        .nav-badge { margin-left: auto; background: var(--admin-accent); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 800; }
         
-        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .logout-btn { display: flex; align-items: center; gap: 10px; color: #f87171; text-decoration: none; font-weight: 600; padding: 10px; border-radius: 8px; transition: 0.3s; }
-        .logout-btn:hover { background-color: rgba(248, 113, 113, 0.1); }
+        .sidebar-footer { padding: 20px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.2); }
+        .logout-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 10px; 
+            color: #fca5a5; 
+            text-decoration: none; 
+            font-weight: 700; 
+            padding: 11px; 
+            border-radius: 8px; 
+            transition: 0.3s; 
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            cursor: pointer;
+            width: 100%;
+        }
+        .logout-btn:hover { background: rgba(239, 68, 68, 0.25); color: white; }
 
         /* Main Content */
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-        .topbar { background: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .user-profile { display: flex; align-items: center; gap: 15px; }
-        .user-profile img { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; }
+        .main-content { 
+            flex: 1; 
+            margin-left: 280px;
+            display: flex; 
+            flex-direction: column; 
+            min-width: 0;
+            transition: margin-left 0.3s ease;
+        }
+        .topbar { 
+            background: white; 
+            padding: 16px 35px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04); 
+            border-bottom: 2px solid var(--admin-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 15px; }
+        .mobile-toggle { 
+            display: none; 
+            background: var(--admin-secondary); 
+            border: 1px solid var(--admin-border); 
+            font-size: 18px; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            color: var(--admin-primary);
+        }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .user-avatar { 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            background: var(--admin-gold-gradient); 
+            color: var(--admin-navy-dark); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 800; 
+            font-size: 15px; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15); 
+            border: 2px solid white; 
+            flex-shrink: 0; 
+        }
+
+        .content-area { padding: 35px; flex: 1; }
+        .page-title { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .page-title h1 { font-size: 26px; font-weight: 800; color: var(--admin-primary); display: flex; align-items: center; gap: 10px; }
+        .page-title h1 i { color: var(--admin-gold); }
         
-        .content-area { padding: 40px; }
-        .page-title { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .page-title h1 { font-size: 28px; font-weight: 800; color: var(--admin-primary); }
-        .btn-action { background-color: var(--admin-primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
-        .btn-action:hover { background-color: #052243; }
+        .btn-action { 
+            background: var(--admin-primary); 
+            color: white; 
+            border: none; 
+            padding: 11px 22px; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            font-size: 14px;
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            transition: 0.3s; 
+            box-shadow: 0 4px 10px rgba(11, 37, 69, 0.15);
+        }
+        .btn-action:hover { background-color: var(--admin-navy-dark); transform: translateY(-2px); }
+        .btn-gold-action {
+            background: var(--admin-gold-gradient);
+            color: var(--admin-navy-dark);
+            border: none;
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(197, 155, 39, 0.25);
+        }
+        .btn-gold-action:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
         /* Cards and Forms */
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); padding: 30px; margin-bottom: 30px; }
-        .card-header { border-bottom: 1px solid var(--admin-border); padding-bottom: 15px; margin-bottom: 25px; }
-        .card-header h3 { font-size: 18px; font-weight: 700; color: var(--admin-text); }
+        .card { 
+            background: white; 
+            border-radius: 14px; 
+            box-shadow: var(--admin-card-shadow); 
+            padding: 28px; 
+            margin-bottom: 30px; 
+            border: 1px solid var(--admin-border);
+        }
+        .card-header { border-bottom: 1.5px solid var(--admin-border); padding-bottom: 15px; margin-bottom: 22px; display: flex; justify-content: space-between; align-items: center; }
+        .card-header h3 { font-size: 18px; font-weight: 800; color: var(--admin-primary); display: flex; align-items: center; gap: 8px; }
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
         .form-group { margin-bottom: 20px; }
         .form-group.full { grid-column: 1 / -1; }
-        .form-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--admin-text); }
-        .form-control { width: 100%; padding: 12px; border: 1px solid var(--admin-border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.3s; }
-        .form-control:focus { border-color: var(--admin-primary); }
-        textarea.form-control { resize: vertical; min-height: 120px; }
+        .form-label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 7px; color: var(--admin-text); text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 12px 15px; border: 1.5px solid var(--admin-border); border-radius: 8px; font-size: 14px; outline: none; transition: border-color 0.3s; background: #f8fafc; }
+        .form-control:focus { border-color: var(--admin-gold); background: white; box-shadow: 0 0 0 3px rgba(197, 155, 39, 0.12); }
+        textarea.form-control { resize: vertical; min-height: 110px; }
         
-        .file-drop-area { border: 2px dashed var(--admin-border); border-radius: 8px; padding: 40px 20px; text-align: center; background: #f8fafc; cursor: pointer; transition: 0.3s; }
-        .file-drop-area:hover { border-color: var(--admin-primary); background: #f1f5f9; }
-        .file-drop-area i { font-size: 40px; color: var(--admin-muted); margin-bottom: 15px; }
-        .file-drop-area p { color: var(--admin-muted); font-weight: 500; font-size: 14px; }
+        .file-drop-area { border: 2px dashed var(--admin-gold); border-radius: 10px; padding: 30px 20px; text-align: center; background: #fdfbf7; cursor: pointer; transition: 0.3s; }
+        .file-drop-area:hover { border-color: var(--admin-primary); background: #f5f0e6; }
+        .file-drop-area i { font-size: 36px; color: var(--admin-gold); margin-bottom: 10px; }
+        .file-drop-area p { color: var(--admin-text); font-weight: 600; font-size: 14px; }
         
         /* Table */
-        .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 15px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 14px; }
-        .data-table th { font-weight: 600; color: var(--admin-muted); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--admin-border); font-size: 14px; }
+        .data-table th { font-weight: 700; color: var(--admin-primary); text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; background: #f8fafc; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 700; display: inline-block; }
         .badge-success { background: #dcfce7; color: #166534; }
         .badge-warning { background: #fef9c3; color: #854d0e; }
-        .btn-action-table { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; margin-right: 5px; }
+        .badge-info { background: #e0f2fe; color: #0369a1; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        
+        .btn-action-table { padding: 6px 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; margin-right: 5px; text-decoration: none; }
         .btn-edit { background-color: #eff6ff; color: #1d4ed8; }
         .btn-edit:hover { background-color: #dbeafe; }
         .btn-delete { background-color: #fef2f2; color: #b91c1c; }
         .btn-delete:hover { background-color: #fee2e2; }
-        .table-thumb { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; background: #e2e8f0; display: inline-block; vertical-align: middle; margin-right: 8px; }
-        .table-avatar-placeholder { width: 35px; height: 35px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #e2e8f0; color: #64748b; font-size: 14px; margin-right: 8px; vertical-align: middle; }
+        .btn-view { background-color: #f0fdf4; color: #15803d; }
+        .btn-view:hover { background-color: #dcfce7; }
+        
+        .table-thumb { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #e2e8f0; display: inline-block; vertical-align: middle; margin-right: 8px; border: 1.5px solid var(--admin-gold); }
+        .table-avatar-placeholder { width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: #e2e8f0; color: #64748b; font-size: 14px; margin-right: 8px; vertical-align: middle; }
+
+        /* Toast feedback */
+        .toast-notification {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--admin-primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-left: 5px solid var(--admin-gold);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast-notification.active { transform: translateY(0); opacity: 1; }
+
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .mobile-toggle { display: block; }
+            .content-area { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
     </style>
     
     <!-- Vercel Web Analytics -->
@@ -88,295 +295,517 @@
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
+    <!-- Overlay móvil -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+    <!-- Sidebar Lateral -->
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <img src="Logo.png" alt="CLEBNE" onerror="this.src='https://via.placeholder.com/45';">
+            <img src="Logo.png" alt="CLEBNE" onerror="this.src='https://via.placeholder.com/48';">
             <div>
                 <h2>CLEBNE</h2>
-                <span>Panel de Administración</span>
+                <span>Intranet Legislativa</span>
             </div>
         </div>
         <nav class="nav-menu">
-            <a href="#" class="nav-item" onclick="switchTab('dashboard', this)"><i class="fas fa-home"></i> Resumen</a>
-            <a href="#" class="nav-item active" onclick="switchTab('noticias', this)"><i class="fas fa-newspaper"></i> Noticias</a>
-            <a href="#" class="nav-item" onclick="switchTab('gacetas', this)"><i class="fas fa-file-pdf"></i> Gacetas Oficiales</a>
-            <a href="#" class="nav-item" onclick="switchTab('directorio', this)"><i class="fas fa-users"></i> Directores Activos</a>
+            <div class="nav-section-title">Navegación Principal</div>
+            <a href="#" class="nav-item active" onclick="switchTab('dashboard', this); return false;">
+                <i class="fas fa-chart-pie"></i> Resumen del Sistema
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('noticias', this); return false;">
+                <i class="fas fa-newspaper"></i> Gestor de Noticias
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('gacetas', this); return false;">
+                <i class="fas fa-file-pdf"></i> Leyes y Gacetas
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('directorio', this); return false;">
+                <i class="fas fa-users-cog"></i> Directores Activos
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('solicitudes', this); return false;">
+                <i class="fas fa-hand-holding-heart"></i> Solicitudes Ciudadanas
+                <span class="nav-badge" id="solicitudesBadge">0</span>
+            </a>
+
+            <div class="nav-section-title" style="margin-top: 15px;">Configuración Portal</div>
+            <a href="#" class="nav-item" onclick="switchTab('hero', this); return false;">
+                <i class="fas fa-sliders-h"></i> Banner de Inicio
+            </a>
+            <a href="#" class="nav-item" onclick="switchTab('seguridad', this); return false;">
+                <i class="fas fa-user-shield"></i> Seguridad y Cuenta
+            </a>
         </nav>
         <div class="sidebar-footer">
-            <a href="index.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            <button onclick="handleLogout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión Segura
+            </button>
         </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Área Principal de Contenido -->
     <main class="main-content">
         <header class="topbar">
-            <div class="search">
-                <span style="color: var(--admin-muted); font-weight: 500;">Sistema Integrado de Gestión Legislativa</span>
+            <div class="topbar-left">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span style="color: var(--admin-primary); font-weight: 700; font-size: 14.5px;">
+                    <i class="fas fa-building" style="color: var(--admin-gold); margin-right: 6px;"></i>
+                    Consejo Legislativo del Estado Bolivariano de Nueva Esparta
+                </span>
             </div>
             <div class="user-profile">
-                <div style="text-align: right;">
-                    <span style="display: block; font-weight: 600; font-size: 14px;">Administrador</span>
-                    <span style="font-size: 12px; color: var(--admin-muted);">Prensa y Relaciones Públicas</span>
+                <div style="text-align: right; display: none; @media(min-width:600px){display:block;}">
+                    <span id="userFullName" style="display: block; font-weight: 700; font-size: 14px; color: var(--admin-primary);">Cargando...</span>
+                    <span id="userRole" style="font-size: 12px; color: var(--admin-muted); font-weight: 500;">Prensa</span>
                 </div>
-                <div class="user-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--admin-primary) 0%, var(--admin-accent) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.15); border: 2px solid white; flex-shrink: 0;">PR</div>
+                <div class="user-avatar" id="userAvatar">PR</div>
             </div>
         </header>
 
         <div class="content-area">
             
-            <!-- Tab: Dashboard -->
-            <div id="tab-dashboard" style="display: none;">
+            <!-- TAB 1: DASHBOARD / RESUMEN -->
+            <div id="tab-dashboard">
                 <div class="page-title">
-                    <h1>Resumen del Sistema</h1>
-                </div>
-                <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid var(--admin-primary);">
-                        <i class="fas fa-newspaper fa-2x" style="color: var(--admin-primary); margin-bottom: 10px;"></i>
-                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Noticias Publicadas</h3>
-                        <p id="stat-news-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
-                    </div>
-                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid var(--admin-accent);">
-                        <i class="fas fa-file-pdf fa-2x" style="color: var(--admin-accent); margin-bottom: 10px;"></i>
-                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Gacetas y Leyes</h3>
-                        <p id="stat-gacetas-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
-                    </div>
-                    <div class="card" style="margin-bottom: 0; padding: 20px; text-align: center; border-top: 4px solid #009b3a;">
-                        <i class="fas fa-users fa-2x" style="color: #009b3a; margin-bottom: 10px;"></i>
-                        <h3 style="font-size: 14px; color: var(--admin-muted); text-transform: uppercase;">Directores y Legisladores</h3>
-                        <p id="stat-legisladores-count" style="font-size: 36px; font-weight: 800; color: var(--admin-primary); margin-top: 5px;">0</p>
+                    <h1><i class="fas fa-chart-line"></i> Resumen del Sistema Institucional</h1>
+                    <div style="font-size: 13px; color: var(--admin-muted); font-weight: 600;">
+                        <i class="far fa-calendar-alt"></i> Hoy: <span id="currentDateStr">--</span>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Acciones Rápidas</h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="card" style="margin-bottom:0; padding:22px; border-top: 4px solid var(--admin-primary);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:13px; color:var(--admin-muted); font-weight:700; text-transform:uppercase;">Noticias</span>
+                                <h2 id="countNoticias" style="font-size:30px; font-weight:800; color:var(--admin-primary); margin-top:5px;">0</h2>
+                            </div>
+                            <div style="width:48px; height:48px; border-radius:12px; background:#eff6ff; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:22px;">
+                                <i class="fas fa-newspaper"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <button class="btn-action" onclick="switchTab('noticias', document.querySelector('[onclick*=\'noticias\']'))"><i class="fas fa-plus"></i> Redactar Noticia</button>
-                        <button class="btn-action" style="background-color: var(--admin-accent);" onclick="switchTab('gacetas', document.querySelector('[onclick*=\'gacetas\']'))"><i class="fas fa-upload"></i> Subir Gaceta</button>
-                        <button class="btn-action" style="background-color: #009b3a;" onclick="switchTab('directorio', document.querySelector('[onclick*=\'directorio\']'))"><i class="fas fa-user-plus"></i> Agregar Miembro</button>
+                    <div class="card" style="margin-bottom:0; padding:22px; border-top: 4px solid var(--admin-gold);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:13px; color:var(--admin-muted); font-weight:700; text-transform:uppercase;">Gacetas / Leyes</span>
+                                <h2 id="countGacetas" style="font-size:30px; font-weight:800; color:var(--admin-primary); margin-top:5px;">0</h2>
+                            </div>
+                            <div style="width:48px; height:48px; border-radius:12px; background:#fef9c3; color:#a16207; display:flex; align-items:center; justify-content:center; font-size:22px;">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom:0; padding:22px; border-top: 4px solid var(--admin-accent);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:13px; color:var(--admin-muted); font-weight:700; text-transform:uppercase;">Directores Activos</span>
+                                <h2 id="countDirectores" style="font-size:30px; font-weight:800; color:var(--admin-primary); margin-top:5px;">0</h2>
+                            </div>
+                            <div style="width:48px; height:48px; border-radius:12px; background:#fee2e2; color:#b91c1c; display:flex; align-items:center; justify-content:center; font-size:22px;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-bottom:0; padding:22px; border-top: 4px solid #10b981;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <span style="font-size:13px; color:var(--admin-muted); font-weight:700; text-transform:uppercase;">Solicitudes</span>
+                                <h2 id="countSolicitudes" style="font-size:30px; font-weight:800; color:var(--admin-primary); margin-top:5px;">0</h2>
+                            </div>
+                            <div style="width:48px; height:48px; border-radius:12px; background:#dcfce7; color:#15803d; display:flex; align-items:center; justify-content:center; font-size:22px;">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-bolt" style="color:var(--admin-gold);"></i> Accesos Rápida Gestión</h3>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <button onclick="switchTab('noticias', document.querySelectorAll('.nav-item')[1]); resetNewsForm();" class="btn-action" style="justify-content:flex-start;">
+                                <i class="fas fa-plus-circle"></i> Publicar Nueva Noticia Institucional
+                            </button>
+                            <button onclick="switchTab('gacetas', document.querySelectorAll('.nav-item')[2]);" class="btn-gold-action" style="justify-content:flex-start;">
+                                <i class="fas fa-file-upload"></i> Cargar Gaceta Oficial o Ley
+                            </button>
+                            <button onclick="switchTab('directorio', document.querySelectorAll('.nav-item')[3]);" class="btn-action" style="background:#0284c7; justify-content:flex-start;">
+                                <i class="fas fa-user-plus"></i> Registrar Director o Legislador
+                            </button>
+                            <button onclick="switchTab('solicitudes', document.querySelectorAll('.nav-item')[4]);" class="btn-action" style="background:#059669; justify-content:flex-start;">
+                                <i class="fas fa-comments"></i> Revisar Solicitudes de Ciudadanos
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-history" style="color:var(--admin-primary);"></i> Historial Reciente</h3>
+                        </div>
+                        <div id="activityLog" style="display:flex; flex-direction:column; gap:12px; font-size:13.5px;">
+                            <!-- Dinámico -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab: Noticias -->
-            <div id="tab-noticias">
+            <!-- TAB 2: GESTOR DE NOTICIAS -->
+            <div id="tab-noticias" style="display: none;">
                 <div class="page-title">
-                    <h1 id="news-page-title">Gestión de Noticias</h1>
-                    <button class="btn-action" id="btn-submit-news" onclick="submitNewsForm()"><i class="fas fa-save"></i> Publicar Noticia</button>
+                    <h1><i class="fas fa-newspaper"></i> Gestor de Noticias y Comunicados</h1>
+                    <button class="btn-gold-action" onclick="resetNewsForm()">
+                        <i class="fas fa-plus"></i> Redactar Noticia
+                    </button>
                 </div>
 
+                <!-- Formulario Noticia -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 id="news-form-title">Redactar Nueva Entrada</h3>
+                        <h3 id="newsFormTitle"><i class="fas fa-edit"></i> Publicar o Editar Noticia</h3>
                     </div>
-                    <form id="newsForm" onsubmit="event.preventDefault();">
-                        <input type="hidden" id="news-edit-id">
+                    <form id="formNoticia" onsubmit="saveNews(event)">
+                        <input type="hidden" id="newsId">
                         <div class="form-grid">
                             <div class="form-group full">
-                                <label class="form-label">Título de la Noticia</label>
-                                <input type="text" id="news-title" class="form-control" placeholder="Ej. Aprobada nueva ley de turismo..." required>
+                                <label class="form-label" for="newsTitle">Titular de la Noticia</label>
+                                <input type="text" id="newsTitle" class="form-control" placeholder="Ej. CLEBNE aprueba Ley de Turismo Sustentable para Nueva Esparta" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Categoría</label>
-                                <select id="news-category" class="form-control">
-                                    <option>Legislación</option>
-                                    <option>Acuerdos</option>
-                                    <option>Institucional</option>
+                                <label class="form-label" for="newsCategory">Categoría</label>
+                                <select id="newsCategory" class="form-control" required>
+                                    <option value="Legislación">Legislación</option>
+                                    <option value="Acuerdos">Acuerdos</option>
+                                    <option value="Institucional">Institucional</option>
+                                    <option value="Sesiones">Sesiones Especiales</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Fecha de Publicación</label>
-                                <input type="date" id="news-date" class="form-control" required>
+                                <label class="form-label" for="newsDate">Fecha de Publicación</label>
+                                <input type="date" id="newsDate" class="form-control" required>
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label" for="newsImage">URL o Imagen Destacada</label>
+                                <input type="url" id="newsImage" class="form-control" placeholder="https://images.unsplash.com/photo-1577495508048-b635879837f1" required>
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label" for="newsContent">Cuerpo del Artículo / Noticia Completa</label>
+                                <textarea id="newsContent" class="form-control" rows="5" placeholder="Escriba aquí los detalles y desarrollo de la nota de prensa..." required></textarea>
                             </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Imagen de Portada</label>
-                            <div class="file-drop-area" onclick="document.getElementById('file-img').click()">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p id="img-upload-status">Haz clic para subir una imagen o arrástrala aquí (opcional)</p>
-                                <input type="file" id="file-img" style="display: none;" accept="image/*" onchange="handleImageUpload(this)">
-                            </div>
-                            <input type="hidden" id="news-image-base64">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Contenido de la Noticia</label>
-                            <textarea id="news-content" class="form-control" placeholder="Escribe el cuerpo de la noticia aquí..." required></textarea>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" onclick="submitNewsForm()" class="btn-action" id="btn-save-news">Publicar</button>
-                            <button type="button" onclick="resetNewsForm()" class="btn-action" style="background-color: var(--admin-muted); display: none;" id="btn-cancel-news">Cancelar Edición</button>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" class="btn-action" style="background:#94a3b8;" onclick="resetNewsForm()">Cancelar</button>
+                            <button type="submit" class="btn-gold-action"><i class="fas fa-save"></i> Guardar y Publicar</button>
                         </div>
                     </form>
                 </div>
 
+                <!-- Tabla de Noticias -->
                 <div class="card">
                     <div class="card-header">
-                        <h3>Últimas Noticias Publicadas</h3>
+                        <h3><i class="fas fa-list"></i> Noticias Publicadas en el Portal</h3>
+                        <input type="text" id="searchNewsTable" class="form-control" style="width: 250px;" placeholder="Filtrar noticias..." oninput="renderAdminNews()">
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Categoría</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="news-table-body">
-                            <!-- Filas dinámicas -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Titular</th>
+                                    <th>Categoría</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="newsTableBody">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tab: Gacetas -->
+            <!-- TAB 3: GACETAS Y LEYES -->
             <div id="tab-gacetas" style="display: none;">
                 <div class="page-title">
-                    <h1>Gestión de Gacetas y Leyes</h1>
+                    <h1><i class="fas fa-file-pdf"></i> Leyes y Gacetas Oficiales</h1>
                 </div>
+
                 <div class="card">
                     <div class="card-header">
-                        <h3>Subir Nuevo Documento Oficial</h3>
+                        <h3><i class="fas fa-upload"></i> Publicar Documento Legislativo (Gaceta u Ordenanza)</h3>
                     </div>
-                    <form id="gacetaForm" onsubmit="event.preventDefault(); submitGacetaForm();">
+                    <form id="formGaceta" onsubmit="saveGaceta(event)">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Título / Número de Gaceta o Ley</label>
-                                <input type="text" id="gaceta-title" class="form-control" placeholder="Ej. Gaceta Oficial N° 5002" required>
+                                <label class="form-label" for="gacetaNumber">N° de Gaceta / Instrumento</label>
+                                <input type="text" id="gacetaNumber" class="form-control" placeholder="Ej. Gaceta Extraordinaria N° 402" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Categoría</label>
-                                <select id="gaceta-category" class="form-control">
-                                    <option>Gaceta</option>
-                                    <option>Ley</option>
-                                    <option>Reglamento</option>
-                                    <option>Otro</option>
+                                <label class="form-label" for="gacetaCategory">Tipo de Documento</label>
+                                <select id="gacetaCategory" class="form-control" required>
+                                    <option value="Gaceta Oficial">Gaceta Oficial</option>
+                                    <option value="Ley Espartana">Ley Espartana</option>
+                                    <option value="Reglamento">Reglamento</option>
+                                    <option value="Decreto">Decreto Presidencial</option>
                                 </select>
                             </div>
+                            <div class="form-group full">
+                                <label class="form-label" for="gacetaTitle">Título Corto del Documento</label>
+                                <input type="text" id="gacetaTitle" class="form-control" placeholder="Ej. Ley de Fomento al Turismo Ecoturístico Regional" required>
+                            </div>
                             <div class="form-group">
-                                <label class="form-label">Fecha de Publicación</label>
-                                <input type="date" id="gaceta-date" class="form-control" required>
+                                <label class="form-label" for="gacetaDate">Fecha de Emisión</label>
+                                <input type="date" id="gacetaDate" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Archivo PDF</label>
-                                <div class="file-drop-area" style="padding: 18px 10px;" onclick="document.getElementById('file-pdf').click()">
-                                    <i class="fas fa-file-pdf" style="font-size: 24px; margin-bottom: 5px;"></i>
-                                    <p id="pdf-upload-status" style="font-size: 13px;">Haz clic para seleccionar el PDF oficial</p>
-                                    <input type="file" id="file-pdf" style="display: none;" accept="application/pdf" onchange="handlePdfUpload(this)">
-                                </div>
-                                <input type="hidden" id="gaceta-pdf-base64">
+                                <input type="file" id="gacetaFileInput" accept="application/pdf" class="form-control" onchange="handlePDFUpload(event)">
+                                <span style="font-size:11.5px; color:var(--admin-muted); display:block; margin-top:4px;">Si no selecciona un archivo local, se usará el documento de prueba del sistema.</span>
                             </div>
                         </div>
-                        <button type="submit" class="btn-action"><i class="fas fa-upload"></i> Cargar Gaceta Oficial</button>
+                        <div style="text-align: right;">
+                            <button type="submit" class="btn-gold-action"><i class="fas fa-file-export"></i> Publicar Documento</button>
+                        </div>
                     </form>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header">
-                        <h3>Repositorio de Documentos</h3>
+                        <h3><i class="fas fa-folder-open"></i> Repositorio de Documentos</h3>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Título</th>
-                                <th>Categoría</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="gaceta-table-body">
-                            <!-- Filas dinámicas -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Gaceta</th>
+                                    <th>Título</th>
+                                    <th>Categoría</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gacetasTableBody">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tab: Directorio -->
+            <!-- TAB 4: DIRECTORES Y LEGISLADORES -->
             <div id="tab-directorio" style="display: none;">
                 <div class="page-title">
-                    <h1 id="directorio-page-title">Directores Activos y Legisladores</h1>
+                    <h1><i class="fas fa-users-cog"></i> Directores Activos y Presídivm</h1>
                 </div>
+
                 <div class="card">
                     <div class="card-header">
-                        <h3 id="leg-form-title">Agregar Miembro (Director / Legislador)</h3>
+                        <h3 id="directorFormTitle"><i class="fas fa-user-plus"></i> Registrar Nuevo Director / Integrante</h3>
                     </div>
-                    <form id="legForm" onsubmit="event.preventDefault(); submitLegForm();">
-                        <input type="hidden" id="leg-edit-id">
+                    <form id="formDirector" onsubmit="saveDirector(event)">
+                        <input type="hidden" id="directorId">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label class="form-label">Nombre Completo</label>
-                                <input type="text" id="leg-name" class="form-control" placeholder="Ej. Jennyffer Gil" required>
+                                <label class="form-label" for="directorName">Nombre y Apellido Completo</label>
+                                <input type="text" id="directorName" class="form-control" placeholder="Ej. Abog. Roberto Gómez" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Cargo / Rol</label>
-                                <select id="leg-role" class="form-control">
-                                    <option>Presidente</option>
-                                    <option>Vicepresidente</option>
-                                    <option>Legislador</option>
-                                    <option>Legisladora</option>
-                                    <option>Secretario</option>
-                                    <option>Director</option>
-                                    <option>Directora</option>
-                                    <option>Coordinador</option>
-                                    <option>Coordinadora</option>
+                                <label class="form-label" for="directorRole">Cargo / Función Institucional</label>
+                                <select id="directorRole" class="form-control" required>
+                                    <option value="Presidente del CLEBNE">Presidente/a del CLEBNE</option>
+                                    <option value="Vicepresidente">Vicepresidente/a</option>
+                                    <option value="Legislador Regional">Legislador/a Regional</option>
+                                    <option value="Director General">Director/a General</option>
+                                    <option value="Directora de Prensa">Director/a de Prensa</option>
+                                    <option value="Secretaria de Cámara">Secretario/a de Cámara</option>
+                                    <option value="Director de Administración">Director/a de Administración</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Comisión Permanente / Oficina</label>
-                                <input type="text" id="leg-commission" class="form-control" placeholder="Ej. Dirección de Prensa" required>
+                                <label class="form-label" for="directorCommission">Comisión / Despacho</label>
+                                <input type="text" id="directorCommission" class="form-control" placeholder="Ej. Comisión de Finanzas y Presupuesto" required>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Género (Para Avatar alternativo)</label>
-                                <select id="leg-gender" class="form-control">
-                                    <option value="male">Masculino (Avatar con corbata)</option>
-                                    <option value="female">Femenino (Avatar estándar)</option>
+                                <label class="form-label" for="directorGender">Género / Icono Avatar</label>
+                                <select id="directorGender" class="form-control">
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
                                 </select>
                             </div>
                             <div class="form-group full">
-                                <label class="form-label">Foto del Director/Legislador (Opcional)</label>
-                                <div class="file-drop-area" style="padding: 20px 10px;" onclick="document.getElementById('file-leg-photo').click()">
-                                    <i class="fas fa-camera" style="font-size: 28px; margin-bottom: 8px;"></i>
-                                    <p id="leg-photo-status" style="font-size: 14px;">Haz clic para seleccionar una fotografía</p>
-                                    <input type="file" id="file-leg-photo" style="display: none;" accept="image/*" onchange="handleLegPhotoUpload(this)">
+                                <label class="form-label">Fotografía Oficial (Opcional)</label>
+                                <input type="file" id="directorPhotoInput" accept="image/*" class="form-control" onchange="handleDirectorPhotoUpload(event)">
+                                <div id="photoPreviewContainer" style="margin-top:10px; display:none;">
+                                    <img id="photoPreviewImg" style="width:70px; height:70px; border-radius:50%; object-fit:cover; border:2px solid var(--admin-gold);">
                                 </div>
-                                <input type="hidden" id="leg-image-base64">
                             </div>
                         </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button type="submit" class="btn-action" id="btn-save-leg">Guardar Registro</button>
-                            <button type="button" onclick="resetLegForm()" class="btn-action" style="background-color: var(--admin-muted); display: none;" id="btn-cancel-leg">Cancelar Edición</button>
+                        <div style="display:flex; gap:10px; justify-content:flex-end;">
+                            <button type="button" class="btn-action" style="background:#94a3b8;" onclick="resetDirectorForm()">Cancelar</button>
+                            <button type="submit" class="btn-gold-action"><i class="fas fa-save"></i> Guardar Ficha</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card">
                     <div class="card-header">
-                        <h3>Miembros Registrados (Legisladores y Directores)</h3>
+                        <h3><i class="fas fa-id-card"></i> Directorio Institucional CLEBNE</h3>
                     </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Miembro</th>
-                                <th>Cargo</th>
-                                <th>Comisión / Oficina</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="leg-table-body">
-                            <!-- Filas dinámicas -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Avatar</th>
+                                    <th>Nombre y Apellido</th>
+                                    <th>Cargo</th>
+                                    <th>Comisión / Despacho</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="directorioTableBody">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: SOLICITUDES Y ATENCION AL CIUDADANO (NUEVO) -->
+            <div id="tab-solicitudes" style="display: none;">
+                <div class="page-title">
+                    <h1><i class="fas fa-hand-holding-heart"></i> Atención al Ciudadano y Propuestas</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-inbox"></i> Solicitudes y Peticiones de la Comunidad</h3>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-action" style="padding:6px 12px; font-size:12px;" onclick="filterSolicitudes('Todas')">Todas</button>
+                            <button class="btn-action" style="padding:6px 12px; font-size:12px; background:#eab308;" onclick="filterSolicitudes('Pendiente')">Pendientes</button>
+                            <button class="btn-action" style="padding:6px 12px; font-size:12px; background:#10b981;" onclick="filterSolicitudes('Atendido')">Atendidas</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Código Ticket</th>
+                                    <th>Ciudadano / Cédula</th>
+                                    <th>Asunto</th>
+                                    <th>Fecha</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="solicitudesTableBody">
+                                <!-- Dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: BANNER DE INICIO / HERO SLIDER (NUEVO) -->
+            <div id="tab-hero" style="display: none;">
+                <div class="page-title">
+                    <h1><i class="fas fa-sliders-h"></i> Personalización de la Portada Principal</h1>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-desktop"></i> Ajustar Textos del Portal Web</h3>
+                    </div>
+                    <form id="formHeroConfig" onsubmit="saveHeroConfig(event)">
+                        <div class="form-grid">
+                            <div class="form-group full">
+                                <label class="form-label" for="heroBadge">Insignia / Leyenda Superior</label>
+                                <input type="text" id="heroBadge" class="form-control" required>
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label" for="heroTitle">Título Principal de la Portada</label>
+                                <input type="text" id="heroTitle" class="form-control" required>
+                            </div>
+                            <div class="form-group full">
+                                <label class="form-label" for="heroSubtitle">Subtítulo / Mensaje Institucional</label>
+                                <textarea id="heroSubtitle" class="form-control" rows="3" required></textarea>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <button type="submit" class="btn-gold-action"><i class="fas fa-sync-alt"></i> Actualizar Portada en Vivo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TAB 7: SEGURIDAD Y CUENTA (NUEVO) -->
+            <div id="tab-seguridad" style="display: none;">
+                <div class="page-title">
+                    <h1><i class="fas fa-user-shield"></i> Seguridad y Auditoría de Sesión</h1>
+                </div>
+
+                <div class="form-grid">
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-key"></i> Información de la Sesión Activa</h3>
+                        </div>
+                        <div style="font-size:14px; display:flex; flex-direction:column; gap:12px;">
+                            <div><strong>Usuario Registrado:</strong> <span id="secUser">--</span></div>
+                            <div><strong>Nombre Completo:</strong> <span id="secName">--</span></div>
+                            <div><strong>Nivel de Acceso:</strong> <span class="badge badge-success" id="secLevel">--</span></div>
+                            <div><strong>Hora de Inicio:</strong> <span id="secTime">--</span></div>
+                            <div><strong>Token de Sesión:</strong> <code id="secToken" style="word-break:break-all; background:#f1f5f9; padding:4px 8px; border-radius:4px; font-size:12px;">--</code></div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-bottom:0;">
+                        <div class="card-header">
+                            <h3><i class="fas fa-lock"></i> Cambiar Clave de Acceso</h3>
+                        </div>
+                        <form onsubmit="event.preventDefault(); showToast('Clave de usuario actualizada correctamente.');">
+                            <div class="form-group">
+                                <label class="form-label">Clave Actual</label>
+                                <input type="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nueva Clave</label>
+                                <input type="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="btn-action" style="width:100%; justify-content:center;"><i class="fas fa-save"></i> Actualizar Credenciales</button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
         </div>
     </main>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification">
+        <i class="fas fa-check-circle" style="color:var(--admin-gold-light); font-size:20px;"></i>
+        <span id="toastText">Operación realizada con éxito.</span>
+    </div>
+
+    <!-- Modal Detalle Solicitud -->
+    <div class="sidebar-overlay" id="solicitudModal" style="display:none; align-items:center; justify-content:center; padding:20px; z-index:2100;">
+        <div class="card" style="max-width:550px; width:100%; margin-bottom:0; box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+            <div class="card-header">
+                <h3 id="modalTicketCode"><i class="fas fa-ticket-alt"></i> Detalle de Solicitud</h3>
+                <button onclick="closeSolicitudModal()" style="border:none; background:none; font-size:20px; cursor:pointer; color:var(--admin-muted);">&times;</button>
+            </div>
+            <div id="modalTicketBody" style="font-size:14px; line-height:1.6; margin-bottom:20px;">
+                <!-- Dinámico -->
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button onclick="updateSolicitudStatus('Atendido')" class="btn-gold-action"><i class="fas fa-check-double"></i> Marcar como Atendido</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Data por defecto
+        // DATOS POR DEFECTO
         const defaultNews = [
             {
                 id: "def-1",
@@ -396,7 +825,7 @@
             },
             {
                 id: "def-3",
-                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria del trimestre",
                 category: "Institucional",
                 date: "2026-05-24",
                 image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
@@ -407,488 +836,526 @@
         const defaultGacetas = [
             {
                 id: "gac-1",
-                title: "Gaceta Oficial N° 5001",
-                category: "Gaceta",
-                date: "2026-05-28",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
+                number: "Gaceta Extraordinaria N° 412",
+                title: "Ley del Régimen Tributario y Desarrollo Eco-Turístico del Estado Nueva Esparta",
+                category: "Ley Espartana",
+                date: "2026-04-15",
+                url: "Gaceta_Oficial_Prueba.pdf"
             },
             {
                 id: "gac-2",
-                title: "Ley de Presupuesto 2026",
-                category: "Ley",
-                date: "2026-05-26",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
-            },
-            {
-                id: "gac-3",
-                title: "Ley de Turismo Sustentable",
-                category: "Ley",
-                date: "2026-05-24",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
+                number: "Gaceta Ordinaria N° 198",
+                title: "Reglamento Interior y de Debates del Consejo Legislativo del Estado Nueva Esparta",
+                category: "Reglamento",
+                date: "2026-02-10",
+                url: "Gaceta_Oficial_Prueba.pdf"
             }
         ];
 
         const defaultLegisladores = [
             {
                 id: "leg-1",
-                name: "Jennyffer Mercedes Gil Martínez",
-                role: "Presidente",
-                commission: "Presidencia",
-                gender: "female"
+                name: "Msc. Mairym Bruzual",
+                role: "Presidente del CLEBNE",
+                commission: "Presidencia del Consejo Legislativo",
+                gender: "F",
+                image: ""
             },
             {
                 id: "leg-2",
-                name: "Tirso Ezequiel Solano Cornivell",
+                name: "Abog. Carlos Sulbarán",
                 role: "Vicepresidente",
-                commission: "Vicepresidencia",
-                gender: "male"
+                commission: "Comisión de Infraestructura y Servicios",
+                gender: "M",
+                image: ""
             },
             {
                 id: "leg-3",
-                name: "Osvelida del Valle Gil Velásquez",
-                role: "Legisladora",
-                commission: "Oficina Legislativa",
-                gender: "female"
-            },
-            {
-                id: "leg-4",
-                name: "Mayra Johana Lairet Viloria",
-                role: "Legisladora",
-                commission: "Oficina Legislativa",
-                gender: "female"
-            },
-            {
-                id: "leg-5",
-                name: "Osmícar José Cabeza Rondón",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
-                gender: "male"
-            },
-            {
-                id: "leg-6",
-                name: "Johan Francisco Yánez Arias",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
-                gender: "male"
-            },
-            {
-                id: "leg-7",
-                name: "Luis Manuel Rosas Caraballo",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
-                gender: "male"
+                name: "Lcda. Johana Marcano",
+                role: "Legislador Regional",
+                commission: "Comisión de Educación y Cultura",
+                gender: "F",
+                image: ""
             }
         ];
 
-        // Inicialización general en localStorage
-        if (!localStorage.getItem('clebne_news')) localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
-        if (!localStorage.getItem('clebne_gacetas')) localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
-        if (!localStorage.getItem('clebne_legisladores')) localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
-
-        // Cambiar entre pestañas
-        function switchTab(tabId, element) {
-            document.getElementById('tab-noticias').style.display = 'none';
-            document.getElementById('tab-gacetas').style.display = 'none';
-            document.getElementById('tab-directorio').style.display = 'none';
-            document.getElementById('tab-dashboard').style.display = 'none';
-            
-            document.getElementById('tab-' + tabId).style.display = 'block';
-            
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if (element) {
-                element.classList.add('active');
-            } else {
-                // Buscar el elemento en el menú para activarlo
-                const menuItems = document.querySelectorAll('.nav-item');
-                menuItems.forEach(item => {
-                    if (item.getAttribute('onclick').includes(tabId)) {
-                        item.classList.add('active');
-                    }
-                });
+        const defaultSolicitudes = [
+            {
+                id: "sol-101",
+                code: "CLEBNE-2026-8942",
+                name: "Jesús Alfonzo",
+                cedula: "V-18.452.981",
+                email: "jalfonzo@gmail.com",
+                phone: "0412-5551234",
+                subject: "Propuesta de Ordenanza para la Conservación de Playa El Agua",
+                message: "Buenas tardes Honorables Legisladores. Presento una inquietud comunitaria sobre la recolección de desechos y protección marina en la franja costera de Antolín del Campo.",
+                date: "2026-08-01",
+                status: "Pendiente"
             }
+        ];
+
+        const defaultHeroConfig = {
+            badge: "PARLAMENTO REGIONAL NEOESPARTANO",
+            title: "Trabajando por el Desarrollo Legislativo de Nueva Esparta",
+            subtitle: "Representación legítima, leyes de impacto social y transparencia para los ciudadanos de Margarita, Coche y Cubagua."
+        };
+
+        let tempDirectorPhoto = "";
+        let currentActiveSolicitudId = null;
+
+        // INICIALIZACION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadUserSession();
+            initDataStores();
+            renderDashboard();
+            renderAdminNews();
+            renderAdminGacetas();
+            renderAdminDirectorio();
+            renderAdminSolicitudes();
+            loadHeroConfigForm();
             
-            // Recargar datos y estadísticas
-            updateDashboardStats();
-            if (tabId === 'noticias') renderNewsTable();
-            if (tabId === 'gacetas') renderGacetasTable();
-            if (tabId === 'directorio') renderLegisladoresTable();
+            document.getElementById('currentDateStr').innerText = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        });
+
+        function loadUserSession() {
+            const sessionStr = sessionStorage.getItem('clebne_auth_session') || localStorage.getItem('clebne_auth_session');
+            if (sessionStr) {
+                try {
+                    const session = JSON.parse(sessionStr);
+                    document.getElementById('userFullName').innerText = session.name || 'Administrador';
+                    document.getElementById('userRole').innerText = session.role || 'Prensa CLEBNE';
+                    document.getElementById('userAvatar').innerText = session.avatar || 'AD';
+                    
+                    document.getElementById('secUser').innerText = session.username || 'admin';
+                    document.getElementById('secName').innerText = session.name || 'Administrador';
+                    document.getElementById('secLevel').innerText = session.level || 'SuperAdmin';
+                    document.getElementById('secTime').innerText = session.loginTime || 'Reciente';
+                    document.getElementById('secToken').innerText = session.token || 'auth-token-demo';
+                } catch(e){}
+            }
         }
 
-        // --- DASHBOARD FUNCTIONS ---
-        function updateDashboardStats() {
+        function initDataStores() {
+            if (!localStorage.getItem('clebne_news')) localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
+            if (!localStorage.getItem('clebne_gacetas')) localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
+            if (!localStorage.getItem('clebne_legisladores')) localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
+            if (!localStorage.getItem('clebne_solicitudes')) localStorage.setItem('clebne_solicitudes', JSON.stringify(defaultSolicitudes));
+            if (!localStorage.getItem('clebne_hero_config')) localStorage.setItem('clebne_hero_config', JSON.stringify(defaultHeroConfig));
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function switchTab(tabId, element) {
+            const tabs = ['dashboard', 'noticias', 'gacetas', 'directorio', 'solicitudes', 'hero', 'seguridad'];
+            tabs.forEach(t => {
+                const el = document.getElementById('tab-' + t);
+                if (el) el.style.display = (t === tabId) ? 'block' : 'none';
+            });
+
+            if (element) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                element.classList.add('active');
+            }
+
+            // Cerrar sidebar en móvil si está abierto
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+
+            if (tabId === 'dashboard') renderDashboard();
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').innerText = message;
+            toast.classList.add('active');
+            setTimeout(() => toast.classList.remove('active'), 3500);
+        }
+
+        function handleLogout() {
+            if (confirm('¿Está seguro de que desea cerrar la sesión institucional?')) {
+                sessionStorage.removeItem('clebne_auth_session');
+                localStorage.removeItem('clebne_auth_session');
+                window.location.href = 'login.html';
+            }
+        }
+
+        // --- DASHBOARD RENDER ---
+        function renderDashboard() {
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
             const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
-            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
-            
-            document.getElementById('stat-news-count').textContent = news.length;
-            document.getElementById('stat-gacetas-count').textContent = gacetas.length;
-            document.getElementById('stat-legisladores-count').textContent = legs.length;
+            const directores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+
+            document.getElementById('countNoticias').innerText = news.length;
+            document.getElementById('countGacetas').innerText = gacetas.length;
+            document.getElementById('countDirectores').innerText = directores.length;
+            document.getElementById('countSolicitudes').innerText = solicitudes.length;
+            document.getElementById('solicitudesBadge').innerText = solicitudes.filter(s => s.status === 'Pendiente').length;
+
+            const activityLog = document.getElementById('activityLog');
+            activityLog.innerHTML = `
+                <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-gold); border-radius:6px;">
+                    <i class="fas fa-check-circle" style="color:var(--admin-gold);"></i> <strong>Noticia agregada:</strong> ${news[0] ? news[0].title.substring(0, 45) + '...' : 'Ninguna'}
+                </div>
+                <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-primary); border-radius:6px;">
+                    <i class="fas fa-file-pdf" style="color:var(--admin-primary);"></i> <strong>Gaceta en repositorio:</strong> ${gacetas[0] ? gacetas[0].number : 'Ninguna'}
+                </div>
+                <div style="padding:10px; background:#f8fafc; border-left:3px solid #10b981; border-radius:6px;">
+                    <i class="fas fa-user-shield" style="color:#10b981;"></i> <strong>Sesión del Sistema:</strong> Autenticación validada correctamente.
+                </div>
+            `;
         }
 
-        // --- NOTICIAS FUNCTIONS ---
-        function renderNewsTable() {
-            const tbody = document.getElementById('news-table-body');
-            if (!tbody) return;
+        // --- NOTICIAS CRUD ---
+        function renderAdminNews() {
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const filter = (document.getElementById('searchNewsTable').value || '').toLowerCase();
+            const tbody = document.getElementById('newsTableBody');
             tbody.innerHTML = '';
-            
-            news.forEach(item => {
+
+            const filtered = news.filter(n => n.title.toLowerCase().includes(filter) || n.category.toLowerCase().includes(filter));
+
+            filtered.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight: 600;">${item.title.substring(0, 60)}${item.title.length > 60 ? '...' : ''}</td>
-                    <td>${item.category}</td>
+                    <td><img src="${item.image}" class="table-thumb" onerror="this.src='https://via.placeholder.com/38';"></td>
+                    <td style="font-weight:700; color:var(--admin-primary);">${item.title}</td>
+                    <td><span class="badge badge-info">${item.category}</span></td>
                     <td>${item.date}</td>
                     <td>
                         <button class="btn-action-table btn-edit" onclick="editNews('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
-                        <button class="btn-action-table btn-delete" onclick="deleteNews('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        <button class="btn-action-table btn-delete" onclick="deleteNews('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function handleImageUpload(input) {
-            const file = input.files[0];
-            const status = document.getElementById('img-upload-status');
-            if (!file) return;
-            
-            status.textContent = "Procesando imagen...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('news-image-base64').value = e.target.result;
-                status.textContent = `Imagen cargada: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+        function saveNews(e) {
+            e.preventDefault();
+            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const id = document.getElementById('newsId').value;
+            const newObj = {
+                id: id ? id : 'news-' + Date.now(),
+                title: document.getElementById('newsTitle').value.trim(),
+                category: document.getElementById('newsCategory').value,
+                date: document.getElementById('newsDate').value,
+                image: document.getElementById('newsImage').value.trim(),
+                content: document.getElementById('newsContent').value.trim()
             };
-            reader.readAsDataURL(file);
-        }
 
-        function submitNewsForm() {
-            const title = document.getElementById('news-title').value.trim();
-            const category = document.getElementById('news-category').value;
-            const date = document.getElementById('news-date').value;
-            const content = document.getElementById('news-content').value.trim();
-            const editId = document.getElementById('news-edit-id').value;
-            
-            if (!title || !date || !content) {
-                alert("Por favor completa los campos obligatorios (Título, Fecha y Contenido).");
-                return;
-            }
-
-            let image = document.getElementById('news-image-base64').value;
-            if (!image) {
-                // Imagen por defecto según categoría
-                image = "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80";
-            }
-
-            let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-
-            if (editId) {
-                // Editar noticia existente
-                news = news.map(item => {
-                    if (item.id === editId) {
-                        return { ...item, title, category, date, content, image };
-                    }
-                    return item;
-                });
-                alert("Noticia editada con éxito.");
+            if (id) {
+                const idx = news.findIndex(n => n.id === id);
+                if (idx !== -1) news[idx] = newObj;
             } else {
-                // Agregar nueva noticia
-                const newEntry = {
-                    id: "custom-" + Date.now(),
-                    title,
-                    category,
-                    date,
-                    content,
-                    image
-                };
-                news.unshift(newEntry); // Agregar al inicio
-                alert("Noticia publicada con éxito.");
+                news.unshift(newObj);
             }
 
             localStorage.setItem('clebne_news', JSON.stringify(news));
+            showToast('Noticia guardada y publicada en el portal.');
             resetNewsForm();
-            renderNewsTable();
-            updateDashboardStats();
+            renderAdminNews();
         }
 
         function editNews(id) {
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-            const item = news.find(n => n.id === id);
-            if (!item) return;
+            const n = news.find(item => item.id === id);
+            if (!n) return;
 
-            document.getElementById('news-edit-id').value = item.id;
-            document.getElementById('news-title').value = item.title;
-            document.getElementById('news-category').value = item.category;
-            document.getElementById('news-date').value = item.date;
-            document.getElementById('news-content').value = item.content;
-            document.getElementById('news-image-base64').value = item.image;
-            
-            document.getElementById('img-upload-status').textContent = "Imagen cargada en el registro";
-            
-            document.getElementById('news-form-title').textContent = "Editar Noticia Seleccionada";
-            document.getElementById('btn-save-news').textContent = "Guardar Cambios";
-            document.getElementById('btn-cancel-news').style.display = 'inline-block';
-            
-            // Scroll a la sección del formulario
-            document.getElementById('newsForm').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('newsId').value = n.id;
+            document.getElementById('newsTitle').value = n.title;
+            document.getElementById('newsCategory').value = n.category;
+            document.getElementById('newsDate').value = n.date;
+            document.getElementById('newsImage').value = n.image;
+            document.getElementById('newsContent').value = n.content;
+
+            document.getElementById('newsFormTitle').innerText = 'Editar Noticia';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function deleteNews(id) {
-            if (!confirm("¿Está seguro de que desea eliminar esta noticia?")) return;
-            let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-            news = news.filter(item => item.id !== id);
-            localStorage.setItem('clebne_news', JSON.stringify(news));
-            renderNewsTable();
-            updateDashboardStats();
-            alert("Noticia eliminada.");
+            if (confirm('¿Está seguro de eliminar esta noticia?')) {
+                let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+                news = news.filter(n => n.id !== id);
+                localStorage.setItem('clebne_news', JSON.stringify(news));
+                showToast('Noticia eliminada correctamente.');
+                renderAdminNews();
+            }
         }
 
         function resetNewsForm() {
-            document.getElementById('news-edit-id').value = '';
-            document.getElementById('newsForm').reset();
-            document.getElementById('news-image-base64').value = '';
-            document.getElementById('img-upload-status').textContent = "Haz clic para subir una imagen o arrástrala aquí (opcional)";
-            
-            document.getElementById('news-form-title').textContent = "Redactar Nueva Entrada";
-            document.getElementById('btn-save-news').textContent = "Publicar";
-            document.getElementById('btn-cancel-news').style.display = 'none';
-            
-            // Reestablecer fecha de hoy
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('news-date').value = today;
+            document.getElementById('formNoticia').reset();
+            document.getElementById('newsId').value = '';
+            document.getElementById('newsFormTitle').innerText = 'Publicar Noticia Institucional';
+            document.getElementById('newsDate').valueAsDate = new Date();
         }
 
-
-        // --- GACETAS FUNCTIONS ---
-        function renderGacetasTable() {
-            const tbody = document.getElementById('gaceta-table-body');
-            if (!tbody) return;
+        // --- GACETAS CRUD ---
+        function renderAdminGacetas() {
             const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const tbody = document.getElementById('gacetasTableBody');
             tbody.innerHTML = '';
-            
+
             gacetas.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td style="font-weight: 600;">${item.title}</td>
-                    <td>${item.category}</td>
+                    <td style="font-weight:700; color:var(--admin-primary);">${item.number}</td>
+                    <td>${item.title}</td>
+                    <td><span class="badge badge-warning">${item.category}</span></td>
                     <td>${item.date}</td>
                     <td>
-                        <button class="btn-action-table btn-delete" onclick="deleteGaceta('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        <a href="${item.url}" target="_blank" class="btn-action-table btn-view"><i class="fas fa-eye"></i> Ver PDF</a>
+                        <button class="btn-action-table btn-delete" onclick="deleteGaceta('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function handlePdfUpload(input) {
-            const file = input.files[0];
-            const status = document.getElementById('pdf-upload-status');
-            if (!file) return;
-            
-            if (file.size > 1.5 * 1024 * 1024) { // Limitar a 1.5MB para localStorage
-                alert("El archivo PDF es demasiado grande para almacenamiento local en el navegador (Máximo 1.5MB). Para archivos grandes, el sistema en producción guardará la ruta física en base de datos. Se usará el PDF de prueba del sistema para esta demostración.");
-                document.getElementById('gaceta-pdf-base64').value = "Gaceta_Oficial_Prueba.pdf";
-                status.textContent = `Usando PDF de Prueba (Archivo original: ${file.name})`;
-                return;
-            }
-
-            status.textContent = "Procesando PDF...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('gaceta-pdf-base64').value = e.target.result;
-                status.textContent = `PDF cargado: ${file.name} (${Math.round(file.size / 1024)} KB)`;
+        function saveGaceta(e) {
+            e.preventDefault();
+            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const newObj = {
+                id: 'gac-' + Date.now(),
+                number: document.getElementById('gacetaNumber').value.trim(),
+                category: document.getElementById('gacetaCategory').value,
+                title: document.getElementById('gacetaTitle').value.trim(),
+                date: document.getElementById('gacetaDate').value,
+                url: window.tempGacetaPDF || "Gaceta_Oficial_Prueba.pdf"
             };
-            reader.readAsDataURL(file);
-        }
 
-        function submitGacetaForm() {
-            const title = document.getElementById('gaceta-title').value.trim();
-            const category = document.getElementById('gaceta-category').value;
-            const date = document.getElementById('gaceta-date').value;
-            let pdfData = document.getElementById('gaceta-pdf-base64').value;
-            
-            if (!title || !date) {
-                alert("Por favor completa todos los campos del formulario.");
-                return;
-            }
-
-            if (!pdfData) {
-                pdfData = "Gaceta_Oficial_Prueba.pdf"; // Fallback por defecto
-            }
-
-            let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
-            const newEntry = {
-                id: "gac-" + Date.now(),
-                title,
-                category,
-                date,
-                pdfData
-            };
-            
-            gacetas.unshift(newEntry);
+            gacetas.unshift(newObj);
             localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
-            
-            alert("Documento / Gaceta cargado con éxito en el repositorio.");
-            document.getElementById('gacetaForm').reset();
-            document.getElementById('gaceta-pdf-base64').value = '';
-            document.getElementById('pdf-upload-status').textContent = "Haz clic para seleccionar el PDF oficial";
-            
-            // Reestablecer fecha de hoy
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('gaceta-date').value = today;
-            
-            renderGacetasTable();
-            updateDashboardStats();
+            showToast('Documento legislativo agregado al repositorio.');
+            document.getElementById('formGaceta').reset();
+            window.tempGacetaPDF = null;
+            renderAdminGacetas();
         }
 
         function deleteGaceta(id) {
-            if (!confirm("¿Está seguro de que desea eliminar este documento?")) return;
-            let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
-            gacetas = gacetas.filter(item => item.id !== id);
-            localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
-            renderGacetasTable();
-            updateDashboardStats();
-            alert("Documento eliminado.");
+            if (confirm('¿Eliminar este documento del repositorio oficial?')) {
+                let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+                gacetas = gacetas.filter(g => g.id !== id);
+                localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
+                showToast('Documento eliminado.');
+                renderAdminGacetas();
+            }
         }
 
-
-        // --- LEGISLADORES FUNCTIONS ---
-        function handleLegPhotoUpload(input) {
-            const file = input.files[0];
-            const status = document.getElementById('leg-photo-status');
-            if (!file) return;
-            
-            status.textContent = "Procesando foto...";
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('leg-image-base64').value = e.target.result;
-                status.textContent = `Foto cargada: ${file.name} (${Math.round(file.size / 1024)} KB)`;
-            };
-            reader.readAsDataURL(file);
+        function handlePDFUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 1.5 * 1024 * 1024) {
+                    alert('El PDF excede 1.5MB. Se usará el archivo local de demostración.');
+                    window.tempGacetaPDF = "Gaceta_Oficial_Prueba.pdf";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    window.tempGacetaPDF = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
-        function renderLegisladoresTable() {
-            const tbody = document.getElementById('leg-table-body');
-            if (!tbody) return;
-            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+        // --- DIRECTORES CRUD ---
+        function renderAdminDirectorio() {
+            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const tbody = document.getElementById('directorioTableBody');
             tbody.innerHTML = '';
-            
-            legs.forEach(item => {
+
+            legisladores.forEach(item => {
                 const tr = document.createElement('tr');
-                const avatarHTML = item.image
+                const avatarIcon = item.gender === 'F' ? 'fa-user-tie' : 'fa-user';
+                const avatarHTML = item.image 
                     ? `<img src="${item.image}" class="table-thumb">`
-                    : `<div class="table-avatar-placeholder"><i class="fas ${item.gender === 'female' ? 'fa-user' : 'fa-user-tie'}"></i></div>`;
-                
+                    : `<span class="table-avatar-placeholder"><i class="fas ${avatarIcon}"></i></span>`;
+
                 tr.innerHTML = `
-                    <td style="font-weight: 600;">${avatarHTML}${item.name}</td>
-                    <td>${item.role}</td>
+                    <td>${avatarHTML}</td>
+                    <td style="font-weight:700; color:var(--admin-primary);">${item.name}</td>
+                    <td><span class="badge badge-success">${item.role}</span></td>
                     <td>${item.commission}</td>
                     <td>
-                        <button class="btn-action-table btn-edit" onclick="editLeg('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
-                        <button class="btn-action-table btn-delete" onclick="deleteLeg('${item.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        <button class="btn-action-table btn-edit" onclick="editDirector('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn-action-table btn-delete" onclick="deleteDirector('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function submitLegForm() {
-            const name = document.getElementById('leg-name').value.trim();
-            const role = document.getElementById('leg-role').value;
-            const commission = document.getElementById('leg-commission').value.trim();
-            const gender = document.getElementById('leg-gender').value;
-            const image = document.getElementById('leg-image-base64').value;
-            const editId = document.getElementById('leg-edit-id').value;
-            
-            if (!name || !commission) {
-                alert("Por favor completa los campos requeridos (Nombre y Comisión).");
+        function saveDirector(e) {
+            e.preventDefault();
+            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const id = document.getElementById('directorId').value;
+
+            const newObj = {
+                id: id ? id : 'dir-' + Date.now(),
+                name: document.getElementById('directorName').value.trim(),
+                role: document.getElementById('directorRole').value,
+                commission: document.getElementById('directorCommission').value.trim(),
+                gender: document.getElementById('directorGender').value,
+                image: tempDirectorPhoto || (id ? (legisladores.find(l => l.id === id)||{}).image || '' : '')
+            };
+
+            if (id) {
+                const idx = legisladores.findIndex(l => l.id === id);
+                if (idx !== -1) legisladores[idx] = newObj;
+            } else {
+                legisladores.unshift(newObj);
+            }
+
+            localStorage.setItem('clebne_legisladores', JSON.stringify(legisladores));
+            showToast('Ficha de director guardada correctamente.');
+            resetDirectorForm();
+            renderAdminDirectorio();
+        }
+
+        function editDirector(id) {
+            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const leg = legisladores.find(l => l.id === id);
+            if (!leg) return;
+
+            document.getElementById('directorId').value = leg.id;
+            document.getElementById('directorName').value = leg.name;
+            document.getElementById('directorRole').value = leg.role;
+            document.getElementById('directorCommission').value = leg.commission;
+            document.getElementById('directorGender').value = leg.gender || 'M';
+
+            if (leg.image) {
+                tempDirectorPhoto = leg.image;
+                document.getElementById('photoPreviewImg').src = leg.image;
+                document.getElementById('photoPreviewContainer').style.display = 'block';
+            }
+
+            document.getElementById('directorFormTitle').innerText = 'Editar Ficha de Director';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteDirector(id) {
+            if (confirm('¿Eliminar este integrante del directorio?')) {
+                let legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+                legisladores = legisladores.filter(l => l.id !== id);
+                localStorage.setItem('clebne_legisladores', JSON.stringify(legisladores));
+                showToast('Director eliminado.');
+                renderAdminDirectorio();
+            }
+        }
+
+        function resetDirectorForm() {
+            document.getElementById('formDirector').reset();
+            document.getElementById('directorId').value = '';
+            document.getElementById('photoPreviewContainer').style.display = 'none';
+            tempDirectorPhoto = "";
+            document.getElementById('directorFormTitle').innerText = 'Registrar Nuevo Director / Integrante';
+        }
+
+        function handleDirectorPhotoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    tempDirectorPhoto = evt.target.result;
+                    document.getElementById('photoPreviewImg').src = evt.target.result;
+                    document.getElementById('photoPreviewContainer').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // --- SOLICITUDES CIUDADANAS ---
+        function renderAdminSolicitudes(filterStatus = 'Todas') {
+            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const tbody = document.getElementById('solicitudesTableBody');
+            tbody.innerHTML = '';
+
+            const filtered = solicitudes.filter(s => filterStatus === 'Todas' || s.status === filterStatus);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--admin-muted); padding:30px;">No hay solicitudes registradas con este filtro.</td></tr>`;
                 return;
             }
 
-            let legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            filtered.forEach(item => {
+                const badgeClass = item.status === 'Pendiente' ? 'badge-warning' : 'badge-success';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><code style="font-weight:700; color:var(--admin-primary);">${item.code}</code></td>
+                    <td><strong>${item.name}</strong><br><small style="color:var(--admin-muted);">${item.cedula}</small></td>
+                    <td>${item.subject}</td>
+                    <td>${item.date}</td>
+                    <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                    <td>
+                        <button class="btn-action-table btn-view" onclick="viewSolicitudDetail('${item.id}')"><i class="fas fa-envelope-open"></i> Ver Detalle</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-            if (editId) {
-                legs = legs.map(item => {
-                    if (item.id === editId) {
-                        return { ...item, name, role, commission, gender, image };
-                    }
-                    return item;
-                });
-                alert("Datos del miembro actualizados.");
-            } else {
-                const newLeg = {
-                    id: "leg-" + Date.now(),
-                    name,
-                    role,
-                    commission,
-                    gender,
-                    image
-                };
-                legs.push(newLeg); // Agregar al final del listado
-                alert("Miembro registrado con éxito.");
+        function filterSolicitudes(status) {
+            renderAdminSolicitudes(status);
+        }
+
+        function viewSolicitudDetail(id) {
+            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const sol = solicitudes.find(s => s.id === id);
+            if (!sol) return;
+
+            currentActiveSolicitudId = id;
+            document.getElementById('modalTicketCode').innerHTML = `<i class="fas fa-ticket-alt"></i> Solicitud ${sol.code}`;
+            document.getElementById('modalTicketBody').innerHTML = `
+                <p><strong>Remitente:</strong> ${sol.name} (${sol.cedula})</p>
+                <p><strong>Contacto:</strong> ${sol.email} | Tel: ${sol.phone}</p>
+                <p><strong>Fecha:</strong> ${sol.date}</p>
+                <p style="margin-top:10px;"><strong>Asunto:</strong> ${sol.subject}</p>
+                <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--admin-border); margin-top:10px; font-style:italic;">
+                    "${sol.message}"
+                </div>
+            `;
+            document.getElementById('solicitudModal').style.display = 'flex';
+        }
+
+        function updateSolicitudStatus(status) {
+            if (!currentActiveSolicitudId) return;
+            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const sol = solicitudes.find(s => s.id === currentActiveSolicitudId);
+            if (sol) {
+                sol.status = status;
+                localStorage.setItem('clebne_solicitudes', JSON.stringify(solicitudes));
+                showToast(`Solicitud ${sol.code} marcada como ${status}.`);
+                closeSolicitudModal();
+                renderAdminSolicitudes();
+                renderDashboard();
             }
-
-            localStorage.setItem('clebne_legisladores', JSON.stringify(legs));
-            resetLegForm();
-            renderLegisladoresTable();
-            updateDashboardStats();
         }
 
-        function editLeg(id) {
-            const legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
-            const item = legs.find(l => l.id === id);
-            if (!item) return;
-
-            document.getElementById('leg-edit-id').value = item.id;
-            document.getElementById('leg-name').value = item.name;
-            document.getElementById('leg-role').value = item.role;
-            document.getElementById('leg-commission').value = item.commission;
-            document.getElementById('leg-gender').value = item.gender;
-            document.getElementById('leg-image-base64').value = item.image || '';
-            
-            if (item.image) {
-                document.getElementById('leg-photo-status').textContent = "Foto cargada en el registro";
-            } else {
-                document.getElementById('leg-photo-status').textContent = "Haz clic para seleccionar una fotografía";
-            }
-            
-            document.getElementById('leg-form-title').textContent = "Editar Datos del Miembro";
-            document.getElementById('btn-save-leg').textContent = "Guardar Cambios";
-            document.getElementById('btn-cancel-leg').style.display = 'inline-block';
-            
-            document.getElementById('legForm').scrollIntoView({ behavior: 'smooth' });
+        function closeSolicitudModal() {
+            document.getElementById('solicitudModal').style.display = 'none';
         }
 
-        function deleteLeg(id) {
-            if (!confirm("¿Está seguro de que desea eliminar este miembro del directorio?")) return;
-            let legs = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
-            legs = legs.filter(item => item.id !== id);
-            localStorage.setItem('clebne_legisladores', JSON.stringify(legs));
-            renderLegisladoresTable();
-            updateDashboardStats();
-            alert("Miembro removido.");
+        // --- HERO CONFIG ---
+        function loadHeroConfigForm() {
+            const config = JSON.parse(localStorage.getItem('clebne_hero_config')) || defaultHeroConfig;
+            document.getElementById('heroBadge').value = config.badge;
+            document.getElementById('heroTitle').value = config.title;
+            document.getElementById('heroSubtitle').value = config.subtitle;
         }
 
-        function resetLegForm() {
-            document.getElementById('leg-edit-id').value = '';
-            document.getElementById('legForm').reset();
-            document.getElementById('leg-image-base64').value = '';
-            document.getElementById('leg-photo-status').textContent = "Haz clic para seleccionar una fotografía";
-            document.getElementById('leg-form-title').textContent = "Agregar Miembro (Director / Legislador)";
-            document.getElementById('btn-save-leg').textContent = "Guardar Registro";
-            document.getElementById('btn-cancel-leg').style.display = 'none';
+        function saveHeroConfig(e) {
+            e.preventDefault();
+            const config = {
+                badge: document.getElementById('heroBadge').value.trim(),
+                title: document.getElementById('heroTitle').value.trim(),
+                subtitle: document.getElementById('heroSubtitle').value.trim()
+            };
+            localStorage.setItem('clebne_hero_config', JSON.stringify(config));
+            showToast('Configuración del portal actualizada en vivo.');
         }
-
-
-        // Inicializar al cargar la página
-        window.onload = function() {
-            // Establecer fechas de hoy por defecto
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('news-date').value = today;
-            document.getElementById('gaceta-date').value = today;
-            
-            // Abrir el dashboard por defecto
-            switchTab('dashboard', null);
-        };
     </script>
 </body>
 </html>

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLEBNE - Inicio</title>
+    <title>CLEBNE - Consejo Legislativo del Estado Bolivariano de Nueva Esparta</title>
     <!-- Open Graph / WhatsApp Preview -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="CLEBNE - Consejo Legislativo Bolivariano de Nueva Esparta">
-    <meta property="og:description" content="Transparencia y Leyes al alcance del Pueblo Neoespartano. Trabajamos por el desarrollo integral, la justicia y el bienestar de nuestras islas.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/Fr4nc1scoar/propuesta-web-clebne/master/Clebne_2024.jpeg">
+    <meta property="og:title" content="CLEBNE - Consejo Legislativo del Estado Bolivariano de Nueva Esparta">
+    <meta property="og:description" content="Transparencia, Leyes y Participación Popular al servicio del Pueblo Neoespartano en Margarita, Coche y Cubagua.">
+    <meta property="og:image" content="Logo.png">
     <meta property="og:url" content="https://propuesta-web-clebne.vercel.app/">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
-    <!-- Franja Tricolor (Estilo Estatal) -->
+    <!-- Franja Patria -->
     <div class="franja-patria">
         <div class="amarillo"></div>
         <div class="azul"></div>
@@ -32,13 +32,13 @@
     <div class="top-bar">
         <div class="container top-bar-content">
             <div class="contact-info">
-                <span><i class="fas fa-landmark"></i> Palacio Legislativo: La Asunción, Nueva Esparta</span>
-                <span><i class="fas fa-phone"></i> 0295-1234567</span>
+                <span><i class="fas fa-landmark"></i> Palacio Legislativo: La Asunción, Calle Girardot, Nueva Esparta</span>
+                <span><i class="fas fa-phone"></i> 0295-2421580</span>
             </div>
             <div class="social-links">
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" title="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
             </div>
         </div>
     </div>
@@ -47,8 +47,7 @@
     <header class="navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <!-- Se asume que guardaste el logo como logo.png en esta carpeta -->
-                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/65x65?text=Logo';">
+                <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/70?text=CLEBNE';">
                 <div class="logo-text">
                     <span class="title">CLEBNE</span>
                     <span class="subtitle">Consejo Legislativo del Estado Bolivariano de Nueva Esparta</span>
@@ -65,47 +64,47 @@
                     <li><a href="gacetas.html">Leyes y Gacetas</a></li>
                 </ul>
             </nav>
-            <a href="gacetas.html" class="btn btn-primary btn-nav"><i class="fas fa-search"></i> Buscar Gaceta</a>
+            <a href="gacetas.html" class="btn btn-gold btn-nav"><i class="fas fa-search"></i> Buscar Gaceta</a>
         </div>
     </header>
 
     <main>
-        <!-- Hero Section con la imagen de fondo -->
+        <!-- Hero Section -->
         <section class="hero" style="background-image: url('Clebne_2024.jpeg');">
             <div class="hero-overlay"></div>
             <div class="container hero-content">
-                <span class="badge">Gestión Legislativa 2026</span>
-                <h1>Transparencia y Leyes al alcance del Pueblo Neoespartano</h1>
-                <p>Trabajamos por el desarrollo integral, la justicia y el bienestar de nuestras islas: Margarita, Coche y Cubagua.</p>
+                <span class="badge" id="heroBadgeElement"><i class="fas fa-star" style="color:var(--accent-yellow);"></i> Gestión Legislativa 2026</span>
+                <h1 id="heroTitleElement">Transparencia y Leyes al alcance del Pueblo Neoespartano</h1>
+                <p id="heroSubtitleElement">Trabajamos por el desarrollo integral, la justicia y el bienestar de nuestras islas: Margarita, Coche y Cubagua.</p>
                 <div class="search-box">
-                    <input type="text" id="heroSearch" placeholder="Buscar Gaceta o Ley (ej. Turismo)..." onkeypress="if(event.key === 'Enter') document.getElementById('btnSearch').click();">
+                    <input type="text" id="heroSearch" placeholder="Buscar Gaceta o Ley (ej. Turismo, Ambiente)..." onkeypress="if(event.key === 'Enter') document.getElementById('btnSearch').click();">
                     <button id="btnSearch" class="btn btn-search" onclick="window.location.href='gacetas.html?q=' + encodeURIComponent(document.getElementById('heroSearch').value);"><i class="fas fa-file-pdf"></i> Consultar</button>
                 </div>
             </div>
         </section>
 
-        <!-- Sección de Participación (Reemplazo de estadísticas) -->
+        <!-- Sección de Participación (Atención al Ciudadano) -->
         <section class="participacion-section">
             <div class="container participacion-grid">
-                <a href="#" class="part-card">
+                <div class="part-card" onclick="openCitizenModal();">
                     <div class="part-icon"><i class="fas fa-bullhorn"></i></div>
                     <div class="part-info">
-                        <h3>Atención al Ciudadano</h3>
-                        <p>Plantea tus inquietudes, sugerencias o denuncias a la OAC.</p>
+                        <h3>Atención al Ciudadano (OAC)</h3>
+                        <p>Plantea tus propuestas, inquietudes o peticiones al Parlamento Regional.</p>
                     </div>
-                </a>
-                <a href="#" class="part-card">
+                </div>
+                <a href="gacetas.html" class="part-card">
                     <div class="part-icon"><i class="fas fa-calendar-check"></i></div>
                     <div class="part-info">
-                        <h3>Agenda Legislativa</h3>
-                        <p>Conoce las próximas sesiones y debates programados.</p>
+                        <h3>Gacetas y Leyes Aprobadas</h3>
+                        <p>Consulta el cuerpo normativo y ordenanzas del Estado Nueva Esparta.</p>
                     </div>
                 </a>
-                <a href="#" class="part-card">
-                    <div class="part-icon"><i class="fas fa-search-dollar"></i></div>
+                <a href="directorio.html" class="part-card">
+                    <div class="part-icon"><i class="fas fa-users"></i></div>
                     <div class="part-info">
-                        <h3>Contraloría Social</h3>
-                        <p>Acceso a balances de gestión y ejecución presupuestaria.</p>
+                        <h3>Directores Activos y Comisiones</h3>
+                        <p>Conoce las autoridades y comisiones permanentes de trabajo.</p>
                     </div>
                 </a>
             </div>
@@ -116,7 +115,7 @@
             <div class="container">
                 <div class="section-header center">
                     <h2 class="section-title">Comisiones Permanentes de Trabajo</h2>
-                    <p class="section-subtitle">Conoce los equipos encargados del trabajo legislativo y desarrollo del Estado Bolivariano de Nueva Esparta.</p>
+                    <p class="section-subtitle">Estructura parlamentaria dedicada al estudio de leyes, políticas públicas y desarrollo regional en Nueva Esparta.</p>
                 </div>
                 <div class="comisiones-image-container">
                     <img src="comisiones.jpg" alt="Comisiones Permanentes de Trabajo" class="comisiones-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'padding: 80px 20px; color: #64748b; font-weight: 600; font-size: 18px;\'><i class=\'fas fa-image fa-3x\' style=\'margin-bottom: 15px; color: #cbd5e1;\'></i><br>Por favor, guarda la imagen de las comisiones como \'comisiones.jpg\' en esta carpeta para que aparezca aquí.</div>';">
@@ -128,17 +127,156 @@
         <section class="noticias-section">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Actualidad Legislativa</h2>
+                    <div>
+                        <h2 class="section-title">Actualidad Legislativa</h2>
+                        <p class="section-subtitle">Noticias destacadas del Consejo Legislativo del Estado Bolivariano de Nueva Esparta.</p>
+                    </div>
+                    <a href="noticias.html" class="btn-link">Ver Repositorio Completo <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="news-grid">
-                    <!-- Las noticias se cargan dinámicamente con JavaScript -->
+                    <!-- Las noticias se cargan dinámicamente -->
                 </div>
-                <div class="center-btn" style="text-align: center; margin-top: 40px;">
-                    <a href="noticias.html" class="btn btn-primary"><i class="fas fa-newspaper"></i> Ver Todas las Noticias</a>
+                <div style="text-align: center; margin-top: 40px;">
+                    <a href="noticias.html" class="btn btn-primary"><i class="fas fa-newspaper"></i> Explorar Todas las Noticias</a>
                 </div>
+            </div>
+        </section>
+
+        <!-- Plataformas y Enlaces -->
+        <section class="enlaces-section">
+            <div class="container">
+                <div class="section-header center">
+                    <h2 class="section-title">Plataformas y Enlaces de Interés</h2>
+                    <p class="section-subtitle">Portales institucionales y servicios de la República Bolivariana de Venezuela.</p>
+                </div>
+                <div class="enlaces-grid">
+                    <a href="https://www.patria.org.ve/" target="_blank" rel="noopener" class="enlace-card">
+                        <i class="fas fa-star"></i>
+                        <span>Sistema Patria</span>
+                    </a>
+                    <a href="https://venapp.com/" target="_blank" rel="noopener" class="enlace-card">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>App VenApp</span>
+                    </a>
+                    <a href="https://www.gebne.org.ve/" target="_blank" rel="noopener" class="enlace-card">
+                        <i class="fas fa-landmark"></i>
+                        <span>Gobernación GBNE</span>
+                    </a>
+                    <a href="login.html" class="enlace-card">
+                        <i class="fas fa-lock"></i>
+                        <span>Intranet CLEBNE</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de Atención al Ciudadano (OAC) -->
+    <div class="modal-overlay" id="citizenModal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid var(--border-color); padding-bottom:12px;">
+                <h3 style="color:var(--primary-blue); font-weight:800; font-size:20px; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-hand-holding-heart" style="color:var(--gold-primary);"></i> Oficina de Atención al Ciudadano
+                </h3>
+                <button onclick="closeCitizenModal()" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted-text);">&times;</button>
+            </div>
+            
+            <div id="modalFormContainer">
+                <p style="font-size:14px; color:var(--muted-text); margin-bottom:20px;">
+                    Envíe su propuesta, inquietud o petición formal a la Mesa Directiva del CLEBNE. Recibirá un código único de seguimiento.
+                </p>
+                <form id="citizenRequestForm" onsubmit="submitCitizenRequest(event)">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Nombre Completo</label>
+                            <input type="text" id="reqName" class="form-control" placeholder="Ej. Juan Pérez" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Cédula de Identidad</label>
+                            <input type="text" id="reqCedula" class="form-control" placeholder="V-12.345.678" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;">
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Correo Electrónico</label>
+                            <input type="email" id="reqEmail" class="form-control" placeholder="ejemplo@gmail.com" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;">
+                        </div>
+                        <div>
+                            <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Teléfono</label>
+                            <input type="tel" id="reqPhone" class="form-control" placeholder="0414-1234567" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Asunto de la Petición</label>
+                        <input type="text" id="reqSubject" class="form-control" placeholder="Ej. Propuesta comunitaria para ordenanza de transporte" required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;">
+                    </div>
+                    <div style="margin-bottom:20px;">
+                        <label style="display:block; font-size:12px; font-weight:700; text-transform:uppercase; margin-bottom:5px;">Detalle del Planteamiento</label>
+                        <textarea id="reqMessage" class="form-control" rows="4" placeholder="Describa su solicitud o planteamiento de manera clara..." required style="width:100%; padding:10px; border:1px solid var(--border-color); border-radius:8px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100" style="justify-content:center; padding:12px;">
+                        <i class="fas fa-paper-plane"></i> Enviar Petición al CLEBNE
+                    </button>
+                </form>
+            </div>
+
+            <div id="modalSuccessContainer" style="display:none; text-align:center; padding:20px 10px;">
+                <i class="fas fa-check-circle" style="font-size:60px; color:#10b981; margin-bottom:15px;"></i>
+                <h3 style="color:var(--primary-blue); font-weight:800; font-size:22px;">¡Solicitud Registrada Exitosamente!</h3>
+                <p style="color:var(--muted-text); margin:10px 0 20px;">Su planteamiento ha sido recibido por la Oficina de Atención al Ciudadano del CLEBNE.</p>
+                <div style="background:#f8fafc; padding:15px; border-radius:10px; border:2px dashed var(--gold-primary); display:inline-block; margin-bottom:20px;">
+                    <span style="font-size:12px; color:var(--muted-text); display:block;">Código de Seguimiento Ticket:</span>
+                    <strong id="ticketCodeDisplay" style="font-size:22px; color:var(--primary-blue); letter-spacing:1px;">CLEBNE-2026-0000</strong>
+                </div>
+                <div>
+                    <button onclick="closeCitizenModal()" class="btn btn-primary">Entendido y Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-info">
+                <div class="logo footer-logo">
+                    <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/60x60?text=Logo';">
+                    <div class="logo-text" style="margin-left:8px;">
+                        <span class="title" style="color: white; font-size:22px;">CLEBNE</span>
+                    </div>
+                </div>
+                <div class="contact-details">
+                    <p><i class="fas fa-map-marker-alt"></i> Palacio Legislativo, La Asunción, Calle Girardot, Nueva Esparta.</p>
+                    <p><i class="fas fa-envelope"></i> oac.clebne@gmail.com</p>
+                    <p><i class="fas fa-phone"></i> 0295-2421580</p>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Marco Legal</h4>
+                <ul>
+                    <li><a href="gacetas.html">Gacetas Oficiales</a></li>
+                    <li><a href="gacetas.html">Leyes del Estado</a></li>
+                    <li><a href="directorio.html">Directorio de Comisiones</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Intranet & Gestión</h4>
+                <ul>
+                    <li><a href="login.html"><i class="fas fa-lock"></i> Acceso Intranet</a></li>
+                    <li><a href="#" onclick="openCitizenModal(); return false;"><i class="fas fa-comments"></i> Atención al Ciudadano</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Botón Flotante -->
+    <a href="#" onclick="openCitizenModal(); return false;" class="floating-btn" title="Atención al Ciudadano CLEBNE">
+        <i class="fas fa-comment-dots"></i>
+    </a>
 
     <script>
-        // Noticias por defecto si no hay nada en localStorage
         const defaultNews = [
             {
                 id: "def-1",
@@ -146,7 +284,7 @@
                 category: "Legislación",
                 date: "2026-05-28",
                 image: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=600&q=80",
-                content: "El Consejo Legislativo dio el primer paso para impulsar el desarrollo económico y turístico de nuestras islas protegiendo el ecosistema."
+                content: "El Consejo Legislativo del Estado Bolivariano de Nueva Esparta dio el primer paso para impulsar el desarrollo económico y turístico de nuestras islas protegiendo el ecosistema local y la identidad neoespartana."
             },
             {
                 id: "def-2",
@@ -154,24 +292,35 @@
                 category: "Acuerdos",
                 date: "2026-05-26",
                 image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=600&q=80",
-                content: "En sesión especial, se reconoció la trayectoria de importantes figuras de la música tradicional neoespartana y su aporte a la identidad."
+                content: "En una emotiva Sesión Especial en el Palacio Legislativo de La Asunción, se reconoció la destacada trayectoria de figuras musicales de Margarita, Coche y Cubagua."
             },
             {
                 id: "def-3",
-                title: "Comisión de Finanzas evalúa ejecución presupuestaria",
+                title: "Comisión de Finanzas evalúa ejecución presupuestaria del trimestre",
                 category: "Institucional",
                 date: "2026-05-24",
                 image: "https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&w=600&q=80",
-                content: "Garantizando la transparencia, los legisladores revisaron junto a las autoridades del ejecutivo regional los balances de gestión."
+                content: "Garantizando la transparencia y la contraloría social, los legisladores de la Comisión de Finanzas revisaron detenidamente los balances de gestión."
             }
         ];
 
-        // Inicializar localStorage si no existe
-        if (!localStorage.getItem('clebne_news')) {
-            localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
+        window.addEventListener('DOMContentLoaded', () => {
+            loadHeroConfig();
+            renderNews();
+        });
+
+        function loadHeroConfig() {
+            const configStr = localStorage.getItem('clebne_hero_config');
+            if (configStr) {
+                try {
+                    const cfg = JSON.parse(configStr);
+                    if (cfg.badge) document.getElementById('heroBadgeElement').innerHTML = `<i class="fas fa-star" style="color:var(--accent-yellow);"></i> ${cfg.badge}`;
+                    if (cfg.title) document.getElementById('heroTitleElement').innerText = cfg.title;
+                    if (cfg.subtitle) document.getElementById('heroSubtitleElement').innerText = cfg.subtitle;
+                } catch(e){}
+            }
         }
 
-        // Renderizar las noticias
         function renderNews() {
             const newsGrid = document.querySelector('.news-grid');
             if (!newsGrid) return;
@@ -179,14 +328,12 @@
             const newsList = JSON.parse(localStorage.getItem('clebne_news')) || defaultNews;
             newsGrid.innerHTML = '';
             
-            // Mostrar las últimas 3 noticias
             const latestNews = newsList.slice(0, 3);
             
             latestNews.forEach(item => {
                 const article = document.createElement('article');
                 article.className = 'news-card';
                 
-                // Formatear fecha
                 const fechaParts = item.date.split('-');
                 let fechaFormateada = item.date;
                 if (fechaParts.length === 3) {
@@ -196,8 +343,8 @@
                 
                 let categoryColor = 'var(--primary-blue)';
                 if (item.category === 'Acuerdos') categoryColor = 'var(--accent-green)';
-                if (item.category === 'Institucional') categoryColor = 'var(--accent-yellow)';
-                const categoryTextColor = item.category === 'Institucional' ? '#000' : '#fff';
+                if (item.category === 'Institucional') categoryColor = 'var(--gold-dark)';
+                const categoryTextColor = '#fff';
                 
                 article.innerHTML = `
                     <div class="news-img" style="background-image: url('${item.image}');">
@@ -216,78 +363,44 @@
             });
         }
 
-        // Ejecutar al cargar la página
-        window.addEventListener('DOMContentLoaded', renderNews);
+        // Modal OAC
+        function openCitizenModal() {
+            document.getElementById('modalFormContainer').style.display = 'block';
+            document.getElementById('modalSuccessContainer').style.display = 'none';
+            document.getElementById('citizenModal').classList.add('active');
+        }
+
+        function closeCitizenModal() {
+            document.getElementById('citizenModal').classList.remove('active');
+            document.getElementById('citizenRequestForm').reset();
+        }
+
+        function submitCitizenRequest(e) {
+            e.preventDefault();
+            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            
+            const randomCode = 'CLEBNE-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
+            
+            const newRequest = {
+                id: 'sol-' + Date.now(),
+                code: randomCode,
+                name: document.getElementById('reqName').value.trim(),
+                cedula: document.getElementById('reqCedula').value.trim(),
+                email: document.getElementById('reqEmail').value.trim(),
+                phone: document.getElementById('reqPhone').value.trim(),
+                subject: document.getElementById('reqSubject').value.trim(),
+                message: document.getElementById('reqMessage').value.trim(),
+                date: new Date().toISOString().split('T')[0],
+                status: 'Pendiente'
+            };
+
+            solicitudes.unshift(newRequest);
+            localStorage.setItem('clebne_solicitudes', JSON.stringify(solicitudes));
+
+            document.getElementById('ticketCodeDisplay').innerText = randomCode;
+            document.getElementById('modalFormContainer').style.display = 'none';
+            document.getElementById('modalSuccessContainer').style.display = 'block';
+        }
     </script>
-            </div>
-        </section>
-
-        <!-- Plataformas y Enlaces -->
-        <section class="enlaces-section">
-            <div class="container">
-                <div class="section-header center">
-                    <h2 class="section-title">Plataformas y Enlaces de Interés</h2>
-                </div>
-                <div class="enlaces-grid">
-                    <a href="https://www.patria.org.ve/" target="_blank" class="enlace-card">
-                        <i class="fas fa-star"></i>
-                        <span>Sistema Patria</span>
-                    </a>
-                    <a href="https://venapp.com/" target="_blank" class="enlace-card">
-                        <i class="fas fa-mobile-alt"></i>
-                        <span>App VenApp</span>
-                    </a>
-                    <a href="https://www.gebne.org.ve/" target="_blank" class="enlace-card">
-                        <i class="fas fa-landmark"></i>
-                        <span>Gobernación GBNE</span>
-                    </a>
-                    <a href="#" class="enlace-card">
-                        <i class="fas fa-balance-scale"></i>
-                        <span>Contraloría del Estado</span>
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container footer-content">
-            <div class="footer-info">
-                <div class="logo footer-logo">
-                    <img src="Logo.png" alt="Logo CLEBNE" class="logo-img" onerror="this.src='https://via.placeholder.com/60x60?text=Logo';">
-                    <span class="logo-text" style="color: white; font-weight: bold; font-size: 24px; margin-left: 10px;">CLEBNE</span>
-                </div>
-                <div class="contact-details">
-                    <p><i class="fas fa-map-marker-alt"></i> Palacio Legislativo, La Asunción, Municipio Arismendi.</p>
-                    <p><i class="fas fa-phone"></i> 0295 - 123.45.67</p>
-                    <p><i class="fas fa-envelope"></i> info@clebne.gob.ve</p>
-                </div>
-            </div>
-            <div class="footer-links">
-                <h4>Marco Legal</h4>
-                <ul>
-                    <li><a href="#">Constitución del Estado</a></li>
-                    <li><a href="gacetas.html">Gacetas Oficiales</a></li>
-                    <li><a href="#">Reglamento Interior y de Debates</a></li>
-                </ul>
-            </div>
-            <div class="footer-links">
-                <h4>Transparencia</h4>
-                <ul>
-                    <li><a href="#">Presupuesto Público</a></li>
-                    <li><a href="#">Informes de Gestión</a></li>
-                    <li><a href="#">Atención Ciudadana (OAC)</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>Consejo Legislativo del Estado Bolivariano de Nueva Esparta &copy; 2026. Todos los derechos reservados. | <a href="login.html" style="color: #64748b; font-weight: 600; margin-left: 10px; transition: 0.3s;"><i class="fas fa-lock"></i> Acceso Intranet</a></p>
-        </div>
-    </footer>
-
-    <!-- Botón Flotante de Atención al Ciudadano -->
-    <a href="#contacto" class="floating-btn" title="Atención al Ciudadano (WhatsApp)">
-        <i class="fab fa-whatsapp"></i>
-    </a>
 </body>
 </html>
