@@ -61,59 +61,57 @@
         const defaultLegisladores = [
             {
                 id: "leg-1",
-                name: "Jennyffer Mercedes Gil Martínez",
-                role: "Presidente",
-                commission: "Presidencia",
+                name: "Msc. Jennyffer Gil",
+                role: "Presidente del CLEBNE",
+                commission: "Despacho de Presidencia",
                 gender: "female"
             },
             {
                 id: "leg-2",
-                name: "Tirso Ezequiel Solano Cornivell",
+                name: "Tirso Solano",
                 role: "Vicepresidente",
-                commission: "Vicepresidencia",
+                commission: "Despacho de Vicepresidencia",
                 gender: "male"
             },
             {
                 id: "leg-3",
-                name: "Osvelida del Valle Gil Velásquez",
-                role: "Legisladora",
-                commission: "Oficina Legislativa",
-                gender: "female"
+                name: "Johan Yánez",
+                role: "Legislador Regional",
+                commission: "Comisión de Administración y Finanzas",
+                gender: "male"
             },
             {
                 id: "leg-4",
-                name: "Mayra Johana Lairet Viloria",
-                role: "Legisladora",
-                commission: "Oficina Legislativa",
-                gender: "female"
+                name: "Luis Rosas",
+                role: "Legislador Regional",
+                commission: "Comisión de Legislación y Normativa",
+                gender: "male"
             },
             {
                 id: "leg-5",
-                name: "Osmícar José Cabeza Rondón",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
-                gender: "male"
+                name: "Mayra Lairet",
+                role: "Legisladora Regional",
+                commission: "Comisión de Desarrollo Social y Salud",
+                gender: "female"
             },
             {
                 id: "leg-6",
-                name: "Johan Francisco Yánez Arias",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
-                gender: "male"
+                name: "Osvelida Gil",
+                role: "Legisladora Regional",
+                commission: "Comisión de Educación, Cultura y Deporte",
+                gender: "female"
             },
             {
                 id: "leg-7",
-                name: "Luis Manuel Rosas Caraballo",
-                role: "Legislador",
-                commission: "Oficina Legislativa",
+                name: "Osmícar Cabeza",
+                role: "Legislador Regional",
+                commission: "Comisión de Infraestructura y Servicios",
                 gender: "male"
             }
         ];
 
-        // Inicializar localStorage si no existe
-        if (!localStorage.getItem('clebne_legisladores')) {
-            localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
-        }
+        // Forzar actualización de la lista oficial de legisladores
+        localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
 
         // Renderizar directorio
         function renderDirectorio() {
