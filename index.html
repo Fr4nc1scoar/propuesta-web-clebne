@@ -382,9 +382,24 @@
             }
         ];
 
+        // Helper de Sanitización XSS
+        function sanitizeHTML(str) {
+            if (!str) return '';
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        const defaultDirectorioPreview = [
+            { name: "Msc. Jennyffer Gil", role: "Presidente del CLEBNE", commission: "Despacho de Presidencia", gender: "female" },
+            { name: "Tirso Solano", role: "Vicepresidente", commission: "Despacho de Vicepresidencia", gender: "male" },
+            { name: "Johan Yánez", role: "Legislador Regional", commission: "Comisión de Administración y Finanzas", gender: "male" }
+        ];
+
         window.addEventListener('DOMContentLoaded', () => {
             loadHeroConfig();
             renderNews();
+            renderDirectorioPreview();
         });
 
         function loadHeroConfig() {
@@ -392,11 +407,40 @@
             if (configStr) {
                 try {
                     const cfg = JSON.parse(configStr);
-                    if (cfg.badge) document.getElementById('heroBadgeElement').innerHTML = `<i class="fas fa-star" style="color:var(--accent-yellow);"></i> ${cfg.badge}`;
+                    if (cfg.badge) document.getElementById('heroBadgeElement').innerHTML = `<i class="fas fa-star" style="color:var(--accent-yellow);"></i> ${sanitizeHTML(cfg.badge)}`;
                     if (cfg.title) document.getElementById('heroTitleElement').innerText = cfg.title;
                     if (cfg.subtitle) document.getElementById('heroSubtitleElement').innerText = cfg.subtitle;
                 } catch(e){}
             }
+        }
+
+        function renderDirectorioPreview() {
+            const previewGrid = document.querySelector('.directorio-preview-grid');
+            if (!previewGrid) return;
+
+            const list = JSON.parse(localStorage.getItem('clebne_legisladores')) || defaultDirectorioPreview;
+            const top3 = list.slice(0, 3);
+            previewGrid.innerHTML = '';
+
+            top3.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'legislador-card';
+                
+                const avatarIcon = item.gender === 'F' || item.gender === 'female' ? 'fa-user' : 'fa-user-tie';
+                const avatarHTML = item.image
+                    ? `<div class="avatar-container"><img src="${item.image}" alt="${sanitizeHTML(item.name)}" class="director-img"></div>`
+                    : `<div class="avatar-placeholder"><i class="fas ${avatarIcon}"></i></div>`;
+
+                card.innerHTML = `
+                    ${avatarHTML}
+                    <div class="legislador-info">
+                        <h3>${sanitizeHTML(item.name)}</h3>
+                        <p class="role">${sanitizeHTML(item.role)}</p>
+                        <p class="comision">${sanitizeHTML(item.commission)}</p>
+                    </div>
+                `;
+                previewGrid.appendChild(card);
+            });
         }
 
         function renderNews() {
@@ -426,14 +470,14 @@
                 
                 article.innerHTML = `
                     <div class="news-img" style="background-image: url('${item.image}');">
-                        <span class="news-category" style="background-color: ${categoryColor}; color: ${categoryTextColor};">${item.category}</span>
+                        <span class="news-category" style="background-color: ${categoryColor}; color: ${categoryTextColor};">${sanitizeHTML(item.category)}</span>
                     </div>
                     <div class="news-content">
                         <div class="news-meta">
                             <span><i class="far fa-calendar-alt"></i> ${fechaFormateada}</span>
                         </div>
-                        <h3>${item.title}</h3>
-                        <p>${item.content}</p>
+                        <h3>${sanitizeHTML(item.title)}</h3>
+                        <p>${sanitizeHTML(item.content)}</p>
                         <a href="noticia.html?id=${item.id}" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
                     </div>
                 `;
@@ -441,7 +485,7 @@
             });
         }
 
-        // Modal OAC
+        // Modal OAC con Protección Anti-Spam (Rate Throttling) y Sanitización
         function openCitizenModal() {
             document.getElementById('modalFormContainer').style.display = 'block';
             document.getElementById('modalSuccessContainer').style.display = 'none';
@@ -455,6 +499,18 @@
 
         function submitCitizenRequest(e) {
             e.preventDefault();
+
+            // Protección de Rate Limiting (Máximo 3 peticiones por 5 minutos)
+            const rateLimitKey = 'clebne_oac_timestamps';
+            let timestamps = JSON.parse(localStorage.getItem(rateLimitKey)) || [];
+            const now = Date.now();
+            timestamps = timestamps.filter(t => now - t < 5 * 60 * 1000); // 5 minutos
+
+            if (timestamps.length >= 3) {
+                alert('Seguridad CLEBNE: Ha alcanzado el límite de solicitudes permitidas por 5 minutos. Por favor intente más tarde.');
+                return;
+            }
+
             const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
             
             const randomCode = 'CLEBNE-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000);
@@ -462,18 +518,21 @@
             const newRequest = {
                 id: 'sol-' + Date.now(),
                 code: randomCode,
-                name: document.getElementById('reqName').value.trim(),
-                cedula: document.getElementById('reqCedula').value.trim(),
-                email: document.getElementById('reqEmail').value.trim(),
-                phone: document.getElementById('reqPhone').value.trim(),
-                subject: document.getElementById('reqSubject').value.trim(),
-                message: document.getElementById('reqMessage').value.trim(),
+                name: sanitizeHTML(document.getElementById('reqName').value.trim()),
+                cedula: sanitizeHTML(document.getElementById('reqCedula').value.trim()),
+                email: sanitizeHTML(document.getElementById('reqEmail').value.trim()),
+                phone: sanitizeHTML(document.getElementById('reqPhone').value.trim()),
+                subject: sanitizeHTML(document.getElementById('reqSubject').value.trim()),
+                message: sanitizeHTML(document.getElementById('reqMessage').value.trim()),
                 date: new Date().toISOString().split('T')[0],
                 status: 'Pendiente'
             };
 
             solicitudes.unshift(newRequest);
             localStorage.setItem('clebne_solicitudes', JSON.stringify(solicitudes));
+
+            timestamps.push(now);
+            localStorage.setItem(rateLimitKey, JSON.stringify(timestamps));
 
             document.getElementById('ticketCodeDisplay').innerText = randomCode;
             document.getElementById('modalFormContainer').style.display = 'none';

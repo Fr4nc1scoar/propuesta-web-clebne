@@ -111,8 +111,10 @@
             }
         ];
 
-        // Forzar actualización de la lista oficial de legisladores
-        localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
+        // Inicializar localStorage solo si no existe
+        if (!localStorage.getItem('clebne_legisladores')) {
+            localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
+        }
 
         // Renderizar directorio
         function renderDirectorio() {

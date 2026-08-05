@@ -461,43 +461,100 @@
                     </button>
                 </div>
 
-                <!-- Formulario Noticia -->
-                <div class="card">
+                <!-- Formulario Redactor Noticia con Vista Previa en Vivo y Carga de Galería -->
+                <div class="card" style="border-top: 4px solid var(--admin-gold);">
                     <div class="card-header">
-                        <h3 id="newsFormTitle"><i class="fas fa-edit"></i> Publicar o Editar Noticia</h3>
+                        <h3 id="newsFormTitle"><i class="fas fa-newspaper" style="color:var(--admin-gold);"></i> Editor de Noticias con Vista Previa en Vivo</h3>
+                        <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;"><i class="fas fa-eye"></i> Vista Previa en Tiempo Real</span>
                     </div>
                     <form id="formNoticia" onsubmit="saveNews(event)">
                         <input type="hidden" id="newsId">
-                        <div class="form-grid">
-                            <div class="form-group full">
-                                <label class="form-label" for="newsTitle">Titular de la Noticia</label>
-                                <input type="text" id="newsTitle" class="form-control" placeholder="Ej. CLEBNE aprueba Ley de Turismo Sustentable para Nueva Esparta" required>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;" class="editor-split-grid">
+                            <!-- Columna Izquierda: Formulario y Controles -->
+                            <div class="editor-controls">
+                                <div class="form-group full" style="margin-bottom: 15px;">
+                                    <label class="form-label" for="newsTitle">Titular de la Noticia</label>
+                                    <input type="text" id="newsTitle" class="form-control" placeholder="Ej. CLEBNE aprueba Ley de Turismo Sustentable para Nueva Esparta" required oninput="updateNewsLivePreview()">
+                                </div>
+                                <div class="form-grid" style="margin-bottom: 15px;">
+                                    <div class="form-group">
+                                        <label class="form-label" for="newsCategory">Categoría</label>
+                                        <select id="newsCategory" class="form-control" required onchange="updateNewsLivePreview()">
+                                            <option value="Legislación">Legislación</option>
+                                            <option value="Acuerdos">Acuerdos</option>
+                                            <option value="Institucional">Institucional</option>
+                                            <option value="Sesiones">Sesiones Especiales</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="newsDate">Fecha de Publicación</label>
+                                        <input type="date" id="newsDate" class="form-control" required onchange="updateNewsLivePreview()">
+                                    </div>
+                                </div>
+
+                                <!-- Carga de Imagen desde Galería/PC o URL -->
+                                <div class="form-group full" style="margin-bottom: 15px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #cbd5e1;">
+                                    <label class="form-label"><i class="fas fa-image" style="color:var(--admin-gold);"></i> Imagen Destacada de la Noticia</label>
+                                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                                        <label class="btn-action" style="background:var(--admin-primary); font-size:12.5px; cursor:pointer;">
+                                            <i class="fas fa-upload"></i> Subir desde Galería / Teléfono
+                                            <input type="file" id="newsImageFile" accept="image/*" style="display:none;" onchange="handleNewsImageFile(event)">
+                                        </label>
+                                        <span style="align-self: center; font-size: 12px; color: var(--admin-muted);">o mediante URL:</span>
+                                    </div>
+                                    <input type="text" id="newsImage" class="form-control" placeholder="URL de la imagen (https://...)" oninput="updateNewsLivePreview()">
+                                    <div id="imagePreviewContainer" style="margin-top: 10px; display: none;">
+                                        <img id="newsImagePreview" src="" style="width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px;">
+                                    </div>
+                                </div>
+
+                                <!-- Barra de Herramientas de Edición -->
+                                <div class="form-group full" style="margin-bottom: 5px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                        <label class="form-label" for="newsContent" style="margin-bottom:0;">Cuerpo y Redacción de la Noticia</label>
+                                        <!-- Botones Formato Rápido -->
+                                        <div style="display: flex; gap: 5px;">
+                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Negrita" onclick="insertFormat('bold')"><b>B</b></button>
+                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Cursiva" onclick="insertFormat('italic')"><i>I</i></button>
+                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Subtítulo" onclick="insertFormat('h3')">H3</button>
+                                            <label class="btn-action" style="padding:4px 10px; font-size:12px; background:var(--admin-gold); color:#000; cursor:pointer;" title="Insertar foto dentro del texto">
+                                                <i class="fas fa-file-image"></i> Insertar Foto
+                                                <input type="file" accept="image/*" style="display:none;" onchange="handleInlineContentImage(event)">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <textarea id="newsContent" class="form-control" rows="8" placeholder="Escriba aquí la nota de prensa..." required oninput="updateNewsLivePreview()"></textarea>
+                                </div>
+
+                                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                                    <button type="button" class="btn-action" style="background:#94a3b8;" onclick="resetNewsForm()">Limpiar / Cancelar</button>
+                                    <button type="submit" class="btn-gold-action"><i class="fas fa-paper-plane"></i> Publicar en la Web</button>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label" for="newsCategory">Categoría</label>
-                                <select id="newsCategory" class="form-control" required>
-                                    <option value="Legislación">Legislación</option>
-                                    <option value="Acuerdos">Acuerdos</option>
-                                    <option value="Institucional">Institucional</option>
-                                    <option value="Sesiones">Sesiones Especiales</option>
-                                </select>
+
+                            <!-- Columna Derecha: VISTA PREVIA EN VIVO -->
+                            <div class="editor-preview-panel" style="background: #f1f5f9; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1;">
+                                <h4 style="font-size: 14px; font-weight: 800; color: var(--admin-primary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                    <i class="fas fa-mobile-alt" style="color:var(--admin-gold);"></i> Así se verá en la página web pública
+                                </h4>
+
+                                <!-- Preview Card Tarjeta -->
+                                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                                    <div id="previewCardImage" style="height: 160px; background-size: cover; background-position: center; background-image: url('Clebne_2024.jpeg'); position: relative;">
+                                        <span id="previewCardCategory" style="position: absolute; top: 12px; left: 12px; background: var(--admin-primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">Legislación</span>
+                                    </div>
+                                    <div style="padding: 16px;">
+                                        <span id="previewCardDate" style="font-size: 12px; color: var(--admin-muted); display: block; margin-bottom: 6px;"><i class="far fa-calendar-alt"></i> Hoy</span>
+                                        <h4 id="previewCardTitle" style="font-size: 16px; font-weight: 800; color: var(--admin-primary); line-height: 1.4; margin-bottom: 8px;">Titular de la Noticia...</h4>
+                                        <p id="previewCardExcerpt" style="font-size: 13px; color: #475569; line-height: 1.5;">El contenido resumido aparecerá en este extracto...</p>
+                                    </div>
+                                </div>
+
+                                <div style="font-size: 11px; color: var(--admin-muted); text-align: center;">
+                                    <i class="fas fa-sync-alt fa-spin"></i> Actualización dinámica en tiempo real
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label" for="newsDate">Fecha de Publicación</label>
-                                <input type="date" id="newsDate" class="form-control" required>
-                            </div>
-                            <div class="form-group full">
-                                <label class="form-label" for="newsImage">URL o Imagen Destacada</label>
-                                <input type="url" id="newsImage" class="form-control" placeholder="https://images.unsplash.com/photo-1577495508048-b635879837f1" required>
-                            </div>
-                            <div class="form-group full">
-                                <label class="form-label" for="newsContent">Cuerpo del Artículo / Noticia Completa</label>
-                                <textarea id="newsContent" class="form-control" rows="5" placeholder="Escriba aquí los detalles y desarrollo de la nota de prensa..." required></textarea>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                            <button type="button" class="btn-action" style="background:#94a3b8;" onclick="resetNewsForm()">Cancelar</button>
-                            <button type="submit" class="btn-gold-action"><i class="fas fa-save"></i> Guardar y Publicar</button>
                         </div>
                     </form>
                 </div>
@@ -1066,17 +1123,102 @@
             });
         }
 
+        // Helper de Sanitización XSS
+        function sanitizeHTML(str) {
+            if (!str) return '';
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        // Live Editor Preview Update
+        function updateNewsLivePreview() {
+            const title = document.getElementById('newsTitle').value.trim() || 'Titular de la Noticia...';
+            const category = document.getElementById('newsCategory').value || 'Legislación';
+            const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
+            const image = document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg';
+            const content = document.getElementById('newsContent').value.trim() || 'El contenido resumido aparecerá en este extracto...';
+
+            const cardTitle = document.getElementById('previewCardTitle');
+            const cardCategory = document.getElementById('previewCardCategory');
+            const cardDate = document.getElementById('previewCardDate');
+            const cardExcerpt = document.getElementById('previewCardExcerpt');
+            const cardImage = document.getElementById('previewCardImage');
+
+            if (cardTitle) cardTitle.innerText = title;
+            if (cardCategory) cardCategory.innerText = category;
+            if (cardDate) cardDate.innerHTML = `<i class="far fa-calendar-alt"></i> ${date}`;
+            if (cardExcerpt) cardExcerpt.innerText = content.length > 110 ? content.substring(0, 110) + '...' : content;
+            if (cardImage) cardImage.style.backgroundImage = `url('${image}')`;
+        }
+
+        // Carga de Imagen desde Galería del Dispositivo / PC
+        function handleNewsImageFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                document.getElementById('newsImage').value = base64Image;
+                const previewImg = document.getElementById('newsImagePreview');
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                
+                if (previewImg && previewContainer) {
+                    previewImg.src = base64Image;
+                    previewContainer.style.display = 'block';
+                }
+                updateNewsLivePreview();
+                showToast('Imagen cargada exitosamente desde su dispositivo.');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Insertar imagen dentro del contenido
+        function handleInlineContentImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                const textarea = document.getElementById('newsContent');
+                const imageTag = `\n\n![Foto Adjunta](${base64Image})\n\n`;
+                textarea.value += imageTag;
+                updateNewsLivePreview();
+                showToast('Fotografía insertada en la redacción.');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Botones de Formato Rápido
+        function insertFormat(type) {
+            const textarea = document.getElementById('newsContent');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selected = text.substring(start, end);
+
+            let replacement = '';
+            if (type === 'bold') replacement = `**${selected || 'texto en negrita'}**`;
+            if (type === 'italic') replacement = `*${selected || 'texto en cursiva'}*`;
+            if (type === 'h3') replacement = `\n### ${selected || 'Subtítulo Destacado'}\n`;
+
+            textarea.value = text.substring(0, start) + replacement + text.substring(end);
+            updateNewsLivePreview();
+        }
+
         function saveNews(e) {
             e.preventDefault();
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
             const id = document.getElementById('newsId').value;
             const newObj = {
                 id: id ? id : 'news-' + Date.now(),
-                title: document.getElementById('newsTitle').value.trim(),
-                category: document.getElementById('newsCategory').value,
+                title: sanitizeHTML(document.getElementById('newsTitle').value.trim()),
+                category: sanitizeHTML(document.getElementById('newsCategory').value),
                 date: document.getElementById('newsDate').value,
-                image: document.getElementById('newsImage').value.trim(),
-                content: document.getElementById('newsContent').value.trim()
+                image: document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg',
+                content: sanitizeHTML(document.getElementById('newsContent').value.trim())
             };
 
             if (id) {
@@ -1104,6 +1246,14 @@
             document.getElementById('newsImage').value = n.image;
             document.getElementById('newsContent').value = n.content;
 
+            const previewImg = document.getElementById('newsImagePreview');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            if (previewImg && previewContainer && n.image) {
+                previewImg.src = n.image;
+                previewContainer.style.display = 'block';
+            }
+
+            updateNewsLivePreview();
             document.getElementById('newsFormTitle').innerText = 'Editar Noticia';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -1121,8 +1271,11 @@
         function resetNewsForm() {
             document.getElementById('formNoticia').reset();
             document.getElementById('newsId').value = '';
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            if (previewContainer) previewContainer.style.display = 'none';
             document.getElementById('newsFormTitle').innerText = 'Publicar Noticia Institucional';
             document.getElementById('newsDate').valueAsDate = new Date();
+            updateNewsLivePreview();
         }
 
         // --- GACETAS CRUD ---
