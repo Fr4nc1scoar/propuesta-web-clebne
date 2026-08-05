@@ -529,8 +529,37 @@
             }
         };
 
+        function safeJSONParse(key, fallback) {
+            try {
+                const item = localStorage.getItem(key);
+                if (!item || item === 'undefined' || item === 'null') return fallback;
+                return JSON.parse(item) || fallback;
+            } catch(e) {
+                return fallback;
+            }
+        }
+
+        function safeJSONSet(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch(e) {
+                console.error("Storage full!", e);
+                showToast('⚠️ Almacenamiento optimizado.');
+                if (Array.isArray(value)) {
+                    value.forEach(item => {
+                        if (item.image && item.image.length > 200000) {
+                            item.image = 'Clebne_2024.jpeg';
+                        }
+                    });
+                    try { localStorage.setItem(key, JSON.stringify(value)); } catch(err){}
+                }
+                return false;
+            }
+        }
+
         function loadArticleData(id) {
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const news = safeJSONParse('clebne_news', []);
             const article = news.find(n => n.id === id);
             if (!article) return;
 
@@ -655,7 +684,7 @@
                 return;
             }
 
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const news = safeJSONParse('clebne_news', []);
             
             const newObj = {
                 id: currentArticleId ? currentArticleId : 'news-' + Date.now(),
@@ -670,11 +699,12 @@
             if (currentArticleId) {
                 const idx = news.findIndex(n => n.id === currentArticleId);
                 if (idx !== -1) news[idx] = newObj;
+                else news.unshift(newObj);
             } else {
                 news.unshift(newObj);
             }
 
-            localStorage.setItem('clebne_news', JSON.stringify(news));
+            safeJSONSet('clebne_news', news);
             showToast(status === 'Borrador' ? 'Guardado como borrador.' : '¡Noticia publicada exitosamente!');
 
             setTimeout(() => {

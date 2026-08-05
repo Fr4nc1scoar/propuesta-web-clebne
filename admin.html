@@ -989,12 +989,44 @@
             }
         }
 
+        function safeJSONParse(key, fallback) {
+            try {
+                const item = localStorage.getItem(key);
+                if (!item || item === 'undefined' || item === 'null') return fallback;
+                const parsed = JSON.parse(item);
+                return parsed || fallback;
+            } catch(e) {
+                console.warn(`JSON parse fail for ${key}, resetting fallback.`, e);
+                try { localStorage.setItem(key, JSON.stringify(fallback)); } catch(err){}
+                return fallback;
+            }
+        }
+
+        function safeJSONSet(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch(e) {
+                console.error(`LocalStorage quota exceeded for ${key}`, e);
+                showToast('⚠️ Almacenamiento lleno. Optimizando datos...');
+                if (Array.isArray(value)) {
+                    value.forEach(item => {
+                        if (item.image && item.image.length > 200000) {
+                            item.image = 'Clebne_2024.jpeg';
+                        }
+                    });
+                    try { localStorage.setItem(key, JSON.stringify(value)); } catch(err){}
+                }
+                return false;
+            }
+        }
+
         function initDataStores() {
-            if (!localStorage.getItem('clebne_news')) localStorage.setItem('clebne_news', JSON.stringify(defaultNews));
-            if (!localStorage.getItem('clebne_gacetas')) localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
-            if (!localStorage.getItem('clebne_legisladores')) localStorage.setItem('clebne_legisladores', JSON.stringify(defaultLegisladores));
-            if (!localStorage.getItem('clebne_solicitudes')) localStorage.setItem('clebne_solicitudes', JSON.stringify(defaultSolicitudes));
-            if (!localStorage.getItem('clebne_hero_config')) localStorage.setItem('clebne_hero_config', JSON.stringify(defaultHeroConfig));
+            safeJSONParse('clebne_news', defaultNews);
+            safeJSONParse('clebne_gacetas', defaultGacetas);
+            safeJSONParse('clebne_legisladores', defaultLegisladores);
+            safeJSONParse('clebne_solicitudes', defaultSolicitudes);
+            safeJSONParse('clebne_hero_config', defaultHeroConfig);
         }
 
         function toggleMobileSidebar() {
@@ -1038,10 +1070,10 @@
 
         // --- DASHBOARD RENDER ---
         function renderDashboard() {
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
-            const directores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
-            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const news = safeJSONParse('clebne_news', defaultNews);
+            const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
+            const directores = safeJSONParse('clebne_legisladores', defaultLegisladores);
+            const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
 
             document.getElementById('countNoticias').innerText = news.length;
             document.getElementById('countGacetas').innerText = gacetas.length;
@@ -1065,12 +1097,12 @@
 
         // --- NOTICIAS CRUD ---
         function renderAdminNews() {
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+            const news = safeJSONParse('clebne_news', defaultNews);
             const filter = (document.getElementById('searchNewsTable').value || '').toLowerCase();
             const tbody = document.getElementById('newsTableBody');
             tbody.innerHTML = '';
 
-            const filtered = news.filter(n => n.title.toLowerCase().includes(filter) || n.category.toLowerCase().includes(filter));
+            const filtered = news.filter(n => (n.title||'').toLowerCase().includes(filter) || (n.category||'').toLowerCase().includes(filter));
 
             filtered.forEach(item => {
                 const tr = document.createElement('tr');
@@ -1079,7 +1111,7 @@
                     : `<span class="badge badge-success"><i class="fas fa-check"></i> Publicada</span>`;
 
                 tr.innerHTML = `
-                    <td><img src="${item.image}" class="table-thumb" onerror="this.src='https://via.placeholder.com/38';"></td>
+                    <td><img src="${item.image || 'Clebne_2024.jpeg'}" class="table-thumb" onerror="this.src='Clebne_2024.jpeg';"></td>
                     <td style="font-weight:700; color:var(--admin-primary);">${item.title}</td>
                     <td><span class="badge badge-info">${item.category}</span> ${statusBadge}</td>
                     <td>${item.date}</td>

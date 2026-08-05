@@ -171,12 +171,23 @@
         let selectedCategory = 'Todos';
         let searchQuery = '';
 
+        function safeGetNews() {
+            try {
+                const item = localStorage.getItem('clebne_news');
+                if (!item) return defaultNews;
+                const parsed = JSON.parse(item);
+                return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultNews;
+            } catch(e) {
+                return defaultNews;
+            }
+        }
+
         function renderAllNews() {
             const newsGrid = document.getElementById('news-grid-all');
             const noNewsMessage = document.getElementById('no-news-message');
             if (!newsGrid) return;
 
-            const newsList = JSON.parse(localStorage.getItem('clebne_news')) || defaultNews;
+            const newsList = safeGetNews();
             newsGrid.innerHTML = '';
 
             // Filtrar
