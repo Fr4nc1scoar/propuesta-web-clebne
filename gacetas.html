@@ -87,38 +87,38 @@
         </div>
     </footer>
 
-    <!-- Botón Flotante de Atención al Ciudadano -->
-    <a href="#" class="floating-btn" title="Atención al Ciudadano (WhatsApp)">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
     <!-- Lógica del buscador funcional y dinámico -->
     <script>
         const defaultGacetas = [
             {
                 id: "gac-1",
-                title: "Gaceta Oficial N° 5001",
-                category: "Gaceta",
-                date: "2026-05-28",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
+                number: "Gaceta Extraordinaria N° 412",
+                title: "Ley del Régimen Tributario y Desarrollo Eco-Turístico del Estado Nueva Esparta",
+                category: "Ley Espartana",
+                date: "2026-04-15",
+                url: "Gaceta_Oficial_Prueba.pdf"
             },
             {
                 id: "gac-2",
-                title: "Ley de Presupuesto 2026",
-                category: "Ley",
-                date: "2026-05-26",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
+                number: "Gaceta Ordinaria N° 198",
+                title: "Reglamento Interior y de Debates del Consejo Legislativo del Estado Nueva Esparta",
+                category: "Reglamento",
+                date: "2026-02-10",
+                url: "Gaceta_Oficial_Prueba.pdf"
             },
             {
                 id: "gac-3",
-                title: "Ley de Turismo Sustentable",
-                category: "Ley",
-                date: "2026-05-24",
-                pdfData: "Gaceta_Oficial_Prueba.pdf"
+                number: "Gaceta Oficial N° 5001",
+                title: "Ley de Presupuesto General y Desarrollo del Estado Nueva Esparta 2026",
+                category: "Presupuesto",
+                date: "2026-01-20",
+                url: "Gaceta_Oficial_Prueba.pdf"
             }
         ];
 
-        if (!localStorage.getItem('clebne_gacetas')) {
+        // Sincronizar o reiniciar gacetas
+        const existingGacetas = localStorage.getItem('clebne_gacetas');
+        if (!existingGacetas) {
             localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
         }
 
@@ -134,22 +134,26 @@
                 const a = document.createElement('a');
                 a.href = '#';
                 a.className = index === 0 ? 'active-doc' : '';
-                a.innerHTML = `<i class="fas fa-file-pdf"></i> ${item.title}`;
+                
+                const displayTitle = item.title ? item.title : item.number;
+                a.innerHTML = `<i class="fas fa-file-pdf"></i> ${displayTitle}`;
+                
+                const targetPDF = item.url || item.pdfData || "Gaceta_Oficial_Prueba.pdf";
                 
                 a.onclick = function(e) {
                     e.preventDefault();
                     document.querySelectorAll('.doc-list a').forEach(el => el.classList.remove('active-doc'));
                     a.classList.add('active-doc');
-                    viewPdf(item.pdfData);
+                    viewPdf(targetPDF);
                 };
                 
                 li.appendChild(a);
                 list.appendChild(li);
             });
             
-            // Ver el primer PDF por defecto al cargar si hay elementos
             if (gacetasList.length > 0) {
-                viewPdf(gacetasList[0].pdfData);
+                const firstPDF = gacetasList[0].url || gacetasList[0].pdfData || "Gaceta_Oficial_Prueba.pdf";
+                viewPdf(firstPDF);
             }
         }
 

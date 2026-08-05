@@ -443,11 +443,35 @@
 
                     <div class="card" style="margin-bottom:0;">
                         <div class="card-header">
-                            <h3><i class="fas fa-history" style="color:var(--admin-primary);"></i> Historial Reciente</h3>
+                            <h3><i class="fas fa-shield-alt" style="color:#10b981;"></i> Estado del Portal y Seguridad</h3>
                         </div>
-                        <div id="activityLog" style="display:flex; flex-direction:column; gap:12px; font-size:13.5px;">
-                            <!-- Dinámico -->
+                        <div style="display:flex; flex-direction:column; gap:12px; font-size:13px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:10px 14px; border-radius:8px; border:1px solid #bbf7d0;">
+                                <span><i class="fas fa-check-circle" style="color:#16a34a; margin-right:8px;"></i> Autenticación Intranet</span>
+                                <span style="font-weight:700; color:#15803d;">Protegida</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:10px 14px; border-radius:8px; border:1px solid #bbf7d0;">
+                                <span><i class="fas fa-check-circle" style="color:#16a34a; margin-right:8px;"></i> Filtro Anti-Spam (Rate Limit)</span>
+                                <span style="font-weight:700; color:#15803d;">Activo (3 sol/5min)</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; padding:10px 14px; border-radius:8px; border:1px solid #bbf7d0;">
+                                <span><i class="fas fa-check-circle" style="color:#16a34a; margin-right:8px;"></i> Sanitizador HTML (Anti-XSS)</span>
+                                <span style="font-weight:700; color:#15803d;">Habilitado</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#eff6ff; padding:10px 14px; border-radius:8px; border:1px solid #bfdbfe;">
+                                <span><i class="fas fa-database" style="color:#2563eb; margin-right:8px;"></i> Base de Datos Local</span>
+                                <span style="font-weight:700; color:#1d4ed8;">Sincronizada</span>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:20px;">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history" style="color:var(--admin-primary);"></i> Registro de Actividades Recientes</h3>
+                    </div>
+                    <div id="activityLog" style="display:flex; flex-direction:column; gap:12px; font-size:13.5px;">
+                        <!-- Dinámico -->
                     </div>
                 </div>
             </div>
@@ -536,11 +560,11 @@
                             <!-- Columna Derecha: VISTA PREVIA EN VIVO -->
                             <div class="editor-preview-panel" style="background: #f1f5f9; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1;">
                                 <h4 style="font-size: 14px; font-weight: 800; color: var(--admin-primary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <i class="fas fa-mobile-alt" style="color:var(--admin-gold);"></i> Así se verá en la página web pública
+                                    <i class="fas fa-mobile-alt" style="color:var(--admin-gold);"></i> Vista Previa de la Tarjeta en la Web
                                 </h4>
 
                                 <!-- Preview Card Tarjeta -->
-                                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px;">
+                                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px;">
                                     <div id="previewCardImage" style="height: 160px; background-size: cover; background-position: center; background-image: url('Clebne_2024.jpeg'); position: relative;">
                                         <span id="previewCardCategory" style="position: absolute; top: 12px; left: 12px; background: var(--admin-primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">Legislación</span>
                                     </div>
@@ -551,7 +575,11 @@
                                     </div>
                                 </div>
 
-                                <div style="font-size: 11px; color: var(--admin-muted); text-align: center;">
+                                <button type="button" class="btn-gold-action" style="width: 100%; justify-content: center; font-size: 13px;" onclick="openFullNewsPreviewModal()">
+                                    <i class="fas fa-expand-arrows-alt"></i> Ver Noticia Completa en Pantalla Grande
+                                </button>
+
+                                <div style="font-size: 11px; color: var(--admin-muted); text-align: center; margin-top: 10px;">
                                     <i class="fas fa-sync-alt fa-spin"></i> Actualización dinámica en tiempo real
                                 </div>
                             </div>
@@ -695,8 +723,11 @@
                             <div class="form-group full">
                                 <label class="form-label">Fotografía Oficial (Opcional)</label>
                                 <input type="file" id="directorPhotoInput" accept="image/*" class="form-control" onchange="handleDirectorPhotoUpload(event)">
-                                <div id="photoPreviewContainer" style="margin-top:10px; display:none;">
-                                    <img id="photoPreviewImg" style="width:70px; height:70px; border-radius:50%; object-fit:cover; border:2px solid var(--admin-gold);">
+                                <div id="photoPreviewContainer" style="margin-top:12px; display:none; align-items:center; gap:15px; background:#f8fafc; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+                                    <img id="photoPreviewImg" style="width:65px; height:65px; border-radius:50%; object-fit:cover; border:2px solid var(--admin-gold);">
+                                    <button type="button" class="btn-action" style="background:#ef4444; color:white; font-size:12px;" onclick="removeDirectorPhoto()">
+                                        <i class="fas fa-trash-alt"></i> Quitar Foto / Usar Avatar por Defecto
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -857,6 +888,26 @@
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button onclick="updateSolicitudStatus('Atendido')" class="btn-gold-action"><i class="fas fa-check-double"></i> Marcar como Atendido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Vista Previa Completa del Artículo -->
+    <div class="sidebar-overlay" id="fullNewsPreviewModal" style="display:none; align-items:center; justify-content:center; padding:20px; z-index:2200;">
+        <div class="card" style="max-width:850px; width:100%; max-height:90vh; overflow-y:auto; margin-bottom:0; box-shadow:0 25px 50px rgba(0,0,0,0.5); padding:0; border-radius:16px;">
+            <div style="background:var(--admin-primary); color:white; padding:18px 25px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10;">
+                <h3 style="margin:0; font-size:16px; font-weight:800; color:white;">
+                    <i class="fas fa-newspaper" style="color:var(--admin-gold); margin-right:8px;"></i> Previsualización Completa del Artículo
+                </h3>
+                <button type="button" onclick="closeFullNewsPreviewModal()" style="border:none; background:none; font-size:22px; cursor:pointer; color:white;">&times;</button>
+            </div>
+            <div style="padding:30px;" id="fullNewsPreviewBody">
+                <!-- Contenido Dinámico Renderizado con Formato Real -->
+            </div>
+            <div style="background:#f8fafc; padding:18px 30px; border-top:1px solid var(--admin-border); display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; position:sticky; bottom:0; z-index:10;">
+                <button type="button" class="btn-action" style="background:#64748b;" onclick="closeFullNewsPreviewModal()">Seguir Editando</button>
+                <button type="button" class="btn-action" style="background:#0284c7;" onclick="saveNewsFromModal('Borrador')"><i class="fas fa-save"></i> Guardar como Borrador</button>
+                <button type="button" class="btn-gold-action" onclick="saveNewsFromModal('Publicada')"><i class="fas fa-paper-plane"></i> Aprobar y Publicar en la Web</button>
             </div>
         </div>
     </div>
@@ -1109,10 +1160,14 @@
 
             filtered.forEach(item => {
                 const tr = document.createElement('tr');
+                const statusBadge = item.status === 'Borrador' 
+                    ? `<span class="badge" style="background:#fef3c7; color:#92400e; font-weight:700;"><i class="fas fa-edit"></i> Borrador</span>`
+                    : `<span class="badge badge-success"><i class="fas fa-check"></i> Publicada</span>`;
+
                 tr.innerHTML = `
                     <td><img src="${item.image}" class="table-thumb" onerror="this.src='https://via.placeholder.com/38';"></td>
                     <td style="font-weight:700; color:var(--admin-primary);">${item.title}</td>
-                    <td><span class="badge badge-info">${item.category}</span></td>
+                    <td><span class="badge badge-info">${item.category}</span> ${statusBadge}</td>
                     <td>${item.date}</td>
                     <td>
                         <button class="btn-action-table btn-edit" onclick="editNews('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
@@ -1129,6 +1184,53 @@
             const temp = document.createElement('div');
             temp.textContent = str;
             return temp.innerHTML;
+        }
+
+        // Modal Lectura Completa del Artículo
+        function openFullNewsPreviewModal() {
+            const title = document.getElementById('newsTitle').value.trim() || 'Titular de la Noticia...';
+            const category = document.getElementById('newsCategory').value || 'Legislación';
+            const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
+            const image = document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg';
+            const rawContent = document.getElementById('newsContent').value.trim() || 'No se ha ingresado contenido aún...';
+
+            // Formatear contenido con Markdown de imágenes y párrafos
+            let contentHTML = rawContent;
+            contentHTML = contentHTML.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="text-align:center; margin:20px 0;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.12);"><p style="font-size:12px; color:#64748b; margin-top:4px; font-style:italic;">$1</p></div>');
+            contentHTML = contentHTML.replace(/^### (.*$)/gim, '<h3 style="color:var(--admin-primary); font-size:20px; font-weight:800; margin:20px 0 10px 0;">$1</h3>');
+            contentHTML = contentHTML.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            contentHTML = contentHTML.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            const paragraphs = contentHTML.split(/\n\n+/);
+            const formattedBody = paragraphs.map(p => {
+                p = p.trim();
+                if (p.startsWith('<div') || p.startsWith('<h3')) return p;
+                return `<p style="font-size:15px; line-height:1.7; color:#334155; margin-bottom:16px;">${p.replace(/\n/g, '<br>')}</p>`;
+            }).join('');
+
+            const modalBody = document.getElementById('fullNewsPreviewBody');
+            modalBody.innerHTML = `
+                <div style="margin-bottom:20px;">
+                    <span class="badge badge-info" style="font-size:12px; padding:6px 12px;">${category}</span>
+                    <span style="font-size:13px; color:var(--admin-muted); margin-left:10px;"><i class="far fa-calendar-alt"></i> ${date}</span>
+                </div>
+                <h1 style="font-size:26px; font-weight:800; color:var(--admin-primary); line-height:1.3; margin-bottom:20px;">${title}</h1>
+                <div style="width:100%; height:320px; background-image:url('${image}'); background-size:cover; background-position:center; border-radius:14px; margin-bottom:25px; box-shadow:0 8px 20px rgba(0,0,0,0.12);"></div>
+                <div class="article-real-content">
+                    ${formattedBody}
+                </div>
+            `;
+
+            document.getElementById('fullNewsPreviewModal').style.display = 'flex';
+        }
+
+        function closeFullNewsPreviewModal() {
+            document.getElementById('fullNewsPreviewModal').style.display = 'none';
+        }
+
+        function saveNewsFromModal(status) {
+            saveNews(null, status);
+            closeFullNewsPreviewModal();
         }
 
         // Live Editor Preview Update
@@ -1208,8 +1310,8 @@
             updateNewsLivePreview();
         }
 
-        function saveNews(e) {
-            e.preventDefault();
+        function saveNews(e, targetStatus) {
+            if (e) e.preventDefault();
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
             const id = document.getElementById('newsId').value;
             const newObj = {
@@ -1218,7 +1320,8 @@
                 category: sanitizeHTML(document.getElementById('newsCategory').value),
                 date: document.getElementById('newsDate').value,
                 image: document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg',
-                content: sanitizeHTML(document.getElementById('newsContent').value.trim())
+                content: sanitizeHTML(document.getElementById('newsContent').value.trim()),
+                status: targetStatus || 'Publicada'
             };
 
             if (id) {
@@ -1229,7 +1332,7 @@
             }
 
             localStorage.setItem('clebne_news', JSON.stringify(news));
-            showToast('Noticia guardada y publicada en el portal.');
+            showToast(targetStatus === 'Borrador' ? 'Noticia guardada como Borrador.' : 'Noticia guardada y publicada en el portal.');
             resetNewsForm();
             renderAdminNews();
         }
@@ -1378,13 +1481,20 @@
             const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
             const id = document.getElementById('directorId').value;
 
+            let finalImage = (id ? (legisladores.find(l => l.id === id)||{}).image || '' : '');
+            if (tempDirectorPhoto === 'REMOVE') {
+                finalImage = '';
+            } else if (tempDirectorPhoto) {
+                finalImage = tempDirectorPhoto;
+            }
+
             const newObj = {
                 id: id ? id : 'dir-' + Date.now(),
                 name: document.getElementById('directorName').value.trim(),
                 role: document.getElementById('directorRole').value,
                 commission: document.getElementById('directorCommission').value.trim(),
                 gender: document.getElementById('directorGender').value,
-                image: tempDirectorPhoto || (id ? (legisladores.find(l => l.id === id)||{}).image || '' : '')
+                image: finalImage
             };
 
             if (id) {
@@ -1414,7 +1524,10 @@
             if (leg.image) {
                 tempDirectorPhoto = leg.image;
                 document.getElementById('photoPreviewImg').src = leg.image;
-                document.getElementById('photoPreviewContainer').style.display = 'block';
+                document.getElementById('photoPreviewContainer').style.display = 'flex';
+            } else {
+                tempDirectorPhoto = "";
+                document.getElementById('photoPreviewContainer').style.display = 'none';
             }
 
             document.getElementById('directorFormTitle').innerText = 'Editar Ficha de Director';
@@ -1439,6 +1552,13 @@
             document.getElementById('directorFormTitle').innerText = 'Registrar Nuevo Director / Integrante';
         }
 
+        function removeDirectorPhoto() {
+            tempDirectorPhoto = "REMOVE";
+            document.getElementById('photoPreviewContainer').style.display = 'none';
+            document.getElementById('directorPhotoInput').value = '';
+            showToast('Foto removida. Se usará el avatar por defecto.');
+        }
+
         function handleDirectorPhotoUpload(e) {
             const file = e.target.files[0];
             if (file) {
@@ -1446,7 +1566,7 @@
                 reader.onload = function(evt) {
                     tempDirectorPhoto = evt.target.result;
                     document.getElementById('photoPreviewImg').src = evt.target.result;
-                    document.getElementById('photoPreviewContainer').style.display = 'block';
+                    document.getElementById('photoPreviewContainer').style.display = 'flex';
                 };
                 reader.readAsDataURL(file);
             }
