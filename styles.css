@@ -338,3 +338,20 @@ footer { background-color: var(--navy-dark); color: var(--white); padding: 60px 
     .valores-bar { flex-direction: column; text-align: center; padding: 25px 20px; }
     .valores-tags { justify-content: center; }
 }
+
+/* Directorio Preview Section */
+.directorio-preview-section {
+    padding: 70px 0;
+    background: #f8fafc;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+.directorio-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 35px;
+}
+@media (max-width: 992px) {
+    .directorio-preview-grid { grid-template-columns: 1fr; }
+}
