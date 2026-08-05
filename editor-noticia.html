@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLEBNE - Editor de Noticias en Vivo</title>
+    <title>CLEBNE - Editor Visual de Noticias</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --editor-bg: #f8fafc;
-            --editor-card: #ffffff;
             --primary-blue: #0f172a;
             --gold-accent: #ca8a04;
         }
@@ -23,7 +22,7 @@
             color: #1e293b;
         }
 
-        /* Top Action Header */
+        /* Fixed Top Action Header */
         .editor-topbar {
             position: fixed;
             top: 0;
@@ -36,7 +35,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 30px;
-            z-index: 1000;
+            z-index: 2000;
             box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
 
@@ -55,7 +54,7 @@
         }
 
         .btn-topbar {
-            padding: 8px 18px;
+            padding: 9px 20px;
             border-radius: 8px;
             font-size: 13.5px;
             font-weight: 700;
@@ -113,17 +112,17 @@
         .image-overlay-controls {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(4px);
-            padding: 10px 16px;
+            padding: 10px 18px;
             border-radius: 10px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
         }
 
         .image-overlay-controls label, .image-overlay-controls button {
             color: white;
             font-size: 12.5px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             border: none;
             background: transparent;
@@ -131,9 +130,9 @@
             align-items: center;
             gap: 6px;
         }
-        .image-overlay-controls label:hover { color: #fef08a; }
+        .image-overlay-controls label:hover, .image-overlay-controls button:hover { color: #fef08a; }
 
-        /* Article Main Content */
+        /* Article Main Content Padding */
         .article-content-padding {
             padding: 40px;
         }
@@ -149,21 +148,22 @@
         }
 
         .meta-select {
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 20px;
             border: 1px solid #cbd5e1;
             background: #f8fafc;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #0369a1;
             outline: none;
+            cursor: pointer;
         }
 
         .meta-date-input {
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 8px;
             border: 1px solid #cbd5e1;
-            font-size: 13px;
+            font-size: 13.5px;
             color: #64748b;
             outline: none;
         }
@@ -176,37 +176,61 @@
             line-height: 1.35;
             margin-bottom: 25px;
             outline: none;
-            border-bottom: 2px dashed transparent;
-            padding: 4px 0;
+            border-bottom: 2px dashed #cbd5e1;
+            padding: 6px 0;
             transition: border-color 0.2s;
         }
         .title-editable:focus {
             border-bottom-color: #d97706;
+            background: #fffbeb;
         }
         .title-editable[data-placeholder]:empty:before {
             content: attr(data-placeholder);
             color: #94a3b8;
         }
 
-        /* Floating / Sticky Visual Formatting Toolbar */
+        /* Sticky Visual Formatting Toolbar */
         .visual-toolbar {
             position: sticky;
             top: 85px;
-            background: white;
+            background: #ffffff;
             border: 1px solid #cbd5e1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-radius: 10px;
-            padding: 8px 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            padding: 10px 14px;
             display: flex;
             gap: 8px;
             align-items: center;
-            z-index: 100;
-            margin-bottom: 20px;
+            z-index: 1000;
+            margin-bottom: 25px;
             flex-wrap: wrap;
         }
 
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding-right: 8px;
+            border-right: 1px solid #e2e8f0;
+        }
+        .tool-group:last-child {
+            border-right: none;
+        }
+
+        .tool-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #334155;
+            background: #f8fafc;
+            outline: none;
+            cursor: pointer;
+        }
+
         .btn-tool {
-            padding: 6px 12px;
+            padding: 6px 10px;
             background: #f1f5f9;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
@@ -215,6 +239,11 @@
             cursor: pointer;
             color: #334155;
             transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
         }
         .btn-tool:hover {
             background: #e2e8f0;
@@ -225,6 +254,10 @@
             background: #fef3c7;
             color: #78350f;
             border-color: #fde68a;
+            min-width: auto;
+            padding: 0 14px;
+            height: 32px;
+            font-size: 12.5px;
         }
         .btn-tool-photo:hover {
             background: #fde68a;
@@ -232,16 +265,27 @@
 
         /* Body Editable Area */
         .body-editable {
-            min-height: 300px;
+            min-height: 350px;
             outline: none;
             font-size: 17px;
             line-height: 1.8;
             color: #334155;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .body-editable:focus {
+            background: #fafafa;
         }
         .body-editable[data-placeholder]:empty:before {
             content: attr(data-placeholder);
             color: #94a3b8;
         }
+
+        .body-editable h1 { font-size: 28px; font-weight: 800; color: #0f172a; margin: 20px 0 10px 0; }
+        .body-editable h2 { font-size: 24px; font-weight: 800; color: #0369a1; margin: 20px 0 10px 0; }
+        .body-editable h3 { font-size: 20px; font-weight: 800; color: #0f172a; margin: 18px 0 8px 0; }
+        .body-editable p { margin-bottom: 16px; }
 
         /* Toast notification */
         .toast-notification {
@@ -273,13 +317,13 @@
     <!-- Top Action Header Bar -->
     <header class="editor-topbar">
         <div class="editor-topbar-brand">
-            <i class="fas fa-edit" style="color:#f59e0b;"></i>
-            <span>CLEBNE Editor Visual en Vivo</span>
-            <span style="font-size:12px; background:#334155; padding:3px 8px; border-radius:6px; font-weight:600; color:#94a3b8;">Modo Pagina Publica</span>
+            <i class="fas fa-edit" style="color:#f59e0b; font-size:20px;"></i>
+            <span>CLEBNE Editor Visual de Noticias</span>
+            <span style="font-size:11.5px; background:#334155; padding:3px 10px; border-radius:12px; font-weight:600; color:#94a3b8;">Modo Pagina Publica</span>
         </div>
         <div class="editor-topbar-actions">
             <button class="btn-topbar btn-topbar-cancel" onclick="returnToAdmin()">
-                <i class="fas fa-times"></i> Volver al Panel
+                <i class="fas fa-arrow-left"></i> Volver al Panel
             </button>
             <button class="btn-topbar btn-topbar-draft" onclick="saveArticle('Borrador')">
                 <i class="fas fa-save"></i> Guardar como Borrador
@@ -331,18 +375,64 @@
 
             <!-- Sticky Visual Format Toolbar -->
             <div class="visual-toolbar">
-                <button type="button" class="btn-tool" onclick="execCmd('bold')" title="Negrita"><b>B</b></button>
-                <button type="button" class="btn-tool" onclick="execCmd('italic')" title="Cursiva"><i>I</i></button>
-                <button type="button" class="btn-tool" onclick="execCmd('formatBlock', 'h3')" title="Subtítulo">H3</button>
-                <button type="button" class="btn-tool" onclick="execCmd('formatBlock', 'p')" title="Párrafo">Párrafo</button>
-                <label class="btn-tool btn-tool-photo" title="Insertar imagen en la posición exacta del cursor">
-                    <i class="fas fa-camera"></i> Insertar Foto en Cursor
-                    <input type="file" accept="image/*" style="display:none;" onchange="insertInlineImage(event)">
-                </label>
+                <!-- Group 1: Format & Heading -->
+                <div class="tool-group">
+                    <select class="tool-select" onchange="applyBlockFormat(this.value); this.value='';">
+                        <option value="">Tipo de Texto...</option>
+                        <option value="p">Texto Normal (Párrafo)</option>
+                        <option value="h1">Título Grande (H1)</option>
+                        <option value="h2">Título Mediano (H2)</option>
+                        <option value="h3">Subtítulo (H3)</option>
+                    </select>
+                    
+                    <select class="tool-select" onchange="applyFontSize(this.value); this.value='';">
+                        <option value="">Tamaño Letra...</option>
+                        <option value="14px">14px - Pequeña</option>
+                        <option value="16px">16px - Normal</option>
+                        <option value="18px">18px - Mediana</option>
+                        <option value="22px">22px - Grande</option>
+                        <option value="28px">28px - Enorme</option>
+                    </select>
+                </div>
+
+                <!-- Group 2: Inline Formats -->
+                <div class="tool-group">
+                    <button type="button" class="btn-tool" onclick="execCmd('bold')" title="Negrita"><b>B</b></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('italic')" title="Cursiva"><i>I</i></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('underline')" title="Subrayado"><u>U</u></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('strikeThrough')" title="Tachado"><s>S</s></button>
+                </div>
+
+                <!-- Group 3: Text Alignment -->
+                <div class="tool-group">
+                    <button type="button" class="btn-tool" onclick="execCmd('justifyLeft')" title="Alinear a la Izquierda"><i class="fas fa-align-left"></i></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('justifyCenter')" title="Centrar Texto"><i class="fas fa-align-center"></i></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('justifyRight')" title="Alinear a la Derecha"><i class="fas fa-align-right"></i></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('justifyFull')" title="Justificar Texto"><i class="fas fa-align-justify"></i></button>
+                </div>
+
+                <!-- Group 4: Color & Lists -->
+                <div class="tool-group">
+                    <label title="Color de Texto" style="display:inline-flex; align-items:center; gap:4px; cursor:pointer; background:#f1f5f9; padding:4px 8px; border-radius:6px; border:1px solid #cbd5e1; font-size:12px; font-weight:700;">
+                        <i class="fas fa-palette" style="color:#ca8a04;"></i> Color
+                        <input type="color" onchange="execCmd('foreColor', this.value)" style="width:20px; height:20px; border:none; background:none; cursor:pointer; padding:0;">
+                    </label>
+                    <button type="button" class="btn-tool" onclick="execCmd('insertUnorderedList')" title="Lista con Viñetas"><i class="fas fa-list-ul"></i></button>
+                    <button type="button" class="btn-tool" onclick="execCmd('insertOrderedList')" title="Lista Numerada"><i class="fas fa-list-ol"></i></button>
+                </div>
+
+                <!-- Group 5: Photos & Separator -->
+                <div class="tool-group">
+                    <button type="button" class="btn-tool" onclick="execCmd('insertHorizontalRule')" title="Línea Separadora"><i class="fas fa-minus"></i></button>
+                    <label class="btn-tool btn-tool-photo" title="Insertar fotografía en la posición exacta del cursor">
+                        <i class="fas fa-camera"></i> Insertar Foto en Cursor
+                        <input type="file" accept="image/*" style="display:none;" onchange="insertInlineImage(event)">
+                    </label>
+                </div>
             </div>
 
             <!-- Editable Body Canvas -->
-            <div id="articleBody" class="body-editable" contenteditable="true" data-placeholder="Comience a redactar la noticia aquí. Puede escribir texto, dar formatos e insertar fotografías donde desee..."></div>
+            <div id="articleBody" class="body-editable" contenteditable="true" data-placeholder="Comience a redactar la noticia aquí. Puede aplicar formatos de texto, ajustar tamaños e insertar fotografías donde desee..."></div>
 
             <!-- Footer Action Link Preview -->
             <div style="margin-top:40px; padding-top:20px; border-top:1px solid #f1f5f9; color:#0369a1; font-weight:700;">
@@ -364,7 +454,6 @@
         let featuredImageBase64 = "Clebne_2024.jpeg";
 
         window.onload = function() {
-            // Verificar ID de URL si es edición
             const params = new URLSearchParams(window.location.search);
             currentArticleId = params.get('id');
 
@@ -418,6 +507,27 @@
 
         function execCmd(cmd, val = null) {
             document.execCommand(cmd, false, val);
+        }
+
+        function applyBlockFormat(tag) {
+            if (!tag) return;
+            document.execCommand('formatBlock', false, '<' + tag + '>');
+        }
+
+        function applyFontSize(px) {
+            if (!px) return;
+            const selection = window.getSelection();
+            if (!selection.rangeCount || selection.isCollapsed) return;
+
+            const range = selection.getRangeAt(0);
+            const span = document.createElement('span');
+            span.style.fontSize = px;
+            
+            try {
+                range.surroundContents(span);
+            } catch(e) {
+                document.execCommand('fontSize', false, '4');
+            }
         }
 
         function insertInlineImage(e) {

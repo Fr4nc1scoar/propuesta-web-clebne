@@ -485,115 +485,20 @@
                     </button>
                 </div>
 
-                <!-- Formulario Redactor Noticia con Vista Previa en Vivo y Carga de Galería -->
-                <div class="card" style="border-top: 4px solid var(--admin-gold);">
-                    <div class="card-header">
-                        <h3 id="newsFormTitle"><i class="fas fa-newspaper" style="color:var(--admin-gold);"></i> Editor de Noticias con Vista Previa en Vivo</h3>
-                        <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;"><i class="fas fa-eye"></i> Vista Previa en Tiempo Real</span>
-                    </div>
-                    <form id="formNoticia" onsubmit="saveNews(event)">
-                        <input type="hidden" id="newsId">
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;" class="editor-split-grid">
-                            <!-- Columna Izquierda: Formulario y Controles -->
-                            <div class="editor-controls">
-                                <div class="form-group full" style="margin-bottom: 15px;">
-                                    <label class="form-label" for="newsTitle">Titular de la Noticia</label>
-                                    <input type="text" id="newsTitle" class="form-control" placeholder="Ej. CLEBNE aprueba Ley de Turismo Sustentable para Nueva Esparta" required oninput="updateNewsLivePreview()">
-                                </div>
-                                <div class="form-grid" style="margin-bottom: 15px;">
-                                    <div class="form-group">
-                                        <label class="form-label" for="newsCategory">Categoría</label>
-                                        <select id="newsCategory" class="form-control" required onchange="updateNewsLivePreview()">
-                                            <option value="Legislación">Legislación</option>
-                                            <option value="Acuerdos">Acuerdos</option>
-                                            <option value="Institucional">Institucional</option>
-                                            <option value="Sesiones">Sesiones Especiales</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-group">
-                                        <label class="form-label" for="newsDate">Fecha de Publicación</label>
-                                        <input type="date" id="newsDate" class="form-control" required onchange="updateNewsLivePreview()">
-                                    </div>
-                                </div>
-
-                                <!-- Carga de Imagen desde Galería/PC o URL -->
-                                <div class="form-group full" style="margin-bottom: 15px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #cbd5e1;">
-                                    <label class="form-label"><i class="fas fa-image" style="color:var(--admin-gold);"></i> Imagen Destacada de la Noticia</label>
-                                    <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                                        <label class="btn-action" style="background:var(--admin-primary); font-size:12.5px; cursor:pointer;">
-                                            <i class="fas fa-upload"></i> Subir desde Galería / Teléfono
-                                            <input type="file" id="newsImageFile" accept="image/*" style="display:none;" onchange="handleNewsImageFile(event)">
-                                        </label>
-                                        <span style="align-self: center; font-size: 12px; color: var(--admin-muted);">o mediante URL:</span>
-                                    </div>
-                                    <input type="text" id="newsImage" class="form-control" placeholder="URL de la imagen (https://...)" oninput="updateNewsLivePreview()">
-                                    <div id="imagePreviewContainer" style="margin-top: 10px; display: none;">
-                                        <img id="newsImagePreview" src="" style="width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px;">
-                                    </div>
-                                </div>
-
-                                <!-- Barra de Herramientas de Edición Visual (Estilo WordPress) -->
-                                <div class="form-group full" style="margin-bottom: 15px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; background: #e2e8f0; padding: 8px 12px; border-radius: 8px 8px 0 0; border: 1px solid #cbd5e1; border-bottom: none;">
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <span style="font-size: 12px; font-weight: 800; color: var(--admin-primary); text-transform: uppercase;"><i class="fab fa-wordpress" style="color:var(--admin-gold);"></i> Editor Visual</span>
-                                        </div>
-                                        <!-- Botones Formato Rápido WYSIWYG -->
-                                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Negrita" onclick="execWpCommand('bold')"><b>B</b></button>
-                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Cursiva" onclick="execWpCommand('italic')"><i>I</i></button>
-                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Subtítulo H3" onclick="execWpCommand('formatBlock', 'h3')">H3</button>
-                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Párrafo Normal" onclick="execWpCommand('formatBlock', 'p')">Párrafo</button>
-                                            <label class="btn-action" style="padding:5px 12px; font-size:12px; background:var(--admin-gold); color:#000; font-weight:700; cursor:pointer;" title="Insertar foto exactamente donde está el cursor">
-                                                <i class="fas fa-camera"></i> Insertar Foto en Cursor
-                                                <input type="file" accept="image/*" style="display:none;" onchange="handleInlineContentImage(event)">
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <div style="background: white; border: 1px solid #cbd5e1; border-radius: 0 0 10px 10px; padding: 20px; min-height: 280px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);" id="visualEditorWrapper">
-                                        <!-- Document Canvas Visual Estilo WordPress -->
-                                        <div id="newsVisualEditor" contenteditable="true" style="min-height: 240px; outline: none; font-size: 16px; line-height: 1.8; color: #1e293b;" oninput="updateNewsLivePreview()" onkeyup="updateNewsLivePreview()">
-                                            <p>Escriba aquí el contenido de la noticia. Puede dar formato y colocar imágenes en cualquier parte...</p>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" id="newsContent" required>
-                                </div>
-
-                                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
-                                    <button type="button" class="btn-action" style="background:#94a3b8;" onclick="resetNewsForm()">Limpiar / Cancelar</button>
-                                    <button type="submit" class="btn-gold-action"><i class="fas fa-paper-plane"></i> Publicar en la Web</button>
-                                </div>
-                            </div>
-
-                            <!-- Columna Derecha: VISTA PREVIA EN VIVO -->
-                            <div class="editor-preview-panel" style="background: #f1f5f9; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1;">
-                                <h4 style="font-size: 14px; font-weight: 800; color: var(--admin-primary); margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <i class="fas fa-mobile-alt" style="color:var(--admin-gold);"></i> Vista Previa de la Tarjeta en la Web
-                                </h4>
-
-                                <!-- Preview Card Tarjeta -->
-                                <div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 15px;">
-                                    <div id="previewCardImage" style="height: 160px; background-size: cover; background-position: center; background-image: url('Clebne_2024.jpeg'); position: relative;">
-                                        <span id="previewCardCategory" style="position: absolute; top: 12px; left: 12px; background: var(--admin-primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;">Legislación</span>
-                                    </div>
-                                    <div style="padding: 16px;">
-                                        <span id="previewCardDate" style="font-size: 12px; color: var(--admin-muted); display: block; margin-bottom: 6px;"><i class="far fa-calendar-alt"></i> Hoy</span>
-                                        <h4 id="previewCardTitle" style="font-size: 16px; font-weight: 800; color: var(--admin-primary); line-height: 1.4; margin-bottom: 8px;">Titular de la Noticia...</h4>
-                                        <p id="previewCardExcerpt" style="font-size: 13px; color: #475569; line-height: 1.5;">El contenido resumido aparecerá en este extracto...</p>
-                                    </div>
-                                </div>
-
-                                <button type="button" class="btn-gold-action" style="width: 100%; justify-content: center; font-size: 13px;" onclick="openFullNewsPreviewModal()">
-                                    <i class="fas fa-expand-arrows-alt"></i> Ver Noticia Completa en Pantalla Grande
-                                </button>
-
-                                <div style="font-size: 11px; color: var(--admin-muted); text-align: center; margin-top: 10px;">
-                                    <i class="fas fa-sync-alt fa-spin"></i> Actualización dinámica en tiempo real
-                                </div>
-                            </div>
+                <!-- Tarjeta Principal de Redacción en Vivo (Llama a Editor a Pantalla Completa) -->
+                <div class="card" style="border-top: 4px solid var(--admin-gold); padding: 35px 25px; text-align: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border-radius: 16px; margin-bottom: 30px;">
+                    <div style="max-width: 650px; margin: 0 auto;">
+                        <div style="width: 70px; height: 70px; background: rgba(202,138,4,0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; border: 2px solid var(--admin-gold);">
+                            <i class="fas fa-magic" style="font-size: 32px; color: var(--admin-gold);"></i>
                         </div>
-                    </form>
+                        <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 12px; color: white;">Editor Visual de Noticias a Pantalla Completa</h2>
+                        <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 25px;">
+                            Redacte y edite noticias directamente sobre la plantilla pública real del portal CLEBNE. Formatee títulos, ajuste tamaños de fuente, cambie la imagen principal e inserte fotografías con vista previa en tiempo real.
+                        </p>
+                        <button class="btn-gold-action" style="padding: 14px 30px; font-size: 15.5px; font-weight: 800; box-shadow: 0 8px 25px rgba(202,138,4,0.4);" onclick="window.location.href='editor-noticia.html'">
+                            <i class="fas fa-edit"></i> Abrir Editor Visual en Pantalla Completa
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tabla de Noticias -->
