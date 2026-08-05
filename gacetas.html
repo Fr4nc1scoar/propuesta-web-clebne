@@ -116,10 +116,10 @@
             }
         ];
 
-        // Sincronizar o reiniciar gacetas
-        const existingGacetas = localStorage.getItem('clebne_gacetas');
-        if (!existingGacetas) {
+        // Sincronizar y forzar la versión actualizada de las leyes institucionales
+        if (!localStorage.getItem('clebne_gacetas_v3')) {
             localStorage.setItem('clebne_gacetas', JSON.stringify(defaultGacetas));
+            localStorage.setItem('clebne_gacetas_v3', 'true');
         }
 
         function renderGacetas() {

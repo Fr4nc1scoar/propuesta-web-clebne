@@ -533,22 +533,31 @@
                                     </div>
                                 </div>
 
-                                <!-- Barra de Herramientas de Edición -->
-                                <div class="form-group full" style="margin-bottom: 5px;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                        <label class="form-label" for="newsContent" style="margin-bottom:0;">Cuerpo y Redacción de la Noticia</label>
-                                        <!-- Botones Formato Rápido -->
-                                        <div style="display: flex; gap: 5px;">
-                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Negrita" onclick="insertFormat('bold')"><b>B</b></button>
-                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Cursiva" onclick="insertFormat('italic')"><i>I</i></button>
-                                            <button type="button" class="btn-action" style="padding:4px 10px; font-size:12px; background:#e2e8f0; color:#1e293b;" title="Subtítulo" onclick="insertFormat('h3')">H3</button>
-                                            <label class="btn-action" style="padding:4px 10px; font-size:12px; background:var(--admin-gold); color:#000; cursor:pointer;" title="Insertar foto dentro del texto">
-                                                <i class="fas fa-file-image"></i> Insertar Foto
+                                <!-- Barra de Herramientas de Edición Visual (Estilo WordPress) -->
+                                <div class="form-group full" style="margin-bottom: 15px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; background: #e2e8f0; padding: 8px 12px; border-radius: 8px 8px 0 0; border: 1px solid #cbd5e1; border-bottom: none;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 12px; font-weight: 800; color: var(--admin-primary); text-transform: uppercase;"><i class="fab fa-wordpress" style="color:var(--admin-gold);"></i> Editor Visual</span>
+                                        </div>
+                                        <!-- Botones Formato Rápido WYSIWYG -->
+                                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Negrita" onclick="execWpCommand('bold')"><b>B</b></button>
+                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Cursiva" onclick="execWpCommand('italic')"><i>I</i></button>
+                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Subtítulo H3" onclick="execWpCommand('formatBlock', 'h3')">H3</button>
+                                            <button type="button" class="btn-action" style="padding:5px 12px; font-size:12px; background:white; color:#1e293b; border:1px solid #cbd5e1;" title="Párrafo Normal" onclick="execWpCommand('formatBlock', 'p')">Párrafo</button>
+                                            <label class="btn-action" style="padding:5px 12px; font-size:12px; background:var(--admin-gold); color:#000; font-weight:700; cursor:pointer;" title="Insertar foto exactamente donde está el cursor">
+                                                <i class="fas fa-camera"></i> Insertar Foto en Cursor
                                                 <input type="file" accept="image/*" style="display:none;" onchange="handleInlineContentImage(event)">
                                             </label>
                                         </div>
                                     </div>
-                                    <textarea id="newsContent" class="form-control" rows="8" placeholder="Escriba aquí la nota de prensa..." required oninput="updateNewsLivePreview()"></textarea>
+                                    <div style="background: white; border: 1px solid #cbd5e1; border-radius: 0 0 10px 10px; padding: 20px; min-height: 280px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);" id="visualEditorWrapper">
+                                        <!-- Document Canvas Visual Estilo WordPress -->
+                                        <div id="newsVisualEditor" contenteditable="true" style="min-height: 240px; outline: none; font-size: 16px; line-height: 1.8; color: #1e293b;" oninput="updateNewsLivePreview()" onkeyup="updateNewsLivePreview()">
+                                            <p>Escriba aquí el contenido de la noticia. Puede dar formato y colocar imágenes en cualquier parte...</p>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="newsContent" required>
                                 </div>
 
                                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
@@ -1186,27 +1195,47 @@
             return temp.innerHTML;
         }
 
+        function execWpCommand(command, value = null) {
+            document.execCommand(command, false, value);
+            updateNewsLivePreview();
+        }
+
+        // Insertar foto VISUALMENTE en la posición exacta del cursor (Estilo WordPress)
+        function handleInlineContentImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Image = e.target.result;
+                const visualEditor = document.getElementById('newsVisualEditor');
+                visualEditor.focus();
+
+                const imgBlock = `
+                    <div class="wp-inline-img-block" contenteditable="false" style="text-align:center; margin:22px 0; position:relative; display:block; user-select:none;">
+                        <img src="${base64Image}" style="max-width:100%; max-height:420px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15); display:block; margin:0 auto;">
+                        <p contenteditable="true" style="font-size:12.5px; color:#64748b; margin-top:8px; font-style:italic; outline:none;">Pie de foto (haga clic para editar)</p>
+                        <button type="button" onclick="this.parentElement.remove(); updateNewsLivePreview();" style="position:absolute; top:8px; right:8px; background:#ef4444; color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:14px; font-weight:bold; line-height:28px; box-shadow:0 2px 6px rgba(0,0,0,0.3);">&times;</button>
+                    </div>
+                    <p><br></p>
+                `;
+
+                document.execCommand('insertHTML', false, imgBlock);
+                updateNewsLivePreview();
+                showToast('Fotografía insertada exactamente en la posición de su cursor.');
+            };
+            reader.readAsDataURL(file);
+        }
+
         // Modal Lectura Completa del Artículo
         function openFullNewsPreviewModal() {
             const title = document.getElementById('newsTitle').value.trim() || 'Titular de la Noticia...';
             const category = document.getElementById('newsCategory').value || 'Legislación';
             const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
             const image = document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg';
-            const rawContent = document.getElementById('newsContent').value.trim() || 'No se ha ingresado contenido aún...';
-
-            // Formatear contenido con Markdown de imágenes y párrafos
-            let contentHTML = rawContent;
-            contentHTML = contentHTML.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="text-align:center; margin:20px 0;"><img src="$2" alt="$1" style="max-width:100%; max-height:400px; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.12);"><p style="font-size:12px; color:#64748b; margin-top:4px; font-style:italic;">$1</p></div>');
-            contentHTML = contentHTML.replace(/^### (.*$)/gim, '<h3 style="color:var(--admin-primary); font-size:20px; font-weight:800; margin:20px 0 10px 0;">$1</h3>');
-            contentHTML = contentHTML.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            contentHTML = contentHTML.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-            const paragraphs = contentHTML.split(/\n\n+/);
-            const formattedBody = paragraphs.map(p => {
-                p = p.trim();
-                if (p.startsWith('<div') || p.startsWith('<h3')) return p;
-                return `<p style="font-size:15px; line-height:1.7; color:#334155; margin-bottom:16px;">${p.replace(/\n/g, '<br>')}</p>`;
-            }).join('');
+            
+            const visualEditor = document.getElementById('newsVisualEditor');
+            const visualHTML = visualEditor ? visualEditor.innerHTML : '';
 
             const modalBody = document.getElementById('fullNewsPreviewBody');
             modalBody.innerHTML = `
@@ -1216,8 +1245,8 @@
                 </div>
                 <h1 style="font-size:26px; font-weight:800; color:var(--admin-primary); line-height:1.3; margin-bottom:20px;">${title}</h1>
                 <div style="width:100%; height:320px; background-image:url('${image}'); background-size:cover; background-position:center; border-radius:14px; margin-bottom:25px; box-shadow:0 8px 20px rgba(0,0,0,0.12);"></div>
-                <div class="article-real-content">
-                    ${formattedBody}
+                <div class="article-real-content" style="font-size:16px; line-height:1.8; color:#334155;">
+                    ${visualHTML}
                 </div>
             `;
 
@@ -1239,7 +1268,9 @@
             const category = document.getElementById('newsCategory').value || 'Legislación';
             const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
             const image = document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg';
-            const content = document.getElementById('newsContent').value.trim() || 'El contenido resumido aparecerá en este extracto...';
+            
+            const visualEditor = document.getElementById('newsVisualEditor');
+            const rawText = visualEditor ? visualEditor.innerText.trim() : '';
 
             const cardTitle = document.getElementById('previewCardTitle');
             const cardCategory = document.getElementById('previewCardCategory');
@@ -1250,7 +1281,7 @@
             if (cardTitle) cardTitle.innerText = title;
             if (cardCategory) cardCategory.innerText = category;
             if (cardDate) cardDate.innerHTML = `<i class="far fa-calendar-alt"></i> ${date}`;
-            if (cardExcerpt) cardExcerpt.innerText = content.length > 110 ? content.substring(0, 110) + '...' : content;
+            if (cardExcerpt) cardExcerpt.innerText = rawText.length > 110 ? rawText.substring(0, 110) + '...' : (rawText || 'El contenido aparecerá aquí...');
             if (cardImage) cardImage.style.backgroundImage = `url('${image}')`;
         }
 
@@ -1276,51 +1307,22 @@
             reader.readAsDataURL(file);
         }
 
-        // Insertar imagen dentro del contenido
-        function handleInlineContentImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                const textarea = document.getElementById('newsContent');
-                const imageTag = `\n\n![Foto Adjunta](${base64Image})\n\n`;
-                textarea.value += imageTag;
-                updateNewsLivePreview();
-                showToast('Fotografía insertada en la redacción.');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Botones de Formato Rápido
-        function insertFormat(type) {
-            const textarea = document.getElementById('newsContent');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const text = textarea.value;
-            const selected = text.substring(start, end);
-
-            let replacement = '';
-            if (type === 'bold') replacement = `**${selected || 'texto en negrita'}**`;
-            if (type === 'italic') replacement = `*${selected || 'texto en cursiva'}*`;
-            if (type === 'h3') replacement = `\n### ${selected || 'Subtítulo Destacado'}\n`;
-
-            textarea.value = text.substring(0, start) + replacement + text.substring(end);
-            updateNewsLivePreview();
-        }
-
         function saveNews(e, targetStatus) {
             if (e) e.preventDefault();
             const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
             const id = document.getElementById('newsId').value;
+            
+            const visualEditor = document.getElementById('newsVisualEditor');
+            const visualHTML = visualEditor ? visualEditor.innerHTML : '';
+            document.getElementById('newsContent').value = visualHTML;
+
             const newObj = {
                 id: id ? id : 'news-' + Date.now(),
                 title: sanitizeHTML(document.getElementById('newsTitle').value.trim()),
                 category: sanitizeHTML(document.getElementById('newsCategory').value),
                 date: document.getElementById('newsDate').value,
                 image: document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg',
-                content: sanitizeHTML(document.getElementById('newsContent').value.trim()),
+                content: visualHTML,
                 status: targetStatus || 'Publicada'
             };
 
@@ -1347,7 +1349,9 @@
             document.getElementById('newsCategory').value = n.category;
             document.getElementById('newsDate').value = n.date;
             document.getElementById('newsImage').value = n.image;
-            document.getElementById('newsContent').value = n.content;
+            
+            const visualEditor = document.getElementById('newsVisualEditor');
+            if (visualEditor) visualEditor.innerHTML = n.content || '<p></p>';
 
             const previewImg = document.getElementById('newsImagePreview');
             const previewContainer = document.getElementById('imagePreviewContainer');
@@ -1374,6 +1378,10 @@
         function resetNewsForm() {
             document.getElementById('formNoticia').reset();
             document.getElementById('newsId').value = '';
+            
+            const visualEditor = document.getElementById('newsVisualEditor');
+            if (visualEditor) visualEditor.innerHTML = '<p>Escriba aquí el contenido de la noticia...</p>';
+
             const previewContainer = document.getElementById('imagePreviewContainer');
             if (previewContainer) previewContainer.style.display = 'none';
             document.getElementById('newsFormTitle').innerText = 'Publicar Noticia Institucional';

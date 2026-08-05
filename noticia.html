@@ -185,30 +185,26 @@
                 
                 document.getElementById('artImage').style.backgroundImage = `url('${article.image}')`;
                 
-                // Formateador de contenido enriquecido con imágenes e inline tags
+                // Formateador de contenido enriquecido (Visual HTML o Markdown)
                 let contentHTML = article.content || '';
                 
-                // Reemplazar imágenes de markdown ![alt](src)
-                contentHTML = contentHTML.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="text-align:center; margin:25px 0;"><img src="$2" alt="$1" style="max-width:100%; max-height:450px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15);"><p style="font-size:12.5px; color:#64748b; margin-top:6px; font-style:italic;">$1</p></div>');
-                
-                // Reemplazar encabezados ###
-                contentHTML = contentHTML.replace(/^### (.*$)/gim, '<h3 style="color:var(--primary-blue); font-size:22px; font-weight:800; margin:25px 0 12px 0;">$1</h3>');
-                
-                // Reemplazar negritas **texto**
-                contentHTML = contentHTML.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                
-                // Reemplazar cursivas *texto*
-                contentHTML = contentHTML.replace(/\*(.*?)\*/g, '<em>$1</em>');
-                
-                // Convertir párrafos por salto de línea
-                const paragraphs = contentHTML.split(/\n\n+/);
-                const formattedBody = paragraphs.map(p => {
-                    p = p.trim();
-                    if (p.startsWith('<div') || p.startsWith('<h3')) return p;
-                    return `<p style="font-size:16.5px; line-height:1.8; color:var(--dark-text); margin-bottom:20px;">${p.replace(/\n/g, '<br>')}</p>`;
-                }).join('');
-
-                document.getElementById('artBody').innerHTML = formattedBody;
+                if (contentHTML.includes('<p>') || contentHTML.includes('<div') || contentHTML.includes('<h3>')) {
+                    document.getElementById('artBody').innerHTML = contentHTML;
+                } else {
+                    contentHTML = contentHTML.replace(/!\[(.*?)\]\((.*?)\)/g, '<div style="text-align:center; margin:25px 0;"><img src="$2" alt="$1" style="max-width:100%; max-height:450px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15);"><p style="font-size:12.5px; color:#64748b; margin-top:6px; font-style:italic;">$1</p></div>');
+                    contentHTML = contentHTML.replace(/^### (.*$)/gim, '<h3 style="color:var(--primary-blue); font-size:22px; font-weight:800; margin:25px 0 12px 0;">$1</h3>');
+                    contentHTML = contentHTML.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                    contentHTML = contentHTML.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                    
+                    const paragraphs = contentHTML.split(/\n\n+/);
+                    const formattedBody = paragraphs.map(p => {
+                        p = p.trim();
+                        if (p.startsWith('<div') || p.startsWith('<h3')) return p;
+                        return `<p>${p.replace(/\n/g, '<br>')}</p>`;
+                    }).join('');
+                    
+                    document.getElementById('artBody').innerHTML = formattedBody;
+                }
             } else {
                 document.getElementById('artTitle').textContent = "Noticia no encontrada";
                 document.getElementById('artBody').innerHTML = "<p style='font-size:16px; color:#64748b;'>Lo sentimos, el artículo solicitado no se encuentra registrado en el sistema.</p>";
