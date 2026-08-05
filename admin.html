@@ -480,8 +480,8 @@
             <div id="tab-noticias" style="display: none;">
                 <div class="page-title">
                     <h1><i class="fas fa-newspaper"></i> Gestor de Noticias y Comunicados</h1>
-                    <button class="btn-gold-action" onclick="resetNewsForm()">
-                        <i class="fas fa-plus"></i> Redactar Noticia
+                    <button class="btn-gold-action" style="padding:12px 22px; font-size:14.5px; font-weight:800;" onclick="window.location.href='editor-noticia.html'">
+                        <i class="fas fa-plus-circle"></i> Redactar Noticia en Pestaña Completa (Editor Visual)
                     </button>
                 </div>
 
@@ -1345,29 +1345,7 @@
         }
 
         function editNews(id) {
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-            const n = news.find(item => item.id === id);
-            if (!n) return;
-
-            document.getElementById('newsId').value = n.id;
-            document.getElementById('newsTitle').value = n.title;
-            document.getElementById('newsCategory').value = n.category;
-            document.getElementById('newsDate').value = n.date;
-            document.getElementById('newsImage').value = n.image;
-            
-            const visualEditor = document.getElementById('newsVisualEditor');
-            if (visualEditor) visualEditor.innerHTML = n.content || '<p></p>';
-
-            const previewImg = document.getElementById('newsImagePreview');
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            if (previewImg && previewContainer && n.image) {
-                previewImg.src = n.image;
-                previewContainer.style.display = 'block';
-            }
-
-            updateNewsLivePreview();
-            document.getElementById('newsFormTitle').innerText = 'Editar Noticia';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.location.href = 'editor-noticia.html?id=' + id;
         }
 
         function deleteNews(id) {
