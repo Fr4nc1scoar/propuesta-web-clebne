@@ -122,7 +122,7 @@ a { text-decoration: none; color: inherit; }
 
 /* Directorio Section & Preview Section */
 .directorio-section,
-.directorio-preview-section { padding: 80px 0; background-color: var(--light-gray); background-image: linear-gradient(180deg, rgba(241, 245, 249, 0.25) 0%, rgba(226, 232, 240, 0.35) 100%), url('Clebne_2024.jpeg'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
+.directorio-preview-section { padding: 80px 0; background-color: var(--light-gray); }
 .directorio-grid,
 .directorio-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
 .legislador-card { background: var(--white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); text-align: center; transition: 0.3s; border: 1px solid var(--border-color); border-top: 5px solid var(--primary-blue); position: relative; }
