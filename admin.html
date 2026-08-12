@@ -1186,13 +1186,6 @@
             window.location.href = 'editor-noticia.html';
         }
 
-        // --- GACETAS CRUD ---
-        function renderAdminGacetas() {
-            const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
-            const tbody = document.getElementById('gacetasTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
         // --- INDEXEDDB PDF STORAGE ENGINE ---
         const pdfDB = {
             dbName: 'CLEBNE_PDF_Store',
@@ -1268,6 +1261,7 @@
             }
         }
 
+        // --- GACETAS CRUD ---
         function renderAdminGacetas() {
             const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
             const tbody = document.getElementById('gacetasTableBody');
