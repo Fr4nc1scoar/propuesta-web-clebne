@@ -444,6 +444,19 @@
             });
         }
 
+        function createExcerpt(htmlContent, maxLen = 140) {
+            if (!htmlContent) return 'Sin descripción disponible...';
+            const temp = document.createElement('div');
+            temp.innerHTML = htmlContent;
+            const scripts = temp.getElementsByTagName('script');
+            while(scripts.length > 0) scripts[0].parentNode.removeChild(scripts[0]);
+            let text = (temp.textContent || temp.innerText || '').replace(/\s+/g, ' ').trim();
+            if (text.length > maxLen) {
+                return text.substring(0, maxLen).trim() + '...';
+            }
+            return text || 'Sin descripción disponible...';
+        }
+
         function renderNews() {
             const newsGrid = document.querySelector('.news-grid');
             if (!newsGrid) return;
@@ -478,7 +491,7 @@
                             <span><i class="far fa-calendar-alt"></i> ${fechaFormateada}</span>
                         </div>
                         <h3>${sanitizeHTML(item.title)}</h3>
-                        <p>${sanitizeHTML(item.content)}</p>
+                        <p>${createExcerpt(item.content, 140)}</p>
                         <a href="noticia.html?id=${item.id}" class="read-more">Seguir leyendo <i class="fas fa-chevron-right"></i></a>
                     </div>
                 `;

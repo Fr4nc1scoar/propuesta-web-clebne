@@ -672,11 +672,30 @@
             reader.readAsDataURL(file);
         }
 
+        function cleanArticleContent(html) {
+            if (!html) return '';
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+
+            while (temp.firstChild) {
+                const first = temp.firstChild;
+                const text = (first.textContent || '').replace(/\u00a0/g, ' ').trim();
+                const hasMedia = first.querySelector ? first.querySelector('img, iframe, video') : false;
+                if (!text && !hasMedia && (first.nodeName === 'P' || first.nodeName === 'DIV' || first.nodeName === 'BR')) {
+                    temp.removeChild(first);
+                } else {
+                    break;
+                }
+            }
+            return temp.innerHTML.trim();
+        }
+
         function saveArticle(status) {
             const title = document.getElementById('articleTitle').innerText.trim();
             const category = document.getElementById('articleCategory').value;
             const date = document.getElementById('articleDate').value;
-            const content = document.getElementById('articleBody').innerHTML.trim();
+            const rawContent = document.getElementById('articleBody').innerHTML.trim();
+            const content = cleanArticleContent(rawContent);
 
             if (!title) {
                 alert('Por favor ingrese el titular de la noticia.');

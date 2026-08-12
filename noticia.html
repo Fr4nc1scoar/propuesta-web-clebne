@@ -185,8 +185,26 @@
                 
                 document.getElementById('artImage').style.backgroundImage = `url('${article.image}')`;
                 
+                function cleanArticleContent(html) {
+                    if (!html) return '';
+                    const temp = document.createElement('div');
+                    temp.innerHTML = html;
+
+                    while (temp.firstChild) {
+                        const first = temp.firstChild;
+                        const text = (first.textContent || '').replace(/\u00a0/g, ' ').trim();
+                        const hasMedia = first.querySelector ? first.querySelector('img, iframe, video') : false;
+                        if (!text && !hasMedia && (first.nodeName === 'P' || first.nodeName === 'DIV' || first.nodeName === 'BR')) {
+                            temp.removeChild(first);
+                        } else {
+                            break;
+                        }
+                    }
+                    return temp.innerHTML.trim();
+                }
+
                 // Formateador de contenido enriquecido (Visual HTML o Markdown)
-                let contentHTML = article.content || '';
+                let contentHTML = cleanArticleContent(article.content || '');
                 
                 if (contentHTML.includes('<p>') || contentHTML.includes('<div') || contentHTML.includes('<h3>')) {
                     document.getElementById('artBody').innerHTML = contentHTML;
@@ -202,7 +220,7 @@
                         if (p.startsWith('<div') || p.startsWith('<h3')) return p;
                         return `<p>${p.replace(/\n/g, '<br>')}</p>`;
                     }).join('');
-                    document.getElementById('artBody').innerHTML = formattedBody;
+                    document.getElementById('artBody').innerHTML = cleanArticleContent(formattedBody);
                 }
             } else {
                 document.getElementById('artTitle').textContent = "Noticia no encontrada";
