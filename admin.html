@@ -1404,16 +1404,46 @@
             });
         }
 
+        // --- DIRECTORES CRUD ---
+        function renderAdminDirectorio() {
+            const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
+            const tbody = document.getElementById('directorioTableBody');
+            tbody.innerHTML = '';
+
+            legisladores.forEach(item => {
+                const tr = document.createElement('tr');
+                const avatarIcon = item.gender === 'F' ? 'fa-user-tie' : 'fa-user';
+                const avatarHTML = (item.image && item.image.trim() !== '') 
+                    ? `<img src="${item.image}" class="table-thumb">`
+                    : `<span class="table-avatar-placeholder"><i class="fas ${avatarIcon}"></i></span>`;
+
+                tr.innerHTML = `
+                    <td>${avatarHTML}</td>
+                    <td style="font-weight:700; color:var(--admin-primary);">${item.name}</td>
+                    <td><span class="badge badge-success">${item.role}</span></td>
+                    <td>${item.commission}</td>
+                    <td>
+                        <button class="btn-action-table btn-edit" onclick="editDirector('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn-action-table btn-delete" onclick="deleteDirector('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function saveDirector(e) {
             e.preventDefault();
-            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
             const id = document.getElementById('directorId').value;
 
-            let finalImage = (id ? (legisladores.find(l => l.id === id)||{}).image || '' : '');
+            let finalImage = "";
             if (tempDirectorPhoto === 'REMOVE') {
-                finalImage = '';
+                finalImage = "";
             } else if (tempDirectorPhoto) {
                 finalImage = tempDirectorPhoto;
+            } else if (id) {
+                const leg = legisladores.find(l => l.id === id);
+                if (leg && tempDirectorPhoto !== 'REMOVE') finalImage = leg.image || "";
             }
 
             const newObj = {
@@ -1428,20 +1458,22 @@
             if (id) {
                 const idx = legisladores.findIndex(l => l.id === id);
                 if (idx !== -1) legisladores[idx] = newObj;
+                else legisladores.unshift(newObj);
             } else {
                 legisladores.unshift(newObj);
             }
 
-            localStorage.setItem('clebne_legisladores', JSON.stringify(legisladores));
-            showToast('Ficha de director guardada correctamente.');
+            safeJSONSet('clebne_legisladores', legisladores);
+            showToast('Ficha de director guardada y publicada correctamente.');
             resetDirectorForm();
             renderAdminDirectorio();
+            renderDashboard();
         }
 
         let tempDirectorPhoto = "";
 
         function editDirector(id) {
-            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+            const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
             const leg = legisladores.find(l => l.id === id);
             if (!leg) return;
 
@@ -1466,11 +1498,12 @@
 
         function deleteDirector(id) {
             if (confirm('¿Eliminar este integrante del directorio?')) {
-                let legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
+                let legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
                 legisladores = legisladores.filter(l => l.id !== id);
-                localStorage.setItem('clebne_legisladores', JSON.stringify(legisladores));
+                safeJSONSet('clebne_legisladores', legisladores);
                 showToast('Director eliminado.');
                 renderAdminDirectorio();
+                renderDashboard();
             }
         }
 
@@ -1486,25 +1519,68 @@
             tempDirectorPhoto = "REMOVE";
             document.getElementById('photoPreviewContainer').style.display = 'none';
             document.getElementById('directorPhotoInput').value = '';
-            showToast('Foto removida. Guarde la ficha para usar el avatar por defecto.');
+
+            const id = document.getElementById('directorId').value;
+            if (id) {
+                const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
+                const leg = legisladores.find(l => l.id === id);
+                if (leg) {
+                    leg.image = "";
+                    safeJSONSet('clebne_legisladores', legisladores);
+                    renderAdminDirectorio();
+                }
+            }
+            showToast('Foto removida. Presione Guardar Ficha para confirmar.');
         }
 
         function handleDirectorPhotoUpload(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    tempDirectorPhoto = evt.target.result;
-                    document.getElementById('photoPreviewImg').src = evt.target.result;
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const rawBase64 = evt.target.result;
+                const img = new Image();
+                img.src = rawBase64;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 500;
+
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
+
+                    tempDirectorPhoto = compressedBase64;
+                    document.getElementById('photoPreviewImg').src = compressedBase64;
+                    document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    showToast('Fotografía procesada y lista para guardar.');
+                };
+                img.onerror = function() {
+                    tempDirectorPhoto = rawBase64;
+                    document.getElementById('photoPreviewImg').src = rawBase64;
                     document.getElementById('photoPreviewContainer').style.display = 'flex';
                 };
-                reader.readAsDataURL(file);
-            }
+            };
+            reader.readAsDataURL(file);
         }
 
         // --- SOLICITUDES CIUDADANAS ---
         function renderAdminSolicitudes(filterStatus = 'Todas') {
-            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
             const tbody = document.getElementById('solicitudesTableBody');
             tbody.innerHTML = '';
 
@@ -1537,7 +1613,7 @@
         }
 
         function viewSolicitudDetail(id) {
-            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
             const sol = solicitudes.find(s => s.id === id);
             if (!sol) return;
 
@@ -1557,11 +1633,11 @@
 
         function updateSolicitudStatus(status) {
             if (!currentActiveSolicitudId) return;
-            const solicitudes = JSON.parse(localStorage.getItem('clebne_solicitudes')) || [];
+            const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
             const sol = solicitudes.find(s => s.id === currentActiveSolicitudId);
             if (sol) {
                 sol.status = status;
-                localStorage.setItem('clebne_solicitudes', JSON.stringify(solicitudes));
+                safeJSONSet('clebne_solicitudes', solicitudes);
                 showToast(`Solicitud ${sol.code} marcada como ${status}.`);
                 closeSolicitudModal();
                 renderAdminSolicitudes();
@@ -1575,7 +1651,7 @@
 
         // --- HERO CONFIG ---
         function loadHeroConfigForm() {
-            const config = JSON.parse(localStorage.getItem('clebne_hero_config')) || defaultHeroConfig;
+            const config = safeJSONParse('clebne_hero_config', defaultHeroConfig);
             document.getElementById('heroBadge').value = config.badge;
             document.getElementById('heroTitle').value = config.title;
             document.getElementById('heroSubtitle').value = config.subtitle;
@@ -1588,7 +1664,7 @@
                 title: document.getElementById('heroTitle').value.trim(),
                 subtitle: document.getElementById('heroSubtitle').value.trim()
             };
-            localStorage.setItem('clebne_hero_config', JSON.stringify(config));
+            safeJSONSet('clebne_hero_config', config);
             showToast('Configuración del portal actualizada en vivo.');
         }
     </script>

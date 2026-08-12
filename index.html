@@ -36,9 +36,9 @@
                 <span><i class="fas fa-phone"></i> 0295-2421580</span>
             </div>
             <div class="social-links">
-                <a href="#" title="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-                <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/clebne_oficial/?hl=es" target="_blank" rel="noopener" title="Instagram @clebne_oficial"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.facebook.com/clebne/?ref=NONE_xav_ig_profile_page_web#" target="_blank" rel="noopener" title="Facebook CLEBNE"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.tiktok.com/@clebne_oficial" target="_blank" rel="noopener" title="TikTok @clebne_oficial"><i class="fab fa-tiktok"></i></a>
             </div>
         </div>
     </div>
@@ -84,16 +84,9 @@
             </div>
         </section>
 
-        <!-- Sección de Participación (Atención al Ciudadano) -->
+        <!-- Sección de Accesos Rápidos -->
         <section class="participacion-section">
-            <div class="container participacion-grid">
-                <div class="part-card" onclick="openCitizenModal();">
-                    <div class="part-icon"><i class="fas fa-bullhorn"></i></div>
-                    <div class="part-info">
-                        <h3>Atención al Ciudadano (OAC)</h3>
-                        <p>Plantea tus propuestas, inquietudes o peticiones al Parlamento Regional.</p>
-                    </div>
-                </div>
+            <div class="container participacion-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <a href="gacetas.html" class="part-card">
                     <div class="part-icon"><i class="fas fa-calendar-check"></i></div>
                     <div class="part-info">
@@ -349,10 +342,18 @@
         </div>
     </footer>
 
-    <!-- Botón Flotante -->
-    <a href="#" onclick="openCitizenModal(); return false;" class="floating-btn" title="Atención al Ciudadano CLEBNE">
-        <i class="fas fa-comment-dots"></i>
-    </a>
+    <!-- Redes Sociales Flotantes CLEBNE -->
+    <div class="floating-social-bar">
+        <a href="https://www.instagram.com/clebne_oficial/?hl=es" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram @clebne_oficial">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/clebne/?ref=NONE_xav_ig_profile_page_web#" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook CLEBNE">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://www.tiktok.com/@clebne_oficial" target="_blank" rel="noopener" class="social-btn tiktok" title="TikTok @clebne_oficial">
+            <i class="fab fa-tiktok"></i>
+        </a>
+    </div>
 
     <script>
         const defaultNews = [

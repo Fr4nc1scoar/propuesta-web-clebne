@@ -202,7 +202,6 @@
                         if (p.startsWith('<div') || p.startsWith('<h3')) return p;
                         return `<p>${p.replace(/\n/g, '<br>')}</p>`;
                     }).join('');
-                    
                     document.getElementById('artBody').innerHTML = formattedBody;
                 }
             } else {
@@ -211,5 +210,18 @@
             }
         };
     </script>
+
+    <!-- Redes Sociales Flotantes CLEBNE -->
+    <div class="floating-social-bar">
+        <a href="https://www.instagram.com/clebne_oficial/?hl=es" target="_blank" rel="noopener" class="social-btn instagram" title="Instagram @clebne_oficial">
+            <i class="fab fa-instagram"></i>
+        </a>
+        <a href="https://www.facebook.com/clebne/?ref=NONE_xav_ig_profile_page_web#" target="_blank" rel="noopener" class="social-btn facebook" title="Facebook CLEBNE">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        <a href="https://www.tiktok.com/@clebne_oficial" target="_blank" rel="noopener" class="social-btn tiktok" title="TikTok @clebne_oficial">
+            <i class="fab fa-tiktok"></i>
+        </a>
+    </div>
 </body>
 </html>
