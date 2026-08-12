@@ -1193,6 +1193,88 @@
             if (!tbody) return;
             tbody.innerHTML = '';
 
+        // --- INDEXEDDB PDF STORAGE ENGINE ---
+        const pdfDB = {
+            dbName: 'CLEBNE_PDF_Store',
+            dbVersion: 1,
+            storeName: 'pdf_files',
+            open() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(this.dbName, this.dbVersion);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(this.storeName)) {
+                            db.createObjectStore(this.storeName);
+                        }
+                    };
+                    req.onsuccess = (e) => resolve(e.target.result);
+                    req.onerror = (e) => reject(e.target.error);
+                });
+            },
+            async savePDF(id, dataUrl) {
+                try {
+                    const db = await this.open();
+                    return new Promise((resolve, reject) => {
+                        const tx = db.transaction(this.storeName, 'readwrite');
+                        const store = tx.objectStore(this.storeName);
+                        const req = store.put(dataUrl, id);
+                        req.onsuccess = () => resolve(id);
+                        req.onerror = (e) => reject(e.target.error);
+                    });
+                } catch (e) {
+                    console.error('Error guardando PDF:', e);
+                    return null;
+                }
+            },
+            async getPDF(id) {
+                try {
+                    const db = await this.open();
+                    return new Promise((resolve) => {
+                        const tx = db.transaction(this.storeName, 'readonly');
+                        const store = tx.objectStore(this.storeName);
+                        const req = store.get(id);
+                        req.onsuccess = () => resolve(req.result);
+                        req.onerror = () => resolve(null);
+                    });
+                } catch (e) {
+                    return null;
+                }
+            },
+            async deletePDF(id) {
+                try {
+                    const db = await this.open();
+                    const tx = db.transaction(this.storeName, 'readwrite');
+                    tx.objectStore(this.storeName).delete(id);
+                } catch(e) {}
+            }
+        };
+
+        function openAdminPDF(url) {
+            if (!url) return;
+            if (url.startsWith('indexeddb:')) {
+                const pdfId = url.replace('indexeddb:', '');
+                pdfDB.getPDF(pdfId).then(dataUrl => {
+                    if (dataUrl) {
+                        const win = window.open();
+                        if (win) {
+                            win.document.write(`<iframe src="${dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100vh;" allowfullscreen></iframe>`);
+                        }
+                    } else {
+                        alert('No se pudo abrir el archivo PDF almacenado.');
+                    }
+                });
+            } else {
+                window.open(url, '_blank');
+            }
+        }
+
+        function renderAdminGacetas() {
+            const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
+            const tbody = document.getElementById('gacetasTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
             gacetas.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1201,7 +1283,7 @@
                     <td><span class="badge badge-warning">${item.category}</span></td>
                     <td>${item.date}</td>
                     <td>
-                        <a href="${item.url}" target="_blank" class="btn-action-table btn-view"><i class="fas fa-eye"></i> Ver PDF</a>
+                        <button onclick="openAdminPDF('${item.url}')" class="btn-action-table btn-view"><i class="fas fa-eye"></i> Ver PDF</button>
                         <button class="btn-action-table btn-delete" onclick="deleteGaceta('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
                     </td>
                 `;
@@ -1228,7 +1310,7 @@
 
             gacetas.unshift(newObj);
             safeJSONSet('clebne_gacetas', gacetas);
-            showToast('Documento legislativo agregado al repositorio.');
+            showToast('Documento legislativo publicado con éxito.');
             const formG = document.getElementById('formGaceta');
             if (formG) formG.reset();
             window.tempGacetaPDF = null;
@@ -1239,6 +1321,10 @@
         function deleteGaceta(id) {
             if (confirm('¿Eliminar este documento del repositorio oficial?')) {
                 let gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
+                const target = gacetas.find(g => g.id === id);
+                if (target && target.url && target.url.startsWith('indexeddb:')) {
+                    pdfDB.deletePDF(target.url.replace('indexeddb:', ''));
+                }
                 gacetas = gacetas.filter(g => g.id !== id);
                 safeJSONSet('clebne_gacetas', gacetas);
                 showToast('Documento eliminado.');
@@ -1250,14 +1336,20 @@
         function handlePDFUpload(e) {
             const file = e.target.files[0];
             if (file) {
-                if (file.size > 1.5 * 1024 * 1024) {
-                    alert('El PDF excede 1.5MB. Se usará el archivo local de demostración.');
-                    window.tempGacetaPDF = "Gaceta_Oficial_Prueba.pdf";
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('El archivo PDF excede el límite permitido de 50MB.');
+                    e.target.value = '';
+                    window.tempGacetaPDF = null;
                     return;
                 }
+                showToast('Cargando y procesando documento PDF...');
                 const reader = new FileReader();
-                reader.onload = function(evt) {
-                    window.tempGacetaPDF = evt.target.result;
+                reader.onload = async function(evt) {
+                    const dataUrl = evt.target.result;
+                    const pdfId = 'pdf-' + Date.now();
+                    await pdfDB.savePDF(pdfId, dataUrl);
+                    window.tempGacetaPDF = 'indexeddb:' + pdfId;
+                    showToast('Documento PDF procesado y listo para publicar.');
                 };
                 reader.readAsDataURL(file);
             }
