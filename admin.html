@@ -426,7 +426,7 @@
                             <h3><i class="fas fa-bolt" style="color:var(--admin-gold);"></i> Accesos Rápida Gestión</h3>
                         </div>
                         <div style="display:flex; flex-direction:column; gap:12px;">
-                            <button onclick="switchTab('noticias', document.querySelectorAll('.nav-item')[1]); resetNewsForm();" class="btn-action" style="justify-content:flex-start;">
+                            <button onclick="window.location.href='editor-noticia.html';" class="btn-action" style="justify-content:flex-start;">
                                 <i class="fas fa-plus-circle"></i> Publicar Nueva Noticia Institucional
                             </button>
                             <button onclick="switchTab('gacetas', document.querySelectorAll('.nav-item')[2]);" class="btn-gold-action" style="justify-content:flex-start;">
@@ -968,7 +968,10 @@
             renderAdminSolicitudes();
             loadHeroConfigForm();
             
-            document.getElementById('currentDateStr').innerText = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const dateEl = document.getElementById('currentDateStr');
+            if (dateEl) {
+                dateEl.innerText = new Date().toLocaleDateString('es-VE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
         });
 
         function loadUserSession() {
@@ -976,15 +979,23 @@
             if (sessionStr) {
                 try {
                     const session = JSON.parse(sessionStr);
-                    document.getElementById('userFullName').innerText = session.name || 'Administrador';
-                    document.getElementById('userRole').innerText = session.role || 'Prensa CLEBNE';
-                    document.getElementById('userAvatar').innerText = session.avatar || 'AD';
+                    const nameEl = document.getElementById('userFullName');
+                    const roleEl = document.getElementById('userRole');
+                    const avatarEl = document.getElementById('userAvatar');
+                    if (nameEl) nameEl.innerText = session.name || 'Administrador';
+                    if (roleEl) roleEl.innerText = session.role || 'Prensa CLEBNE';
+                    if (avatarEl) avatarEl.innerText = session.avatar || 'AD';
                     
-                    document.getElementById('secUser').innerText = session.username || 'admin';
-                    document.getElementById('secName').innerText = session.name || 'Administrador';
-                    document.getElementById('secLevel').innerText = session.level || 'SuperAdmin';
-                    document.getElementById('secTime').innerText = session.loginTime || 'Reciente';
-                    document.getElementById('secToken').innerText = session.token || 'auth-token-demo';
+                    const secUser = document.getElementById('secUser');
+                    const secName = document.getElementById('secName');
+                    const secLevel = document.getElementById('secLevel');
+                    const secTime = document.getElementById('secTime');
+                    const secToken = document.getElementById('secToken');
+                    if (secUser) secUser.innerText = session.username || 'admin';
+                    if (secName) secName.innerText = session.name || 'Administrador';
+                    if (secLevel) secLevel.innerText = session.level || 'SuperAdmin';
+                    if (secTime) secTime.innerText = session.loginTime || 'Reciente';
+                    if (secToken) secToken.innerText = session.token || 'auth-token-demo';
                 } catch(e){}
             }
         }
@@ -992,8 +1003,17 @@
         function safeJSONParse(key, fallback) {
             try {
                 const item = localStorage.getItem(key);
-                if (!item || item === 'undefined' || item === 'null') return fallback;
+                if (!item || item === 'undefined' || item === 'null') {
+                    if (fallback) {
+                        try { localStorage.setItem(key, JSON.stringify(fallback)); } catch(e){}
+                    }
+                    return fallback;
+                }
                 const parsed = JSON.parse(item);
+                if (Array.isArray(fallback) && Array.isArray(parsed) && parsed.length === 0) {
+                    try { localStorage.setItem(key, JSON.stringify(fallback)); } catch(e){}
+                    return fallback;
+                }
                 return parsed || fallback;
             } catch(e) {
                 console.warn(`JSON parse fail for ${key}, resetting fallback.`, e);
@@ -1030,8 +1050,10 @@
         }
 
         function toggleMobileSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('sidebarOverlay').classList.toggle('active');
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sb) sb.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
         }
 
         function switchTab(tabId, element) {
@@ -1046,18 +1068,22 @@
                 element.classList.add('active');
             }
 
-            // Cerrar sidebar en móvil si está abierto
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebarOverlay').classList.remove('active');
+            const sb = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sb) sb.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
 
             if (tabId === 'dashboard') renderDashboard();
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
-            document.getElementById('toastText').innerText = message;
-            toast.classList.add('active');
-            setTimeout(() => toast.classList.remove('active'), 3500);
+            const textEl = document.getElementById('toastText');
+            if (textEl) textEl.innerText = message;
+            if (toast) {
+                toast.classList.add('active');
+                setTimeout(() => toast.classList.remove('active'), 3500);
+            }
         }
 
         function handleLogout() {
@@ -1075,31 +1101,41 @@
             const directores = safeJSONParse('clebne_legisladores', defaultLegisladores);
             const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
 
-            document.getElementById('countNoticias').innerText = news.length;
-            document.getElementById('countGacetas').innerText = gacetas.length;
-            document.getElementById('countDirectores').innerText = directores.length;
-            document.getElementById('countSolicitudes').innerText = solicitudes.length;
-            document.getElementById('solicitudesBadge').innerText = solicitudes.filter(s => s.status === 'Pendiente').length;
+            const countN = document.getElementById('countNoticias');
+            const countG = document.getElementById('countGacetas');
+            const countD = document.getElementById('countDirectores');
+            const countS = document.getElementById('countSolicitudes');
+            const badgeS = document.getElementById('solicitudesBadge');
+
+            if (countN) countN.innerText = news.length;
+            if (countG) countG.innerText = gacetas.length;
+            if (countD) countD.innerText = directores.length;
+            if (countS) countS.innerText = solicitudes.length;
+            if (badgeS) badgeS.innerText = solicitudes.filter(s => s.status === 'Pendiente').length;
 
             const activityLog = document.getElementById('activityLog');
-            activityLog.innerHTML = `
-                <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-gold); border-radius:6px;">
-                    <i class="fas fa-check-circle" style="color:var(--admin-gold);"></i> <strong>Noticia agregada:</strong> ${news[0] ? news[0].title.substring(0, 45) + '...' : 'Ninguna'}
-                </div>
-                <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-primary); border-radius:6px;">
-                    <i class="fas fa-file-pdf" style="color:var(--admin-primary);"></i> <strong>Gaceta en repositorio:</strong> ${gacetas[0] ? gacetas[0].number : 'Ninguna'}
-                </div>
-                <div style="padding:10px; background:#f8fafc; border-left:3px solid #10b981; border-radius:6px;">
-                    <i class="fas fa-user-shield" style="color:#10b981;"></i> <strong>Sesión del Sistema:</strong> Autenticación validada correctamente.
-                </div>
-            `;
+            if (activityLog) {
+                activityLog.innerHTML = `
+                    <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-gold); border-radius:6px;">
+                        <i class="fas fa-check-circle" style="color:var(--admin-gold);"></i> <strong>Noticia agregada:</strong> ${news[0] ? news[0].title.substring(0, 45) + '...' : 'Ninguna'}
+                    </div>
+                    <div style="padding:10px; background:#f8fafc; border-left:3px solid var(--admin-primary); border-radius:6px;">
+                        <i class="fas fa-file-pdf" style="color:var(--admin-primary);"></i> <strong>Gaceta en repositorio:</strong> ${gacetas[0] ? gacetas[0].number : 'Ninguna'}
+                    </div>
+                    <div style="padding:10px; background:#f8fafc; border-left:3px solid #10b981; border-radius:6px;">
+                        <i class="fas fa-user-shield" style="color:#10b981;"></i> <strong>Sesión del Sistema:</strong> Autenticación validada correctamente.
+                    </div>
+                `;
+            }
         }
 
         // --- NOTICIAS CRUD ---
         function renderAdminNews() {
             const news = safeJSONParse('clebne_news', defaultNews);
-            const filter = (document.getElementById('searchNewsTable').value || '').toLowerCase();
+            const searchEl = document.getElementById('searchNewsTable');
+            const filter = (searchEl ? searchEl.value || '' : '').toLowerCase();
             const tbody = document.getElementById('newsTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             const filtered = news.filter(n => (n.title||'').toLowerCase().includes(filter) || (n.category||'').toLowerCase().includes(filter));
@@ -1124,161 +1160,11 @@
             });
         }
 
-        // Helper de Sanitización XSS
         function sanitizeHTML(str) {
             if (!str) return '';
             const temp = document.createElement('div');
             temp.textContent = str;
             return temp.innerHTML;
-        }
-
-        function execWpCommand(command, value = null) {
-            document.execCommand(command, false, value);
-            updateNewsLivePreview();
-        }
-
-        // Insertar foto VISUALMENTE en la posición exacta del cursor (Estilo WordPress)
-        function handleInlineContentImage(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                const visualEditor = document.getElementById('newsVisualEditor');
-                visualEditor.focus();
-
-                const imgBlock = `
-                    <div class="wp-inline-img-block" contenteditable="false" style="text-align:center; margin:22px 0; position:relative; display:block; user-select:none;">
-                        <img src="${base64Image}" style="max-width:100%; max-height:420px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.15); display:block; margin:0 auto;">
-                        <p contenteditable="true" style="font-size:12.5px; color:#64748b; margin-top:8px; font-style:italic; outline:none;">Pie de foto (haga clic para editar)</p>
-                        <button type="button" onclick="this.parentElement.remove(); updateNewsLivePreview();" style="position:absolute; top:8px; right:8px; background:#ef4444; color:white; border:none; border-radius:50%; width:28px; height:28px; cursor:pointer; font-size:14px; font-weight:bold; line-height:28px; box-shadow:0 2px 6px rgba(0,0,0,0.3);">&times;</button>
-                    </div>
-                    <p><br></p>
-                `;
-
-                document.execCommand('insertHTML', false, imgBlock);
-                updateNewsLivePreview();
-                showToast('Fotografía insertada exactamente en la posición de su cursor.');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Modal Lectura Completa del Artículo (Idéntico a la Web)
-        function openFullNewsPreviewModal() {
-            const title = document.getElementById('newsTitle').value.trim() || 'Titular de la Noticia...';
-            const category = document.getElementById('newsCategory').value || 'Legislación';
-            const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
-            const image = document.getElementById('newsImage').value.trim();
-            
-            const visualEditor = document.getElementById('newsVisualEditor');
-            const visualHTML = visualEditor ? visualEditor.innerHTML : '';
-
-            let featuredImgHTML = '';
-            if (image) {
-                featuredImgHTML = `<div style="width:100%; height:340px; background-image:url('${image}'); background-size:cover; background-position:center; border-radius:14px; margin-bottom:25px; box-shadow:0 8px 20px rgba(0,0,0,0.12);"></div>`;
-            }
-
-            const modalBody = document.getElementById('fullNewsPreviewBody');
-            modalBody.innerHTML = `
-                <div style="margin-bottom:12px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                    <span class="badge badge-info" style="font-size:12.5px; padding:6px 14px; background:#e0f2fe; color:#0369a1; border-radius:20px; font-weight:700;"><i class="fas fa-tag"></i> ${category}</span>
-                    <span style="font-size:13.5px; color:#64748b; font-weight:600;"><i class="far fa-calendar-alt"></i> ${date}</span>
-                </div>
-                <h1 style="font-size:28px; font-weight:800; color:var(--admin-primary); line-height:1.3; margin-bottom:20px;">${title}</h1>
-                ${featuredImgHTML}
-                <div class="article-real-content" style="font-size:16.5px; line-height:1.8; color:#334155;">
-                    ${visualHTML}
-                </div>
-            `;
-
-            document.getElementById('fullNewsPreviewModal').style.display = 'flex';
-        }
-
-        function closeFullNewsPreviewModal() {
-            document.getElementById('fullNewsPreviewModal').style.display = 'none';
-        }
-
-        function saveNewsFromModal(status) {
-            saveNews(null, status);
-            closeFullNewsPreviewModal();
-        }
-
-        // Live Editor Preview Update
-        function updateNewsLivePreview() {
-            const title = document.getElementById('newsTitle').value.trim() || 'Titular de la Noticia...';
-            const category = document.getElementById('newsCategory').value || 'Legislación';
-            const date = document.getElementById('newsDate').value || new Date().toISOString().split('T')[0];
-            const image = document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg';
-            
-            const visualEditor = document.getElementById('newsVisualEditor');
-            const rawText = visualEditor ? visualEditor.innerText.trim() : '';
-
-            const cardTitle = document.getElementById('previewCardTitle');
-            const cardCategory = document.getElementById('previewCardCategory');
-            const cardDate = document.getElementById('previewCardDate');
-            const cardExcerpt = document.getElementById('previewCardExcerpt');
-            const cardImage = document.getElementById('previewCardImage');
-
-            if (cardTitle) cardTitle.innerText = title;
-            if (cardCategory) cardCategory.innerText = category;
-            if (cardDate) cardDate.innerHTML = `<i class="far fa-calendar-alt"></i> ${date}`;
-            if (cardExcerpt) cardExcerpt.innerText = rawText.length > 110 ? rawText.substring(0, 110) + '...' : (rawText || 'El contenido aparecerá aquí...');
-            if (cardImage) cardImage.style.backgroundImage = `url('${image}')`;
-        }
-
-        // Carga de Imagen desde Galería del Dispositivo / PC
-        function handleNewsImageFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Image = e.target.result;
-                document.getElementById('newsImage').value = base64Image;
-                const previewImg = document.getElementById('newsImagePreview');
-                const previewContainer = document.getElementById('imagePreviewContainer');
-                
-                if (previewImg && previewContainer) {
-                    previewImg.src = base64Image;
-                    previewContainer.style.display = 'block';
-                }
-                updateNewsLivePreview();
-                showToast('Imagen cargada exitosamente desde su dispositivo.');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function saveNews(e, targetStatus) {
-            if (e) e.preventDefault();
-            const news = JSON.parse(localStorage.getItem('clebne_news')) || [];
-            const id = document.getElementById('newsId').value;
-            
-            const visualEditor = document.getElementById('newsVisualEditor');
-            const visualHTML = visualEditor ? visualEditor.innerHTML : '';
-            document.getElementById('newsContent').value = visualHTML;
-
-            const newObj = {
-                id: id ? id : 'news-' + Date.now(),
-                title: sanitizeHTML(document.getElementById('newsTitle').value.trim()),
-                category: sanitizeHTML(document.getElementById('newsCategory').value),
-                date: document.getElementById('newsDate').value,
-                image: document.getElementById('newsImage').value.trim() || 'Clebne_2024.jpeg',
-                content: visualHTML,
-                status: targetStatus || 'Publicada'
-            };
-
-            if (id) {
-                const idx = news.findIndex(n => n.id === id);
-                if (idx !== -1) news[idx] = newObj;
-            } else {
-                news.unshift(newObj);
-            }
-
-            localStorage.setItem('clebne_news', JSON.stringify(news));
-            showToast(targetStatus === 'Borrador' ? 'Noticia guardada como Borrador.' : 'Noticia guardada y publicada en el portal.');
-            resetNewsForm();
-            renderAdminNews();
         }
 
         function editNews(id) {
@@ -1287,32 +1173,24 @@
 
         function deleteNews(id) {
             if (confirm('¿Está seguro de eliminar esta noticia?')) {
-                let news = JSON.parse(localStorage.getItem('clebne_news')) || [];
+                let news = safeJSONParse('clebne_news', defaultNews);
                 news = news.filter(n => n.id !== id);
-                localStorage.setItem('clebne_news', JSON.stringify(news));
+                safeJSONSet('clebne_news', news);
                 showToast('Noticia eliminada correctamente.');
                 renderAdminNews();
+                renderDashboard();
             }
         }
 
         function resetNewsForm() {
-            document.getElementById('formNoticia').reset();
-            document.getElementById('newsId').value = '';
-            
-            const visualEditor = document.getElementById('newsVisualEditor');
-            if (visualEditor) visualEditor.innerHTML = '<p>Escriba aquí el contenido de la noticia...</p>';
-
-            const previewContainer = document.getElementById('imagePreviewContainer');
-            if (previewContainer) previewContainer.style.display = 'none';
-            document.getElementById('newsFormTitle').innerText = 'Publicar Noticia Institucional';
-            document.getElementById('newsDate').valueAsDate = new Date();
-            updateNewsLivePreview();
+            window.location.href = 'editor-noticia.html';
         }
 
         // --- GACETAS CRUD ---
         function renderAdminGacetas() {
-            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
             const tbody = document.getElementById('gacetasTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             gacetas.forEach(item => {
@@ -1333,31 +1211,39 @@
 
         function saveGaceta(e) {
             e.preventDefault();
-            const gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+            const gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
+            const numEl = document.getElementById('gacetaNumber');
+            const catEl = document.getElementById('gacetaCategory');
+            const titleEl = document.getElementById('gacetaTitle');
+            const dateEl = document.getElementById('gacetaDate');
+
             const newObj = {
                 id: 'gac-' + Date.now(),
-                number: document.getElementById('gacetaNumber').value.trim(),
-                category: document.getElementById('gacetaCategory').value,
-                title: document.getElementById('gacetaTitle').value.trim(),
-                date: document.getElementById('gacetaDate').value,
+                number: numEl ? numEl.value.trim() : '',
+                category: catEl ? catEl.value : 'Gaceta Oficial',
+                title: titleEl ? titleEl.value.trim() : '',
+                date: dateEl ? dateEl.value : new Date().toISOString().split('T')[0],
                 url: window.tempGacetaPDF || "Gaceta_Oficial_Prueba.pdf"
             };
 
             gacetas.unshift(newObj);
-            localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
+            safeJSONSet('clebne_gacetas', gacetas);
             showToast('Documento legislativo agregado al repositorio.');
-            document.getElementById('formGaceta').reset();
+            const formG = document.getElementById('formGaceta');
+            if (formG) formG.reset();
             window.tempGacetaPDF = null;
             renderAdminGacetas();
+            renderDashboard();
         }
 
         function deleteGaceta(id) {
             if (confirm('¿Eliminar este documento del repositorio oficial?')) {
-                let gacetas = JSON.parse(localStorage.getItem('clebne_gacetas')) || [];
+                let gacetas = safeJSONParse('clebne_gacetas', defaultGacetas);
                 gacetas = gacetas.filter(g => g.id !== id);
-                localStorage.setItem('clebne_gacetas', JSON.stringify(gacetas));
+                safeJSONSet('clebne_gacetas', gacetas);
                 showToast('Documento eliminado.');
                 renderAdminGacetas();
+                renderDashboard();
             }
         }
 
@@ -1379,35 +1265,9 @@
 
         // --- DIRECTORES CRUD ---
         function renderAdminDirectorio() {
-            const legisladores = JSON.parse(localStorage.getItem('clebne_legisladores')) || [];
-            const tbody = document.getElementById('directorioTableBody');
-            tbody.innerHTML = '';
-
-            legisladores.forEach(item => {
-                const tr = document.createElement('tr');
-                const avatarIcon = item.gender === 'F' ? 'fa-user-tie' : 'fa-user';
-                const avatarHTML = item.image 
-                    ? `<img src="${item.image}" class="table-thumb">`
-                    : `<span class="table-avatar-placeholder"><i class="fas ${avatarIcon}"></i></span>`;
-
-                tr.innerHTML = `
-                    <td>${avatarHTML}</td>
-                    <td style="font-weight:700; color:var(--admin-primary);">${item.name}</td>
-                    <td><span class="badge badge-success">${item.role}</span></td>
-                    <td>${item.commission}</td>
-                    <td>
-                        <button class="btn-action-table btn-edit" onclick="editDirector('${item.id}')"><i class="fas fa-edit"></i> Editar</button>
-                        <button class="btn-action-table btn-delete" onclick="deleteDirector('${item.id}')"><i class="fas fa-trash"></i> Eliminar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // --- DIRECTORES CRUD ---
-        function renderAdminDirectorio() {
             const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
             const tbody = document.getElementById('directorioTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             legisladores.forEach(item => {
@@ -1434,7 +1294,8 @@
         function saveDirector(e) {
             e.preventDefault();
             const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
-            const id = document.getElementById('directorId').value;
+            const dirIdEl = document.getElementById('directorId');
+            const id = dirIdEl ? dirIdEl.value : '';
 
             let finalImage = "";
             if (tempDirectorPhoto === 'REMOVE') {
@@ -1446,12 +1307,17 @@
                 if (leg && tempDirectorPhoto !== 'REMOVE') finalImage = leg.image || "";
             }
 
+            const nameEl = document.getElementById('directorName');
+            const roleEl = document.getElementById('directorRole');
+            const commEl = document.getElementById('directorCommission');
+            const genEl = document.getElementById('directorGender');
+
             const newObj = {
                 id: id ? id : 'dir-' + Date.now(),
-                name: document.getElementById('directorName').value.trim(),
-                role: document.getElementById('directorRole').value,
-                commission: document.getElementById('directorCommission').value.trim(),
-                gender: document.getElementById('directorGender').value,
+                name: nameEl ? nameEl.value.trim() : '',
+                role: roleEl ? roleEl.value : 'Director General',
+                commission: commEl ? commEl.value.trim() : '',
+                gender: genEl ? genEl.value : 'M',
                 image: finalImage
             };
 
@@ -1470,29 +1336,36 @@
             renderDashboard();
         }
 
-        let tempDirectorPhoto = "";
-
         function editDirector(id) {
             const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
             const leg = legisladores.find(l => l.id === id);
             if (!leg) return;
 
-            document.getElementById('directorId').value = leg.id;
-            document.getElementById('directorName').value = leg.name;
-            document.getElementById('directorRole').value = leg.role;
-            document.getElementById('directorCommission').value = leg.commission;
-            document.getElementById('directorGender').value = leg.gender || 'M';
+            const dirId = document.getElementById('directorId');
+            const dirName = document.getElementById('directorName');
+            const dirRole = document.getElementById('directorRole');
+            const dirComm = document.getElementById('directorCommission');
+            const dirGender = document.getElementById('directorGender');
+            const photoImg = document.getElementById('photoPreviewImg');
+            const photoContainer = document.getElementById('photoPreviewContainer');
+            const formTitle = document.getElementById('directorFormTitle');
+
+            if (dirId) dirId.value = leg.id;
+            if (dirName) dirName.value = leg.name;
+            if (dirRole) dirRole.value = leg.role;
+            if (dirComm) dirComm.value = leg.commission;
+            if (dirGender) dirGender.value = leg.gender || 'M';
 
             if (leg.image && leg.image.trim() !== "") {
                 tempDirectorPhoto = leg.image;
-                document.getElementById('photoPreviewImg').src = leg.image;
-                document.getElementById('photoPreviewContainer').style.display = 'flex';
+                if (photoImg) photoImg.src = leg.image;
+                if (photoContainer) photoContainer.style.display = 'flex';
             } else {
                 tempDirectorPhoto = "";
-                document.getElementById('photoPreviewContainer').style.display = 'none';
+                if (photoContainer) photoContainer.style.display = 'none';
             }
 
-            document.getElementById('directorFormTitle').innerText = 'Editar Ficha de Director';
+            if (formTitle) formTitle.innerText = 'Editar Ficha de Director';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1508,19 +1381,26 @@
         }
 
         function resetDirectorForm() {
-            document.getElementById('formDirector').reset();
-            document.getElementById('directorId').value = '';
-            document.getElementById('photoPreviewContainer').style.display = 'none';
+            const form = document.getElementById('formDirector');
+            if (form) form.reset();
+            const dirId = document.getElementById('directorId');
+            if (dirId) dirId.value = '';
+            const photoContainer = document.getElementById('photoPreviewContainer');
+            if (photoContainer) photoContainer.style.display = 'none';
             tempDirectorPhoto = "";
-            document.getElementById('directorFormTitle').innerText = 'Registrar Nuevo Director / Integrante';
+            const formTitle = document.getElementById('directorFormTitle');
+            if (formTitle) formTitle.innerText = 'Registrar Nuevo Director / Integrante';
         }
 
         function removeDirectorPhoto() {
             tempDirectorPhoto = "REMOVE";
-            document.getElementById('photoPreviewContainer').style.display = 'none';
-            document.getElementById('directorPhotoInput').value = '';
+            const photoContainer = document.getElementById('photoPreviewContainer');
+            if (photoContainer) photoContainer.style.display = 'none';
+            const photoInput = document.getElementById('directorPhotoInput');
+            if (photoInput) photoInput.value = '';
 
-            const id = document.getElementById('directorId').value;
+            const dirId = document.getElementById('directorId');
+            const id = dirId ? dirId.value : '';
             if (id) {
                 const legisladores = safeJSONParse('clebne_legisladores', defaultLegisladores);
                 const leg = legisladores.find(l => l.id === id);
@@ -1565,14 +1445,18 @@
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.75);
 
                     tempDirectorPhoto = compressedBase64;
-                    document.getElementById('photoPreviewImg').src = compressedBase64;
-                    document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    const photoImg = document.getElementById('photoPreviewImg');
+                    const photoContainer = document.getElementById('photoPreviewContainer');
+                    if (photoImg) photoImg.src = compressedBase64;
+                    if (photoContainer) photoContainer.style.display = 'flex';
                     showToast('Fotografía procesada y lista para guardar.');
                 };
                 img.onerror = function() {
                     tempDirectorPhoto = rawBase64;
-                    document.getElementById('photoPreviewImg').src = rawBase64;
-                    document.getElementById('photoPreviewContainer').style.display = 'flex';
+                    const photoImg = document.getElementById('photoPreviewImg');
+                    const photoContainer = document.getElementById('photoPreviewContainer');
+                    if (photoImg) photoImg.src = rawBase64;
+                    if (photoContainer) photoContainer.style.display = 'flex';
                 };
             };
             reader.readAsDataURL(file);
@@ -1582,6 +1466,7 @@
         function renderAdminSolicitudes(filterStatus = 'Todas') {
             const solicitudes = safeJSONParse('clebne_solicitudes', defaultSolicitudes);
             const tbody = document.getElementById('solicitudesTableBody');
+            if (!tbody) return;
             tbody.innerHTML = '';
 
             const filtered = solicitudes.filter(s => filterStatus === 'Todas' || s.status === filterStatus);
@@ -1618,17 +1503,23 @@
             if (!sol) return;
 
             currentActiveSolicitudId = id;
-            document.getElementById('modalTicketCode').innerHTML = `<i class="fas fa-ticket-alt"></i> Solicitud ${sol.code}`;
-            document.getElementById('modalTicketBody').innerHTML = `
-                <p><strong>Remitente:</strong> ${sol.name} (${sol.cedula})</p>
-                <p><strong>Contacto:</strong> ${sol.email} | Tel: ${sol.phone}</p>
-                <p><strong>Fecha:</strong> ${sol.date}</p>
-                <p style="margin-top:10px;"><strong>Asunto:</strong> ${sol.subject}</p>
-                <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--admin-border); margin-top:10px; font-style:italic;">
-                    "${sol.message}"
-                </div>
-            `;
-            document.getElementById('solicitudModal').style.display = 'flex';
+            const codeEl = document.getElementById('modalTicketCode');
+            const bodyEl = document.getElementById('modalTicketBody');
+            const modalEl = document.getElementById('solicitudModal');
+
+            if (codeEl) codeEl.innerHTML = `<i class="fas fa-ticket-alt"></i> Solicitud ${sol.code}`;
+            if (bodyEl) {
+                bodyEl.innerHTML = `
+                    <p><strong>Remitente:</strong> ${sol.name} (${sol.cedula})</p>
+                    <p><strong>Contacto:</strong> ${sol.email} | Tel: ${sol.phone}</p>
+                    <p><strong>Fecha:</strong> ${sol.date}</p>
+                    <p style="margin-top:10px;"><strong>Asunto:</strong> ${sol.subject}</p>
+                    <div style="background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--admin-border); margin-top:10px; font-style:italic;">
+                        "${sol.message}"
+                    </div>
+                `;
+            }
+            if (modalEl) modalEl.style.display = 'flex';
         }
 
         function updateSolicitudStatus(status) {
@@ -1646,23 +1537,30 @@
         }
 
         function closeSolicitudModal() {
-            document.getElementById('solicitudModal').style.display = 'none';
+            const modalEl = document.getElementById('solicitudModal');
+            if (modalEl) modalEl.style.display = 'none';
         }
 
         // --- HERO CONFIG ---
         function loadHeroConfigForm() {
             const config = safeJSONParse('clebne_hero_config', defaultHeroConfig);
-            document.getElementById('heroBadge').value = config.badge;
-            document.getElementById('heroTitle').value = config.title;
-            document.getElementById('heroSubtitle').value = config.subtitle;
+            const badgeEl = document.getElementById('heroBadge');
+            const titleEl = document.getElementById('heroTitle');
+            const subtitleEl = document.getElementById('heroSubtitle');
+            if (badgeEl) badgeEl.value = config.badge || '';
+            if (titleEl) titleEl.value = config.title || '';
+            if (subtitleEl) subtitleEl.value = config.subtitle || '';
         }
 
         function saveHeroConfig(e) {
             e.preventDefault();
+            const badgeEl = document.getElementById('heroBadge');
+            const titleEl = document.getElementById('heroTitle');
+            const subtitleEl = document.getElementById('heroSubtitle');
             const config = {
-                badge: document.getElementById('heroBadge').value.trim(),
-                title: document.getElementById('heroTitle').value.trim(),
-                subtitle: document.getElementById('heroSubtitle').value.trim()
+                badge: badgeEl ? badgeEl.value.trim() : '',
+                title: titleEl ? titleEl.value.trim() : '',
+                subtitle: subtitleEl ? subtitleEl.value.trim() : ''
             };
             safeJSONSet('clebne_hero_config', config);
             showToast('Configuración del portal actualizada en vivo.');
